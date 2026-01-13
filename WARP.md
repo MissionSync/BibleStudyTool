@@ -7,6 +7,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 Bible Study Tool is a Next.js-based application for interactive Bible study planning and visualization. The app uses React Flow for graph-based visualization of biblical passages, themes, and study notes, with Supabase for data persistence.
 
 **Key Technologies:**
+
 - Next.js 16 (App Router)
 - React 19
 - TypeScript
@@ -20,33 +21,43 @@ Bible Study Tool is a Next.js-based application for interactive Bible study plan
 ## Common Development Commands
 
 ### Development
+
 ```bash
 npm run dev
 ```
+
 Starts the development server at http://localhost:3000 with hot-reload enabled.
 
 ### Building
+
 ```bash
 npm run build
 ```
+
 Creates an optimized production build. Next.js will output to `.next/` directory.
 
 ### Production Server
+
 ```bash
 npm run start
 ```
+
 Runs the production build locally (must run `npm run build` first).
 
 ### Linting
+
 ```bash
 npm run lint
 ```
+
 Runs ESLint with Next.js configuration to check code quality.
 
 ### Type Checking
+
 ```bash
 npx tsc --noEmit
 ```
+
 Runs TypeScript type checker without emitting files.
 
 ## Architecture
@@ -54,6 +65,7 @@ Runs TypeScript type checker without emitting files.
 ### Directory Structure
 
 **`src/app/`** - Next.js App Router pages and layouts
+
 - `page.tsx` - Home page (currently placeholder)
 - `layout.tsx` - Root layout with font configuration
 - `globals.css` - Global styles and Tailwind imports
@@ -61,25 +73,30 @@ Runs TypeScript type checker without emitting files.
 - `api/` - API route handlers (graph operations, notes)
 
 **`src/components/`** - React components
+
 - `graph/nodes/` - Custom React Flow node components:
   - `PassageNode.tsx` - Biblical passage/chapter nodes
   - `ThemeNode.tsx` - Thematic concept nodes
   - `NoteNode.tsx` - User note nodes
 
 **`src/lib/`** - Utility functions and shared logic
+
 - `utils/` - Helper functions
 
 **`src/data/`** - Static data and mock data
+
 - `first-study-plan-data.ts` - Example study plan structure with 1 John data
 
 ### Data Model
 
 The application centers around **Study Plans** containing:
+
 - **Readings** - Scheduled Bible passages with metadata (themes, people, key verses)
 - **Graph Nodes** - Visual elements representing books, passages, themes, people, and notes
 - **Graph Edges** - Relationships between nodes (contains, theme_connection, authored, about)
 
 **Node Types:**
+
 1. `book` - Biblical book (e.g., "1 John")
 2. `passage` - Chapter or section
 3. `theme` - Theological/topical concept
@@ -89,12 +106,14 @@ The application centers around **Study Plans** containing:
 ### Component Architecture
 
 **Graph Visualization:**
+
 - Built on React Flow for interactive node-edge graphs
 - Custom node components styled with Tailwind
 - Each node type has distinct visual styling (colors, icons)
 - Handles for connecting relationships between entities
 
 **Styling Approach:**
+
 - Tailwind CSS 4 with PostCSS
 - Component-level styling with utility classes
 - Dark mode support via Tailwind classes
@@ -103,6 +122,7 @@ The application centers around **Study Plans** containing:
 ### Path Aliases
 
 The project uses TypeScript path aliases:
+
 - `@/*` maps to `./src/*`
 
 Example: `import { Component } from '@/components/Component'`
@@ -112,6 +132,7 @@ Example: `import { Component } from '@/components/Component'`
 ### React Flow Nodes
 
 All custom node components follow this pattern:
+
 ```typescript
 'use client';
 import { memo } from 'react';
@@ -129,6 +150,7 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
 ```
 
 **Key Points:**
+
 - Always use `'use client'` directive for React Flow components
 - Wrap in `React.memo()` for performance
 - Include both target and source handles
@@ -138,6 +160,7 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
 ### Data Structure Conventions
 
 **Graph Node Schema:**
+
 ```typescript
 {
   id: string;           // Unique identifier with prefix (e.g., 'passage-1john-1')
@@ -151,6 +174,7 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
 ```
 
 **Graph Edge Schema:**
+
 ```typescript
 {
   id: string;           // Unique identifier
@@ -178,11 +202,13 @@ export const CustomNode = memo(({ data, selected }: NodeProps) => {
 **Important:** This project uses self-hosted Appwrite on DigitalOcean, NOT Supabase.
 
 ### Setup Instructions
-Refer to `SELF_HOST_DIGITALOCEAN_GUIDE.md` for complete setup instructions.
+
+Refer to `Bible_Study_App_Plan.md` for complete setup instructions.
 
 ### Environment Variables
 
 The project uses `.env.local` for configuration:
+
 ```env
 NEXT_PUBLIC_APPWRITE_ENDPOINT=http://YOUR-DROPLET-IP/v1
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=your-project-id
@@ -219,6 +245,7 @@ No test framework is currently configured. When adding tests, consider:
 ## Deployment
 
 This project is optimized for Vercel deployment (see README.md for details). Alternative deployment options include:
+
 - Docker containerization
 - Other Node.js hosting platforms
 
@@ -227,6 +254,7 @@ This project is optimized for Vercel deployment (see README.md for details). Alt
 ### ✅ Completed Components
 
 **Frontend Components (All Built):**
+
 - ✅ 5 Custom Node Components:
   - `NoteNode.tsx` - User study notes
   - `PassageNode.tsx` - Bible passages
@@ -244,6 +272,7 @@ This project is optimized for Vercel deployment (see README.md for details). Alt
   - `first-study-plan-data.ts` - Pre-configured 1 John study plan
 
 **Documentation:**
+
 - ✅ `README_KNOWLEDGE_GRAPH.md` - Project overview
 - ✅ `IMPLEMENTATION_STATUS.md` - Current status and checklist
 - ✅ `QUICK_START.md` - Quick reference
@@ -256,9 +285,10 @@ This project is optimized for Vercel deployment (see README.md for details). Alt
 ### 🚧 Remaining Tasks
 
 #### Task 1: Setup Self-Hosted Appwrite Backend
+
 **Priority:** HIGH  
 **Time:** 30-45 minutes  
-**Reference:** `SELF_HOST_DIGITALOCEAN_GUIDE.md`
+**Reference:** `Bible_Study_App_Plan.md`
 
 1. Create DigitalOcean droplet ($12/month, 2GB RAM)
 2. Install Docker and Docker Compose
@@ -276,6 +306,7 @@ This project is optimized for Vercel deployment (see README.md for details). Alt
 **Deliverable:** Working Appwrite backend accessible at `http://YOUR-DROPLET-IP`
 
 #### Task 2: Create Appwrite Integration Layer
+
 **Priority:** HIGH  
 **Time:** 45 minutes  
 **Dependencies:** Task 1 complete
@@ -293,6 +324,7 @@ This project is optimized for Vercel deployment (see README.md for details). Alt
    - Link tags to theme nodes
 
 **Key Functions:**
+
 ```typescript
 // lib/appwrite/notes.ts
 export async function createNoteWithGraph({
@@ -313,6 +345,7 @@ export async function createNoteWithGraph({
 **Deliverable:** Appwrite integration functions ready for use
 
 #### Task 3: Create Study Graph Page
+
 **Priority:** HIGH  
 **Time:** 30 minutes  
 **Dependencies:** Tasks 1-2 complete  
@@ -327,7 +360,8 @@ export async function createNoteWithGraph({
 7. Implement node interactions (click, double-click)
 
 **User Flow:**
-```
+
+```md
 User clicks "+ New Note"
   → NoteEditor modal opens
   → User types note with Bible references
@@ -340,6 +374,7 @@ User clicks "+ New Note"
 **Deliverable:** Working study graph page at `/study/1/graph`
 
 #### Task 4: Testing & Refinement
+
 **Priority:** MEDIUM  
 **Time:** 1-2 hours  
 **Dependencies:** Tasks 1-3 complete
@@ -368,18 +403,11 @@ User clicks "+ New Note"
 ### Quick Commands for Each Task
 
 **Task 1 - Backend Setup:**
-```bash
-# On DigitalOcean droplet
-ssh root@YOUR-DROPLET-IP
-apt update && apt upgrade -y
-curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
-mkdir appwrite && cd appwrite
-docker run -it --rm --volume /var/run/docker.sock:/var/run/docker.sock \
-  --volume "$(pwd)"/appwrite:/usr/src/code/appwrite:rw \
-  --entrypoint="install" appwrite/appwrite:1.5.7
-```
+
+Check Bible_Study_App_Plan; backend will be appwrite cloud
 
 **Task 2 - Integration:**
+
 ```bash
 # Local machine
 npm install appwrite
@@ -394,6 +422,7 @@ mkdir -p src/app/study/\[planId\]/graph
 ```
 
 **Task 4 - Testing:**
+
 ```bash
 npm run dev
 # Navigate to http://localhost:3000/study/1/graph

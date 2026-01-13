@@ -3,6 +3,7 @@
 ## 📚 What You're Building
 
 A powerful knowledge graph system that transforms Bible study notes into an **interactive, visual network** showing connections between:
+
 - 📖 Bible passages
 - 📝 Personal insights and notes  
 - 🏷️ Theological themes
@@ -10,6 +11,7 @@ A powerful knowledge graph system that transforms Bible study notes into an **in
 - 📍 Places
 
 **Example:** When you create a note about "God's love" in 1 John 4:8, the system automatically:
+
 1. Creates a note node in the graph
 2. Links it to the "1 John 4" passage node
 3. Connects it to the "Love" theme node
@@ -19,12 +21,14 @@ A powerful knowledge graph system that transforms Bible study notes into an **in
 ## 🎯 Best Implementation Approach
 
 ### Recommended Tech Stack
+
 - **Database:** PostgreSQL (via Supabase) - you already have it!
 - **Graph Library:** React Flow - modern, performant, React-native
 - **Note Editor:** TipTap - rich text with great extensibility
 - **State Management:** Zustand or React Query for caching
 
 ### Why This Approach?
+
 ✅ **No new infrastructure** - works with existing Supabase setup
 ✅ **Scales well** - can handle thousands of notes/connections
 ✅ **Easy to start** - can build MVP in 2-3 weeks
@@ -34,13 +38,16 @@ A powerful knowledge graph system that transforms Bible study notes into an **in
 ## 🚀 Implementation Timeline
 
 ### Week 1: Foundation (Backend)
+
 **Days 1-3: Database Setup**
+
 - Run SQL migrations for notes, graph_nodes, graph_edges tables
 - Add indexes for performance
 - Populate system themes
 - Test with sample data
 
 **Days 4-7: API Development**
+
 - Build `/api/notes` endpoints (CRUD)
 - Build `/api/graph/nodes` and `/api/graph/edges`
 - Implement auto-linking logic
@@ -49,12 +56,15 @@ A powerful knowledge graph system that transforms Bible study notes into an **in
 **Deliverable:** Working backend that creates graph structure from notes
 
 ### Week 2: Visualization
+
 **Days 8-10: Setup**
+
 - Install dependencies (React Flow, TipTap, etc.)
 - Set up component structure
 - Create custom node components
 
 **Days 11-14: Graph Component**
+
 - Build main KnowledgeGraph component
 - Implement filtering and search
 - Add graph controls
@@ -142,6 +152,7 @@ src/
 ## 💡 Key Implementation Details
 
 ### 1. Note Creation Flow
+
 ```typescript
 async function createNoteWithGraph(noteData: NoteInput) {
   // 1. Create note
@@ -377,6 +388,7 @@ curl http://localhost:3000/api/graph/nodes?userId=user-123
 ## 🤝 Support
 
 If you need help:
+
 1. Check existing documentation
 2. Review code examples
 3. Test with sample data from first-study-plan-data.ts
@@ -385,6 +397,7 @@ If you need help:
 ## 🎉 Success Criteria
 
 You'll know it's working when:
+
 - [ ] User creates note with Bible reference
 - [ ] Note appears automatically in graph
 - [ ] Clicking note in graph opens editor

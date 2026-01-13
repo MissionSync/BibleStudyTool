@@ -3,6 +3,7 @@
 ## Page Integration Example
 
 ### app/study/[planId]/graph/page.tsx
+
 ```typescript
 'use client';
 
@@ -117,6 +118,7 @@ export default function StudyGraphPage() {
 ### Week 1: Database & Backend Setup
 
 #### Day 1-2: Database Schema
+
 ```sql
 -- Run these migrations in Supabase SQL Editor
 
@@ -188,6 +190,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 ```
 
 #### Day 3-4: API Routes
+
 1. Copy the API routes from `api-routes.ts`
 2. Test endpoints with Postman/Thunder Client:
    - POST /api/notes - Create note
@@ -195,6 +198,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
    - GET /api/graph/nodes?userId=xxx - Get graph data
 
 #### Day 5-7: Initial Data Population
+
 ```typescript
 // scripts/populate-first-study.ts
 import { createClient } from '@supabase/supabase-js';
@@ -253,6 +257,7 @@ async function populateFirstStudy(userId: string) {
 ### Week 2: Frontend Components
 
 #### Day 8-10: Install Dependencies
+
 ```bash
 npm install reactflow@11.10.0
 npm install @tiptap/react @tiptap/starter-kit
@@ -262,11 +267,13 @@ npm install dagre
 ```
 
 #### Day 11-12: Build Custom Nodes
+
 1. Copy code from `CustomNodes.tsx`
 2. Create each node component in `components/graph/nodes/`
 3. Test rendering with sample data
 
 #### Day 13-14: Build Main Graph Component
+
 1. Copy `KnowledgeGraph.tsx`
 2. Implement graph controls
 3. Test with first study data
@@ -274,17 +281,20 @@ npm install dagre
 ### Week 3: Note Editor & Integration
 
 #### Day 15-17: Note Editor
+
 1. Copy `NoteEditor.tsx`
 2. Implement rich text editing
 3. Add Bible reference detection
 4. Test save/update functionality
 
 #### Day 18-19: Graph Integration
+
 1. Connect note creation to graph updates
 2. Implement auto-linking logic
 3. Test edge creation
 
 #### Day 20-21: Polish & Testing
+
 1. Fix bugs
 2. Improve styling
 3. Test full workflow
@@ -292,6 +302,7 @@ npm install dagre
 ### Week 4: Advanced Features
 
 #### Day 22-23: Path Finding
+
 ```typescript
 // utils/graphAlgorithms.ts
 export function findShortestPath(
@@ -346,6 +357,7 @@ export function clusterByTheme(nodes: Node[], edges: Edge[], themeId: string) {
 ```
 
 #### Day 26-28: UI Polish
+
 - Add animations
 - Improve mobile responsiveness
 - Add keyboard shortcuts
@@ -354,6 +366,7 @@ export function clusterByTheme(nodes: Node[], edges: Edge[], themeId: string) {
 ## Testing Checklist
 
 ### Backend Tests
+
 - [ ] Create note via API
 - [ ] Note creates graph node
 - [ ] Bible references create passage nodes
@@ -362,6 +375,7 @@ export function clusterByTheme(nodes: Node[], edges: Edge[], themeId: string) {
 - [ ] Delete note removes graph nodes
 
 ### Frontend Tests
+
 - [ ] Graph renders correctly
 - [ ] Nodes are clickable
 - [ ] Filters work
@@ -383,6 +397,7 @@ export function clusterByTheme(nodes: Node[], edges: Edge[], themeId: string) {
 ## Performance Optimization
 
 ### Database Queries
+
 ```typescript
 // Use this for efficient graph loading
 export async function loadGraphWithRelations(userId: string, planId: string) {
@@ -401,6 +416,7 @@ export async function loadGraphWithRelations(userId: string, planId: string) {
 ```
 
 ### Frontend Caching
+
 ```typescript
 // Use React Query for caching
 import { useQuery } from '@tanstack/react-query';
