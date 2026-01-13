@@ -39,8 +39,8 @@ export const ThemeNode = memo(({ data, selected }: NodeProps) => {
           )}
         </div>
       </div>
-      
-      <Handle typ      <Handle typ      <Handle typ      <Handle typ      </>
+
+      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
     </div>
   );
 });

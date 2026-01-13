@@ -1,4 +1,5 @@
 # 🚀 Backend Deployment Guide
+
 ## Using Appwrite Cloud for the Bible Study App
 
 ---
@@ -19,6 +20,7 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 ## ✅ Why Appwrite Cloud?
 
 ### Benefits
+
 - ✅ **Managed Service** - No server setup or maintenance
 - ✅ **Free Tier** - Generous limits for most applications
 - ✅ **Zero DevOps** - No infrastructure management needed
@@ -27,6 +29,7 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 - ✅ **Secure** - Enterprise-grade security out of the box
 
 ### Free Tier Includes
+
 - **75,000 monthly active users**
 - **2GB storage**
 - **750,000 function executions**
@@ -68,30 +71,40 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 
 #### Create Collections
 
+> **📝 Important Notes:**
+> - Appwrite automatically creates `$id`, `$createdAt`, and `$updatedAt` for every collection
+> - You only need to manually add the attributes listed under "Manual Attributes"
+> - For Boolean attributes, set Required to "No" if you want a default value
+> - Array attributes are created by selecting the "Array" checkbox when creating String attributes
+> - Enum attributes let you specify allowed values (comma-separated, no spaces)
+
 You need to create 4 collections:
 
 **1. Notes Collection**
 
-```
+```md
 Collection ID: notes
 Name: Notes
 
-Attributes:
-- title (String, 500 chars, Required)
-- content (String, 50000 chars, Required)
-- contentPlain (String, 50000 chars, Required)
-- userId (String, 100 chars, Required)
-- bibleReferences (Array of Strings)
-- tags (Array of Strings)
-- createdAt (DateTime, Required)
-- updatedAt (DateTime, Required)
-- isArchived (Boolean, Required, Default: false)
+Automatic Attributes (created by Appwrite):
+- $id (Document ID)
+- $createdAt (Creation timestamp)
+- $updatedAt (Last update timestamp)
+
+Manual Attributes (you need to add these):
+- title (String, Size: 500, Required: Yes)
+- content (String, Size: 50000, Required: Yes)
+- contentPlain (String, Size: 50000, Required: Yes)
+- userId (String, Size: 100, Required: Yes)
+- bibleReferences (String[], Array: Yes, Required: No)
+- tags (String[], Array: Yes, Required: No)
+- isArchived (Boolean, Required: No, Default: false)
 
 Indexes:
-- userId (Type: key)
-- createdAt (Type: key, Order: DESC)
+- userId (Type: key, Attribute: userId)
+- $createdAt (Type: key, Attribute: $createdAt, Order: DESC)
 
-Permissions:
+Permissions (in Settings tab):
 - Create: Users
 - Read: user:$userId
 - Update: user:$userId
@@ -100,24 +113,28 @@ Permissions:
 
 **2. Graph Nodes Collection**
 
-```
+```md
 Collection ID: graph_nodes
 Name: Graph Nodes
 
-Attributes:
-- userId (String, 100 chars, Required)
-- nodeType (Enum: book, passage, theme, person, place, note)
-- referenceId (String, 100 chars)
-- label (String, 500 chars, Required)
-- description (String, 5000 chars)
-- metadata (String, 10000 chars) // JSON stored as string
-- createdAt (DateTime, Required)
+Automatic Attributes (created by Appwrite):
+- $id (Document ID)
+- $createdAt (Creation timestamp)
+- $updatedAt (Last update timestamp)
+
+Manual Attributes (you need to add these):
+- userId (String, Size: 100, Required: Yes)
+- nodeType (Enum, Elements: book,passage,theme,person,place,note, Required: Yes)
+- referenceId (String, Size: 100, Required: No)
+- label (String, Size: 500, Required: Yes)
+- description (String, Size: 5000, Required: No)
+- metadata (String, Size: 10000, Required: No) // For storing JSON
 
 Indexes:
-- userId (Type: key)
-- nodeType (Type: key)
+- userId (Type: key, Attribute: userId)
+- nodeType (Type: key, Attribute: nodeType)
 
-Permissions:
+Permissions (in Settings tab):
 - Create: Users
 - Read: user:$userId
 - Update: user:$userId
@@ -126,24 +143,28 @@ Permissions:
 
 **3. Graph Edges Collection**
 
-```
+```md
 Collection ID: graph_edges
 Name: Graph Edges
 
-Attributes:
-- userId (String, 100 chars, Required)
-- sourceNodeId (String, 100 chars, Required)
-- targetNodeId (String, 100 chars, Required)
-- edgeType (Enum: references, theme_connection, mentions, cross_ref)
-- weight (Float, Default: 1.0)
-- createdAt (DateTime, Required)
+Automatic Attributes (created by Appwrite):
+- $id (Document ID)
+- $createdAt (Creation timestamp)
+- $updatedAt (Last update timestamp)
+
+Manual Attributes (you need to add these):
+- userId (String, Size: 100, Required: Yes)
+- sourceNodeId (String, Size: 100, Required: Yes)
+- targetNodeId (String, Size: 100, Required: Yes)
+- edgeType (Enum, Elements: references,theme_connection,mentions,cross_ref, Required: Yes)
+- weight (Float, Min: 0, Max: 100, Required: No, Default: 1.0)
 
 Indexes:
-- userId (Type: key)
-- sourceNodeId (Type: key)
-- targetNodeId (Type: key)
+- userId (Type: key, Attribute: userId)
+- sourceNodeId (Type: key, Attribute: sourceNodeId)
+- targetNodeId (Type: key, Attribute: targetNodeId)
 
-Permissions:
+Permissions (in Settings tab):
 - Create: Users
 - Read: user:$userId
 - Update: user:$userId
@@ -152,24 +173,29 @@ Permissions:
 
 **4. Themes Collection**
 
-```
+```md
 Collection ID: themes
 Name: Themes
 
-Attributes:
-- name (String, 200 chars, Required)
-- description (String, 2000 chars)
-- color (String, 20 chars, Required)
-- isSystem (Boolean, Required, Default: false)
-- userId (String, 100 chars) // Nullable for system themes
+Automatic Attributes (created by Appwrite):
+- $id (Document ID)
+- $createdAt (Creation timestamp)
+- $updatedAt (Last update timestamp)
+
+Manual Attributes (you need to add these):
+- name (String, Size: 200, Required: Yes)
+- description (String, Size: 2000, Required: No)
+- color (String, Size: 20, Required: Yes)
+- isSystem (Boolean, Required: No, Default: false)
+- userId (String, Size: 100, Required: No) // Nullable for system themes
 
 Indexes:
-- name (Type: key)
-- isSystem (Type: key)
+- name (Type: key, Attribute: name)
+- isSystem (Type: key, Attribute: isSystem)
 
-Permissions:
+Permissions (in Settings tab):
 - Create: Users
-- Read: any
+- Read: Any
 - Update: user:$userId
 - Delete: user:$userId
 ```
@@ -257,6 +283,7 @@ For most users, **Appwrite Cloud is the better choice** due to zero maintenance,
 6. ✅ Can migrate data if you outgrow it
 
 **When you might need Pro ($15/month):**
+
 - More than 75K monthly active users
 - Need more than 2GB storage
 - Require premium support
@@ -292,25 +319,30 @@ For most users, **Appwrite Cloud is the better choice** due to zero maintenance,
 Your Next.js frontend can be deployed to:
 
 ### Vercel (Recommended - FREE)
+
 ```bash
 npm i -g vercel
 vercel
 ```
 
 Add environment variables in Vercel dashboard:
+
 - `NEXT_PUBLIC_APPWRITE_ENDPOINT`
 - `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
 
 ### Netlify (Alternative - FREE)
+
 ```bash
 npm i -g netlify-cli
 netlify deploy
 ```
 
 ### Cloudflare Pages (Alternative - FREE)
+
 Connect your GitHub repo to Cloudflare Pages
 
 All three options offer:
+
 - Free SSL certificates
 - Global CDN
 - Automatic deployments
