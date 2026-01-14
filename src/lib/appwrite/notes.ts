@@ -1,5 +1,6 @@
 import { ID, Query, type Models } from 'appwrite';
 import { databases, DATABASE_ID, COLLECTIONS } from '../appwrite';
+import { generateGraphForNote } from '../graphGenerator';
 
 export interface Note extends Models.Document {
   title: string;
@@ -31,7 +32,7 @@ export interface UpdateNoteData {
 }
 
 /**
- * Create a new note
+ * Create a new note and generate graph nodes
  */
 export async function createNote(data: CreateNoteData): Promise<Note> {
   const noteData = {
@@ -51,7 +52,17 @@ export async function createNote(data: CreateNoteData): Promise<Note> {
     noteData
   );
 
-  return response as unknown as Note;
+  const note = response as unknown as Note;
+
+  // Generate graph nodes for this note (async, don't block)
+  try {
+    await generateGraphForNote(note);
+  } catch (error) {
+    console.error('Failed to generate graph for note:', error);
+    // Don't throw - note creation succeeded
+  }
+
+  return note;
 }
 
 /**
