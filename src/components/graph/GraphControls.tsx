@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { Search, Filter } from 'lucide-react';
 
 interface GraphControlsProps {
   filteredNodeTypes: Set<string>;
@@ -14,12 +13,12 @@ interface GraphControlsProps {
 }
 
 const NODE_TYPE_CONFIG = [
-  { type: 'book', label: 'Books', color: 'bg-blue-500' },
-  { type: 'passage', label: 'Passages', color: 'bg-emerald-500' },
-  { type: 'note', label: 'Notes', color: 'bg-amber-500' },
-  { type: 'theme', label: 'Themes', color: 'bg-purple-500' },
-  { type: 'person', label: 'People', color: 'bg-rose-500' },
-  { type: 'place', label: 'Places', color: 'bg-cyan-500' },
+  { type: 'book', label: 'Books', colorVar: '--node-book' },
+  { type: 'passage', label: 'Passages', colorVar: '--node-passage' },
+  { type: 'note', label: 'Notes', colorVar: '--node-note' },
+  { type: 'theme', label: 'Themes', colorVar: '--node-theme' },
+  { type: 'person', label: 'People', colorVar: '--node-person' },
+  { type: 'place', label: 'Places', colorVar: '--node-place' },
 ];
 
 export function GraphControls({
@@ -31,46 +30,56 @@ export function GraphControls({
   onSearchChange,
 }: GraphControlsProps) {
   return (
-    <div className="space-y-4 w-64">
+    <div className="space-y-5 w-56">
       {/* Search */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Search Nodes
+        <label
+          className="block text-xs uppercase tracking-wider mb-2"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Search
         </label>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Search nodes..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="w-full text-sm"
+          style={{ height: '2.5rem' }}
+        />
       </div>
 
       {/* Node Type Filters */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <Filter className="w-4 h-4 text-gray-700" />
-          <label className="block text-sm font-medium text-gray-700">
-            Node Types
-          </label>
-        </div>
+        <label
+          className="block text-xs uppercase tracking-wider mb-3"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Node Types
+        </label>
         <div className="space-y-2">
-          {NODE_TYPE_CONFIG.map(({ type, label, color }) => (
+          {NODE_TYPE_CONFIG.map(({ type, label, colorVar }) => (
             <label
               key={type}
-              className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+              className="flex items-center gap-2 cursor-pointer py-1"
             >
               <input
                 type="checkbox"
                 checked={filteredNodeTypes.has(type)}
                 onChange={(e) => onFilterChange(type, e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '14px',
+                  height: '14px',
+                  accentColor: 'var(--accent)',
+                }}
               />
-              <div className={`w-3 h-3 rounded ${color}`} />
-              <span className="text-sm text-gray-700">{label}</span>
+              <div
+                className="w-2 h-2 rounded-sm"
+                style={{ backgroundColor: `var(${colorVar})` }}
+              />
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                {label}
+              </span>
             </label>
           ))}
         </div>
@@ -78,13 +87,17 @@ export function GraphControls({
 
       {/* Layout Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          className="block text-xs uppercase tracking-wider mb-2"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
           Layout
         </label>
         <select
           value={layoutAlgorithm}
-          onChange={(e) => onLayoutChange(e.target.value as any)}
-          className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          onChange={(e) => onLayoutChange(e.target.value as 'force' | 'hierarchical' | 'radial')}
+          className="w-full text-sm"
+          style={{ height: '2.5rem' }}
         >
           <option value="force">Force Directed</option>
           <option value="hierarchical">Hierarchical</option>
@@ -92,15 +105,19 @@ export function GraphControls({
         </select>
       </div>
 
-      {/* Quick Actions */}
-      <div className="pt-2 border-t">
+      {/* Reset */}
+      <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1rem' }}>
         <button
           onClick={() => {
-            // Reset all filters
             NODE_TYPE_CONFIG.forEach(({ type }) => onFilterChange(type, true));
             onSearchChange('');
           }}
-          className="w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="w-full py-2 text-sm transition-colors"
+          style={{
+            color: 'var(--text-secondary)',
+            background: 'none',
+            border: 'none',
+          }}
         >
           Reset Filters
         </button>

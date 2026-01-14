@@ -25,7 +25,6 @@ import { GraphControls } from './GraphControls';
 import { GraphStats } from './GraphStats';
 import { NodeDetailsPanel } from './NodeDetailsPanel';
 
-// Custom node types
 const nodeTypes = {
   passage: PassageNode,
   note: NoteNode,
@@ -34,38 +33,38 @@ const nodeTypes = {
   book: BookNode,
 };
 
-// Edge styling by type
+// Muted edge styles matching the contemplative design
 const getEdgeStyle = (edgeType: string) => {
-  const styles: Record<string, any> = {
+  const styles: Record<string, object> = {
     contains: {
-      stroke: '#94a3b8',
-      strokeWidth: 2,
+      stroke: 'var(--border-medium)',
+      strokeWidth: 1,
     },
     references: {
-      stroke: '#3b82f6',
-      strokeWidth: 2,
-      strokeDasharray: '5,5',
+      stroke: 'var(--node-book)',
+      strokeWidth: 1,
+      strokeDasharray: '4,4',
     },
     theme_connection: {
-      stroke: '#8b5cf6',
-      strokeWidth: 2,
+      stroke: 'var(--node-theme)',
+      strokeWidth: 1,
     },
     cross_reference: {
-      stroke: '#10b981',
-      strokeWidth: 2,
+      stroke: 'var(--node-passage)',
+      strokeWidth: 1,
       strokeDasharray: '3,3',
     },
     authored: {
-      stroke: '#f59e0b',
-      strokeWidth: 2,
+      stroke: 'var(--node-person)',
+      strokeWidth: 1,
     },
     about: {
-      stroke: '#ef4444',
-      strokeWidth: 2,
+      stroke: 'var(--node-note)',
+      strokeWidth: 1,
     },
   };
-  
-  return styles[edgeType] || { stroke: '#cbd5e1', strokeWidth: 1 };
+
+  return styles[edgeType] || { stroke: 'var(--border-light)', strokeWidth: 1 };
 };
 
 interface KnowledgeGraphProps {
@@ -90,8 +89,8 @@ export function KnowledgeGraph({
       ...getEdgeStyle(edge.type || 'default'),
       markerEnd: {
         type: MarkerType.ArrowClosed,
-        width: 20,
-        height: 20,
+        width: 16,
+        height: 16,
       },
     }))
   );
@@ -103,26 +102,23 @@ export function KnowledgeGraph({
   const [layoutAlgorithm, setLayoutAlgorithm] = useState<'force' | 'hierarchical' | 'radial'>('force');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter nodes based on selected types and search
   const visibleNodes = useMemo(() => {
     return nodes.filter(node => {
       const typeMatch = filteredNodeTypes.has(node.type || 'default');
-      const searchMatch = searchQuery === '' || 
+      const searchMatch = searchQuery === '' ||
         node.data.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         node.data.description?.toLowerCase().includes(searchQuery.toLowerCase());
       return typeMatch && searchMatch;
     });
   }, [nodes, filteredNodeTypes, searchQuery]);
 
-  // Filter edges to only show connections between visible nodes
   const visibleEdges = useMemo(() => {
     const visibleNodeIds = new Set(visibleNodes.map(n => n.id));
-    return edges.filter(edge => 
+    return edges.filter(edge =>
       visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
     );
   }, [edges, visibleNodes]);
 
-  // Handle node selection
   const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
     onNodeClick?.(node);
@@ -132,7 +128,6 @@ export function KnowledgeGraph({
     onNodeDoubleClick?.(node);
   }, [onNodeDoubleClick]);
 
-  // Handle filter changes
   const handleFilterChange = useCallback((nodeType: string, enabled: boolean) => {
     setFilteredNodeTypes(prev => {
       const next = new Set(prev);
@@ -145,7 +140,6 @@ export function KnowledgeGraph({
     });
   }, []);
 
-  // Calculate graph statistics
   const stats = useMemo(() => {
     const nodeTypeCounts = nodes.reduce((acc, node) => {
       const type = node.type || 'default';
@@ -185,37 +179,55 @@ export function KnowledgeGraph({
         minZoom={0.1}
         maxZoom={4}
       >
-        <Background color="#e2e8f0" gap={16} />
+        <Background color="var(--border-light)" gap={20} />
         <Controls />
         <MiniMap
           nodeColor={(node) => {
             const colors: Record<string, string> = {
-              book: '#3b82f6',
-              passage: '#10b981',
-              note: '#f59e0b',
-              theme: '#8b5cf6',
-              person: '#ef4444',
-              place: '#06b6d4',
+              book: 'var(--node-book)',
+              passage: 'var(--node-passage)',
+              note: 'var(--node-note)',
+              theme: 'var(--node-theme)',
+              person: 'var(--node-person)',
+              place: 'var(--node-place)',
             };
-            return colors[node.type || 'default'] || '#94a3b8';
+            return colors[node.type || 'default'] || 'var(--border-medium)';
           }}
-          nodeBorderRadius={8}
-          maskColor="rgba(0, 0, 0, 0.2)"
+          nodeBorderRadius={2}
+          maskColor="rgba(0, 0, 0, 0.1)"
         />
-        
-        <Panel position="top-left" className="bg-white rounded-lg shadow-lg p-4 m-4">
-          <GraphControls
-            filteredNodeTypes={filteredNodeTypes}
-            onFilterChange={handleFilterChange}
-            layoutAlgorithm={layoutAlgorithm}
-            onLayoutChange={setLayoutAlgorithm}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
+
+        <Panel position="top-left" className="m-4">
+          <div
+            className="p-4"
+            style={{
+              backgroundColor: 'var(--bg-primary)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '2px',
+            }}
+          >
+            <GraphControls
+              filteredNodeTypes={filteredNodeTypes}
+              onFilterChange={handleFilterChange}
+              layoutAlgorithm={layoutAlgorithm}
+              onLayoutChange={setLayoutAlgorithm}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </div>
         </Panel>
 
-        <Panel position="top-right" className="bg-white rounded-lg shadow-lg p-4 m-4">
-          <GraphStats stats={stats} />
+        <Panel position="top-right" className="m-4">
+          <div
+            className="p-4"
+            style={{
+              backgroundColor: 'var(--bg-primary)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '2px',
+            }}
+          >
+            <GraphStats stats={stats} />
+          </div>
         </Panel>
       </ReactFlow>
 
