@@ -9,12 +9,14 @@ This plan extends your Bible study app with advanced note-taking and knowledge g
 ### Best Approach: Hybrid Graph System
 
 **Recommended Solution:**
+
 - **PostgreSQL** for core data storage (already using Supabase)
 - **Neo4j-style graph relations** modeled in PostgreSQL
 - **React Flow** for frontend visualization (modern, performant, React-native)
 - **Graph algorithms** in application layer
 
 **Why this approach:**
+
 - ✅ No additional database infrastructure needed
 - ✅ Leverages existing Supabase setup
 - ✅ PostgreSQL has excellent JSON support for flexible node attributes
@@ -24,6 +26,7 @@ This plan extends your Bible study app with advanced note-taking and knowledge g
 ## Key Features
 
 ### 1. Smart Note-Taking
+
 - **Rich text editor** with markdown support
 - **Verse linking** - automatically detect Bible references
 - **Tagging system** - themes, topics, people, places
@@ -31,6 +34,7 @@ This plan extends your Bible study app with advanced note-taking and knowledge g
 - **Auto-suggestions** - AI-powered theme detection
 
 ### 2. Knowledge Graph Visualization
+
 - **Interactive graph** - zoom, pan, filter nodes
 - **Node types:**
   - 📖 Passages (Bible references)
@@ -48,6 +52,7 @@ This plan extends your Bible study app with advanced note-taking and knowledge g
   - Cross-reference (note → note)
 
 ### 3. Discovery Features
+
 - **Path finding** - show connections between any two nodes
 - **Theme clustering** - group related notes by theme
 - **Timeline view** - chronological study progression
@@ -57,6 +62,7 @@ This plan extends your Bible study app with advanced note-taking and knowledge g
 ## Technical Stack
 
 ### New Dependencies
+
 ```json
 {
   "reactflow": "^11.10.0",
@@ -75,6 +81,7 @@ This plan extends your Bible study app with advanced note-taking and knowledge g
 ### New Tables
 
 #### notes (Enhanced)
+
 ```sql
 CREATE TABLE notes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -96,6 +103,7 @@ CREATE INDEX idx_notes_content_search ON notes USING GIN(to_tsvector('english', 
 ```
 
 #### graph_nodes
+
 ```sql
 CREATE TYPE node_type AS ENUM (
   'passage',
@@ -124,6 +132,7 @@ CREATE INDEX idx_nodes_ref ON graph_nodes(reference_id);
 ```
 
 #### graph_edges
+
 ```sql
 CREATE TYPE edge_type AS ENUM (
   'references',
@@ -153,6 +162,7 @@ CREATE INDEX idx_edges_user ON graph_edges(user_id);
 ```
 
 #### themes (Predefined themes + user custom)
+
 ```sql
 CREATE TABLE themes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -183,23 +193,27 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 ## API Routes Structure
 
 ### `/api/notes`
+
 - GET: Fetch user notes with filtering
 - POST: Create new note with auto-linking
 - PUT: Update note and rebuild connections
 - DELETE: Remove note and graph nodes
 
 ### `/api/graph/nodes`
+
 - GET: Fetch graph nodes for visualization
 - POST: Create custom node (theme, person, place)
 - PUT: Update node properties
 - DELETE: Remove node
 
 ### `/api/graph/edges`
+
 - GET: Fetch connections between nodes
 - POST: Create manual connection
 - DELETE: Remove connection
 
 ### `/api/graph/analyze`
+
 - POST: Find paths between nodes
 - POST: Cluster by theme
 - POST: Suggest connections
@@ -210,18 +224,21 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 ### `/components/notes/`
 
 #### `NoteEditor.tsx`
+
 - Rich text editing with TipTap
 - Bible reference detection
 - Tag input with autocomplete
 - Save/update/delete actions
 
 #### `NoteSidebar.tsx`
+
 - List of all notes
 - Search and filter
 - Tag filtering
 - Sort by date/relevance
 
 #### `BibleReferenceSelector.tsx`
+
 - Searchable Bible book/chapter/verse
 - Visual passage selector
 - Quick access to common references
@@ -229,6 +246,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 ### `/components/graph/`
 
 #### `KnowledgeGraph.tsx`
+
 - Main React Flow canvas
 - Custom node renderers
 - Edge styling by type
@@ -236,24 +254,28 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 - Mini-map
 
 #### `GraphControls.tsx`
+
 - Layout algorithm selector (force, hierarchical, radial)
 - Filter by node type
 - Search nodes
 - Toggle physics simulation
 
 #### `NodeDetailsPanel.tsx`
+
 - Selected node information
 - Quick edit capabilities
 - Related nodes list
 - Navigation shortcuts
 
 #### `GraphStats.tsx`
+
 - Total nodes/edges count
 - Most connected themes
 - Study coverage visualization
 - Timeline view
 
 ### `/app/study/[planId]/graph`
+
 - Knowledge graph page for specific reading plan
 - Integration with notes and progress
 - Plan-specific graph filtering
@@ -261,6 +283,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 ## Implementation Phases
 
 ### Phase 1: Enhanced Note-Taking (Week 1-2)
+
 1. Install dependencies (TipTap, React Markdown)
 2. Create database schema extensions
 3. Build NoteEditor component with rich text
@@ -269,6 +292,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 6. Create notes API routes
 
 ### Phase 2: Graph Data Structure (Week 2-3)
+
 1. Implement graph_nodes and graph_edges tables
 2. Create auto-linking logic for notes
 3. Build graph creation from notes
@@ -276,6 +300,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 5. Add API routes for graph operations
 
 ### Phase 3: Graph Visualization (Week 3-4)
+
 1. Install React Flow
 2. Build KnowledgeGraph component
 3. Create custom node components
@@ -284,6 +309,7 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 6. Build node details panel
 
 ### Phase 4: Discovery Features (Week 4-5)
+
 1. Implement path finding algorithm
 2. Build theme clustering
 3. Create suggestion engine
@@ -295,12 +321,14 @@ INSERT INTO themes (name, description, color, is_system) VALUES
 
 For "1 John" (first reading):
 
-### Auto-Generated Nodes:
+### Auto-Generated Nodes
+
 - **Book Node**: "1 John"
 - **Theme Nodes**: "Love", "Fellowship", "Truth", "Sin", "Eternal Life"
 - **Person Nodes**: "John", "Jesus Christ", "Antichrist"
 
-### User Note Creates:
+### User Note Creates
+
 1. Note: "God is light - 1 John 1:5"
    - Links to: 1 John 1:5 (passage)
    - Tagged: "Nature of God", "Light", "Truth"
@@ -312,8 +340,9 @@ For "1 John" (first reading):
    - Cross-references previous note
    - Connects to theme: "Fellowship"
 
-### Graph Visualization:
-```
+### Graph Visualization
+
+```md
 [1 John] ─────references────→ [God is light]
     │                              │
     └──────chapter───→ [1:5]      │
@@ -334,18 +363,21 @@ For "1 John" (first reading):
 ## Performance Optimization
 
 ### Caching Strategy
+
 - Cache frequently accessed graph data
 - Incremental updates on note changes
 - Lazy load graph nodes (paginated)
 - Debounce search and filters
 
 ### Query Optimization
+
 - Use materialized views for complex queries
 - Index all foreign keys
 - Batch graph operations
 - Use connection pooling
 
 ### Frontend Optimization
+
 - Virtualize large graphs (render visible nodes only)
 - Use React Flow's built-in optimizations
 - Memoize expensive calculations
@@ -354,12 +386,14 @@ For "1 John" (first reading):
 ## Mobile Considerations
 
 ### Responsive Graph View
+
 - Simplified graph on mobile
 - Touch gestures for zoom/pan
 - Bottom sheet for node details
 - Swipeable node cards
 
 ### Progressive Enhancement
+
 - List view fallback
 - Text-based connections
 - Simple tagging interface
