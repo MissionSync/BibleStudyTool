@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:1john": "tsx src/scripts/seedOneJohn.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",
@@ -16,6 +17,7 @@
     "dagre": "^0.8.5",
     "lucide-react": "^0.556.0",
     "next": "16.0.10",
+    "next": "^16.1.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "reactflow": "^11.10.0"
@@ -25,9 +27,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
-    "eslint-config-next": "16.0.1",
+    "eslint-config-next": "^16.1.1",
+    "node-appwrite": "^21.1.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

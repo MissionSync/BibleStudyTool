@@ -24,7 +24,7 @@ export const account = new Account(client);
 export default client;
 
 // Database and collection IDs
-export const DATABASE_ID = 'bible_study';
+export const DATABASE_ID = '6966a14a0026e990c14b';
 export const COLLECTIONS = {
   NOTES: 'notes',
   GRAPH_NODES: 'graph_nodes',

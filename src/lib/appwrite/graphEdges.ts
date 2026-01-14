@@ -7,7 +7,7 @@ export interface GraphEdge extends Models.Document {
   userId: string;
   sourceNodeId: string;
   targetNodeId: string;
-  edgeType: EdgeType;
+  edgeTyp: EdgeType;
   weight: number;
 }
 
@@ -15,7 +15,7 @@ export interface CreateGraphEdgeData {
   userId: string;
   sourceNodeId: string;
   targetNodeId: string;
-  edgeType: EdgeType;
+  edgeTyp: EdgeType;
   weight?: number;
 }
 
@@ -31,7 +31,7 @@ export async function createGraphEdge(data: CreateGraphEdgeData): Promise<GraphE
     userId: data.userId,
     sourceNodeId: data.sourceNodeId,
     targetNodeId: data.targetNodeId,
-    edgeType: data.edgeType,
+    edgeTyp: data.edgeTyp,
     weight: data.weight || 1.0,
   };
 

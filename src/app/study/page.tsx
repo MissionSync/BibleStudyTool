@@ -1,11 +1,37 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Book, Calendar, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Book, Calendar, CheckCircle2, Loader2 } from 'lucide-react';
 import { STUDY_PLAN, getCompletionPercentage } from '@/data/studyPlan';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function StudyPlanPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const currentWeek = 1; // Can be made dynamic later
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, loading, router]);
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -13,11 +39,11 @@ export default function StudyPlanPage() {
         {/* Header */}
         <div className="mb-8">
           <Link
-            href="/"
+            href="/dashboard"
             className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
+            Back to Dashboard
           </Link>
           <div className="flex items-center justify-between">
             <div>
