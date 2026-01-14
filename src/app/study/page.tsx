@@ -3,183 +3,203 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Book, Calendar, CheckCircle2, Loader2 } from 'lucide-react';
 import { STUDY_PLAN, getCompletionPercentage } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function StudyPlanPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const currentWeek = 1; // Can be made dynamic later
+  const currentWeek = 1;
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       router.push('/auth/login');
     }
   }, [user, loading, router]);
 
-  // Show loading while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
-  // Don't render if not authenticated
   if (!user) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline mb-4"
+    <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      {/* Navigation */}
+      <nav
+        className="content-wide py-6 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-light)' }}
+      >
+        <Link
+          href="/dashboard"
+          className="text-lg tracking-wide"
+          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
+        >
+          Bible Notes Journal
+        </Link>
+        <div className="flex items-center gap-8">
+          <span
+            className="text-sm"
+            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
+            Study Plans
+          </span>
+          <Link
+            href="/notes"
+            className="text-sm transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Notes
           </Link>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                38-Week New Testament Study Plan
-              </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300">
-                Read through the entire New Testament in 38 weeks, 7 days per week
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                {getCompletionPercentage(currentWeek)}%
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Complete</div>
-            </div>
-          </div>
         </div>
+      </nav>
 
-        {/* Progress Bar */}
-        <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      {/* Header */}
+      <header className="content-narrow py-12">
+        <Link
+          href="/dashboard"
+          className="inline-block mb-6 text-sm transition-colors"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          &larr; Dashboard
+        </Link>
+
+        <h1
+          className="text-3xl mb-3"
+          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+        >
+          New Testament Study Plan
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+          38 weeks through the entire New Testament
+        </p>
+
+        {/* Progress */}
+        <div
+          className="p-5"
+          style={{
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border-light)',
+            borderRadius: '2px',
+          }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Week {currentWeek} of 38
             </span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {38 - currentWeek} weeks remaining
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {getCompletionPercentage(currentWeek)}% complete
             </span>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div
+            className="h-1 w-full"
+            style={{ backgroundColor: 'var(--border-light)', borderRadius: '2px' }}
+          >
             <div
-              className="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all"
-              style={{ width: `${getCompletionPercentage(currentWeek)}%` }}
-            ></div>
+              className="h-1 transition-all"
+              style={{
+                width: `${getCompletionPercentage(currentWeek)}%`,
+                backgroundColor: 'var(--accent)',
+                borderRadius: '2px',
+              }}
+            />
           </div>
         </div>
+      </header>
 
-        {/* Study Plan Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Study Plan List */}
+      <main className="content-narrow pb-16">
+        <div className="space-y-1">
           {STUDY_PLAN.map((week) => {
-            const isCompleted = week.week < currentWeek;
             const isCurrent = week.week === currentWeek;
 
             return (
-              <div
+              <Link
                 key={week.week}
-                className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-all hover:shadow-xl ${
-                  isCurrent
-                    ? 'ring-2 ring-blue-600 dark:ring-blue-400'
-                    : ''
-                }`}
+                href={`/study/${week.week}`}
+                className="block py-5 transition-colors"
+                style={{
+                  borderBottom: '1px solid var(--border-light)',
+                  textDecoration: 'none',
+                }}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                        isCompleted
-                          ? 'bg-green-100 dark:bg-green-900'
-                          : isCurrent
-                          ? 'bg-blue-100 dark:bg-blue-900'
-                          : 'bg-gray-100 dark:bg-gray-700'
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
-                      ) : (
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <span
+                        className="text-xs uppercase tracking-wider"
+                        style={{ color: 'var(--text-tertiary)' }}
+                      >
+                        Week {week.week}
+                      </span>
+                      {isCurrent && (
                         <span
-                          className={`text-sm font-bold ${
-                            isCurrent
-                              ? 'text-blue-600 dark:text-blue-400'
-                              : 'text-gray-600 dark:text-gray-400'
-                          }`}
+                          className="text-xs px-2 py-0.5"
+                          style={{
+                            backgroundColor: 'var(--highlight-gold)',
+                            color: 'var(--text-primary)',
+                            borderRadius: '2px',
+                          }}
                         >
-                          {week.week}
+                          Current
                         </span>
                       )}
                     </div>
-                    {isCurrent && (
-                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
-                        Current
-                      </span>
-                    )}
+                    <h3
+                      className="text-lg mb-1"
+                      style={{
+                        fontFamily: 'var(--font-serif)',
+                        color: 'var(--text-primary)',
+                        fontWeight: 400,
+                      }}
+                    >
+                      {week.title}
+                    </h3>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      {week.reading}
+                    </p>
                   </div>
-                  <Book className="w-5 h-5 text-gray-400" />
+                  <span style={{ color: 'var(--text-tertiary)', marginTop: '0.5rem' }}>&rarr;</span>
                 </div>
-
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {week.title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  {week.reading}
-                </p>
-                {week.description && (
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mb-4 line-clamp-2">
-                    {week.description}
-                  </p>
-                )}
-
-                <div className="flex gap-2">
-                  <Link
-                    href={`/study/${week.week}`}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded transition-colors text-center"
-                  >
-                    Details
-                  </Link>
-                  <Link
-                    href={`/study/${week.week}/graph`}
-                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-2 rounded transition-colors text-center"
-                  >
-                    Graph
-                  </Link>
-                </div>
-              </div>
+              </Link>
             );
           })}
         </div>
+      </main>
 
-        {/* Info Section */}
-        <div className="mt-12 bg-blue-50 dark:bg-gray-800 rounded-lg p-6">
-          <div className="flex items-start gap-3">
-            <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400 mt-1" />
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Study Plan Guidelines
-              </h3>
-              <ul className="text-gray-700 dark:text-gray-300 space-y-1">
-                <li>• Each reading is designed to be studied for 7 days</li>
-                <li>• Take time to reflect, take notes, and explore connections</li>
-                <li>• Use the knowledge graph to visualize relationships between passages</li>
-                <li>• After completing all 38 weeks, re-read sections that need clarification</li>
-                <li>• Consider studying Proverbs and Psalms during remaining weeks of the year</li>
-              </ul>
-            </div>
-          </div>
+      {/* Guidelines */}
+      <section
+        style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-light)' }}
+      >
+        <div className="content-narrow py-12">
+          <h2
+            className="text-xl mb-6"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+          >
+            Study guidelines
+          </h2>
+          <ul className="space-y-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            <li>Each reading is designed to be studied over 7 days</li>
+            <li>Take time to reflect, take notes, and explore connections</li>
+            <li>Use the knowledge graph to visualize relationships</li>
+            <li>After completing all 38 weeks, revisit sections as needed</li>
+          </ul>
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        className="py-8 text-center text-sm"
+        style={{ color: 'var(--text-tertiary)' }}
+      >
+        Bible Notes Journal
+      </footer>
     </div>
   );
 }
