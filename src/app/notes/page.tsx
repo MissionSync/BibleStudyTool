@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Search, Edit, Trash2, Calendar, Tag } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Plus, Search, Edit, Trash2, Calendar, Tag, Loader2 } from 'lucide-react';
 import { NoteEditor } from '@/components/notes/NoteEditor';
 import { createNote, getUserNotes, deleteNote, type Note } from '@/lib/appwrite/notes';
-
-// Temporary mock user ID - will be replaced with actual auth
-const MOCK_USER_ID = 'demo-user';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function NotesPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
@@ -17,19 +18,27 @@ export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // Load notes on mount
+  // Redirect if not authenticated
   useEffect(() => {
-    loadNotes();
-  }, []);
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, authLoading, router]);
+
+  // Load notes when user is available
+  useEffect(() => {
+    if (user) {
+      loadNotes();
+    }
+  }, [user]);
 
   const loadNotes = async () => {
+    if (!user) return;
     try {
       setLoading(true);
       setError(null);
-      // For now, use empty array since we need auth first
-      // const fetchedNotes = await getUserNotes(MOCK_USER_ID);
-      // setNotes(fetchedNotes);
-      setNotes([]);
+      const fetchedNotes = await getUserNotes(user.$id);
+      setNotes(fetchedNotes);
     } catch (err) {
       console.error('Error loading notes:', err);
       setError('Unable to load notes. Please ensure you are connected to Appwrite.');
@@ -50,13 +59,13 @@ export default function NotesPage() {
       if (editingNote) {
         // Update existing note (implement later)
         console.log('Update note:', noteData);
-      } else {
+      } else if (user) {
         // Create new note
         const newNote = await createNote({
           title: noteData.title,
           content: noteData.content,
           contentPlain: noteData.content.replace(/<[^>]*>/g, ''), // Strip HTML tags
-          userId: MOCK_USER_ID,
+          userId: user.$id,
           bibleReferences: noteData.references,
           tags: noteData.tags,
           isArchived: false,
@@ -97,6 +106,20 @@ export default function NotesPage() {
       note.tags.some(tag => tag.toLowerCase().includes(query))
     );
   });
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-green-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   if (isCreating || editingNote) {
     return (
@@ -143,7 +166,7 @@ export default function NotesPage() {
         {/* Header */}
         <div className="mb-8">
           <Link
-            href="/"
+            href="/dashboard"
             className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

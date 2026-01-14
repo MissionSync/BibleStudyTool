@@ -34,7 +34,7 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, name);
-      router.push('/notes');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to create account. Please try again.');
     } finally {

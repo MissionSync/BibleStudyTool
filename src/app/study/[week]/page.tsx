@@ -1,18 +1,43 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Book, Network, FileText, Calendar } from 'lucide-react';
+import { ArrowLeft, Book, Network, FileText, Calendar, Loader2 } from 'lucide-react';
 import { getStudyWeek, STUDY_PLAN } from '@/data/studyPlan';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PageProps {
   params: Promise<{ week: string }>;
 }
 
 export default function WeekDetailPage({ params }: PageProps) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const resolvedParams = use(params);
   const weekNumber = parseInt(resolvedParams.week);
   const week = getStudyWeek(weekNumber);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, loading, router]);
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   if (!week) {
     return (
