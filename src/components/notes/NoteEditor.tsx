@@ -4,19 +4,6 @@
 import React, { useState, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Quote,
-  Undo,
-  Redo,
-  Save,
-  Tag as TagIcon,
-  BookOpen,
-  X
-} from 'lucide-react';
 
 interface NoteEditorProps {
   initialTitle?: string;
@@ -44,6 +31,7 @@ export function NoteEditor({
   const [tags, setTags] = useState<string[]>(initialTags);
   const [tagInput, setTagInput] = useState('');
   const [references, setReferences] = useState<string[]>(initialReferences);
+  const [referenceInput, setReferenceInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [detectedReferences, setDetectedReferences] = useState<string[]>([]);
 
@@ -52,7 +40,7 @@ export function NoteEditor({
     content: initialContent,
     editorProps: {
       attributes: {
-        class: 'prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[300px] p-4 text-gray-900 dark:text-gray-100',
+        class: 'prose prose-sm max-w-none focus:outline-none min-h-[300px]',
       },
     },
     onUpdate: ({ editor }) => {
@@ -91,8 +79,9 @@ export function NoteEditor({
   }, [tags]);
 
   const handleAddReference = useCallback((ref: string) => {
-    if (!references.includes(ref)) {
-      setReferences([...references, ref]);
+    if (ref.trim() && !references.includes(ref.trim())) {
+      setReferences([...references, ref.trim()]);
+      setReferenceInput('');
     }
   }, [references]);
 
@@ -123,11 +112,21 @@ export function NoteEditor({
   if (!editor) return null;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-4xl mx-auto border border-gray-200 dark:border-gray-700">
-      {/* Title Section */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <label htmlFor="note-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Note Title
+    <div
+      style={{
+        backgroundColor: 'var(--bg-primary)',
+        border: '1px solid var(--border-light)',
+        borderRadius: '2px',
+      }}
+    >
+      {/* Title */}
+      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <label
+          htmlFor="note-title"
+          className="block text-xs uppercase tracking-wider mb-2"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Title
         </label>
         <input
           id="note-title"
@@ -135,96 +134,148 @@ export function NoteEditor({
           placeholder="Enter your note title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full text-2xl font-bold bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.25rem',
+            border: 'none',
+            padding: 0,
+            background: 'transparent',
+          }}
         />
       </div>
 
-      {/* Formatting Toolbar */}
-      <div className="flex items-center gap-1 p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex-wrap">
+      {/* Toolbar */}
+      <div
+        className="flex items-center gap-1 p-3"
+        style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-secondary)' }}
+      >
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${editor.isActive('bold') ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+          className="p-2 transition-colors"
+          style={{
+            borderRadius: '2px',
+            background: editor.isActive('bold') ? 'var(--bg-tertiary)' : 'transparent',
+            color: 'var(--text-secondary)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
           title="Bold"
         >
-          <Bold className="w-4 h-4" />
+          <strong>B</strong>
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${editor.isActive('italic') ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+          className="p-2 transition-colors"
+          style={{
+            borderRadius: '2px',
+            background: editor.isActive('italic') ? 'var(--bg-tertiary)' : 'transparent',
+            color: 'var(--text-secondary)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
           title="Italic"
         >
-          <Italic className="w-4 h-4" />
+          <em>I</em>
         </button>
 
-        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+        <div className="w-px h-5 mx-1" style={{ backgroundColor: 'var(--border-light)' }} />
 
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${editor.isActive('bulletList') ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+          className="p-2 transition-colors text-sm"
+          style={{
+            borderRadius: '2px',
+            background: editor.isActive('bulletList') ? 'var(--bg-tertiary)' : 'transparent',
+            color: 'var(--text-secondary)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
           title="Bullet List"
         >
-          <List className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${editor.isActive('orderedList') ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
-          title="Numbered List"
-        >
-          <ListOrdered className="w-4 h-4" />
+          List
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${editor.isActive('blockquote') ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+          className="p-2 transition-colors text-sm"
+          style={{
+            borderRadius: '2px',
+            background: editor.isActive('blockquote') ? 'var(--bg-tertiary)' : 'transparent',
+            color: 'var(--text-secondary)',
+            border: 'none',
+            cursor: 'pointer',
+          }}
           title="Quote"
         >
-          <Quote className="w-4 h-4" />
+          Quote
         </button>
 
-        <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+        <div className="w-px h-5 mx-1" style={{ backgroundColor: 'var(--border-light)' }} />
 
         <button
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
-          className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-30"
+          className="p-2 transition-colors text-sm"
+          style={{
+            borderRadius: '2px',
+            color: 'var(--text-tertiary)',
+            border: 'none',
+            cursor: 'pointer',
+            opacity: editor.can().undo() ? 1 : 0.3,
+          }}
           title="Undo"
         >
-          <Undo className="w-4 h-4" />
+          Undo
         </button>
         <button
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().redo()}
-          className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-30"
+          className="p-2 transition-colors text-sm"
+          style={{
+            borderRadius: '2px',
+            color: 'var(--text-tertiary)',
+            border: 'none',
+            cursor: 'pointer',
+            opacity: editor.can().redo() ? 1 : 0.3,
+          }}
           title="Redo"
         >
-          <Redo className="w-4 h-4" />
+          Redo
         </button>
       </div>
 
-      {/* Rich Text Editor */}
-      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <EditorContent editor={editor} className="[&_.ProseMirror]:min-h-[300px] [&_.ProseMirror]:p-4 [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:text-gray-900 [&_.ProseMirror]:dark:text-gray-100" />
+      {/* Editor */}
+      <div style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <EditorContent editor={editor} />
       </div>
 
-      {/* Tags Section */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-        <div className="flex items-center gap-2 mb-3">
-          <TagIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
-        </div>
+      {/* Tags */}
+      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <label
+          className="block text-xs uppercase tracking-wider mb-3"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Tags
+        </label>
 
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {tags.map(tag => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+                className="inline-flex items-center gap-1 px-2 py-1 text-sm"
+                style={{
+                  backgroundColor: 'var(--highlight-gold)',
+                  color: 'var(--text-secondary)',
+                  borderRadius: '2px',
+                }}
               >
                 {tag}
                 <button
                   onClick={() => handleRemoveTag(tag)}
-                  className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full p-0.5"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)' }}
                 >
-                  <X className="w-3 h-3" />
+                  &times;
                 </button>
               </span>
             ))}
@@ -243,38 +294,47 @@ export function NoteEditor({
                 handleAddTag();
               }
             }}
-            className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 text-sm"
+            style={{ height: '2.5rem' }}
           />
           <button
             onClick={handleAddTag}
             disabled={!tagInput.trim()}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-secondary text-sm"
+            style={{ opacity: tagInput.trim() ? 1 : 0.5 }}
           >
             Add
           </button>
         </div>
       </div>
 
-      {/* Bible References Section */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-        <div className="flex items-center gap-2 mb-3">
-          <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Bible References</label>
-        </div>
+      {/* Bible References */}
+      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <label
+          className="block text-xs uppercase tracking-wider mb-3"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Bible References
+        </label>
 
         {references.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {references.map(ref => (
               <span
                 key={ref}
-                className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 rounded-full text-sm"
+                className="inline-flex items-center gap-1 px-2 py-1 text-sm"
+                style={{
+                  backgroundColor: 'var(--highlight-sage)',
+                  color: 'var(--text-secondary)',
+                  borderRadius: '2px',
+                }}
               >
                 {ref}
                 <button
                   onClick={() => handleRemoveReference(ref)}
-                  className="hover:bg-emerald-200 dark:hover:bg-emerald-800 rounded-full p-0.5"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)' }}
                 >
-                  <X className="w-3 h-3" />
+                  &times;
                 </button>
               </span>
             ))}
@@ -282,8 +342,14 @@ export function NoteEditor({
         )}
 
         {detectedReferences.length > 0 && detectedReferences.some(ref => !references.includes(ref)) && (
-          <div className="mt-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+          <div
+            className="mb-3 p-3"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: '2px',
+            }}
+          >
+            <div className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>
               Detected references (click to add):
             </div>
             <div className="flex flex-wrap gap-2">
@@ -293,7 +359,14 @@ export function NoteEditor({
                   <button
                     key={ref}
                     onClick={() => handleAddReference(ref)}
-                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    className="px-2 py-1 text-sm transition-colors"
+                    style={{
+                      backgroundColor: 'var(--bg-tertiary)',
+                      color: 'var(--text-secondary)',
+                      borderRadius: '2px',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
                   >
                     + {ref}
                   </button>
@@ -302,19 +375,44 @@ export function NoteEditor({
           </div>
         )}
 
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add a reference (e.g., John 3:16)..."
+            value={referenceInput}
+            onChange={(e) => setReferenceInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddReference(referenceInput);
+              }
+            }}
+            className="flex-1 text-sm"
+            style={{ height: '2.5rem' }}
+          />
+          <button
+            onClick={() => handleAddReference(referenceInput)}
+            disabled={!referenceInput.trim()}
+            className="btn-secondary text-sm"
+            style={{ opacity: referenceInput.trim() ? 1 : 0.5 }}
+          >
+            Add
+          </button>
+        </div>
+
         {references.length === 0 && detectedReferences.length === 0 && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-            Bible references will be automatically detected as you type (e.g., "John 3:16")
+          <p className="text-sm mt-2" style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+            Bible references will be automatically detected as you type
           </p>
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="p-4 flex justify-end gap-3 bg-white dark:bg-gray-800 rounded-b-lg">
+      {/* Actions */}
+      <div className="p-6 flex justify-end gap-3">
         {onCancel && (
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            className="btn-secondary text-sm"
           >
             Cancel
           </button>
@@ -322,9 +420,9 @@ export function NoteEditor({
         <button
           onClick={handleSave}
           disabled={!title.trim() || isSaving}
-          className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="btn-primary text-sm"
+          style={{ opacity: (!title.trim() || isSaving) ? 0.5 : 1 }}
         >
-          <Save className="w-4 h-4" />
           {isSaving ? 'Saving...' : 'Save Note'}
         </button>
       </div>

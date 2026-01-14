@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Search, Edit, Trash2, Calendar, Tag, Loader2 } from 'lucide-react';
 import { NoteEditor } from '@/components/notes/NoteEditor';
 import { createNote, getUserNotes, deleteNote, type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,14 +17,12 @@ export default function NotesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/auth/login');
     }
   }, [user, authLoading, router]);
 
-  // Load notes when user is available
   useEffect(() => {
     if (user) {
       loadNotes();
@@ -57,14 +54,12 @@ export default function NotesPage() {
       setError(null);
 
       if (editingNote) {
-        // Update existing note (implement later)
         console.log('Update note:', noteData);
       } else if (user) {
-        // Create new note
         const newNote = await createNote({
           title: noteData.title,
           content: noteData.content,
-          contentPlain: noteData.content.replace(/<[^>]*>/g, ''), // Strip HTML tags
+          contentPlain: noteData.content.replace(/<[^>]*>/g, ''),
           userId: user.$id,
           bibleReferences: noteData.references,
           tags: noteData.tags,
@@ -107,126 +102,198 @@ export default function NotesPage() {
     );
   });
 
-  // Show loading while checking auth
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-green-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
-  // Don't render if not authenticated
   if (!user) {
     return null;
   }
 
+  // Editor View
   if (isCreating || editingNote) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="mb-6">
-            <button
-              onClick={() => {
-                setIsCreating(false);
-                setEditingNote(null);
-              }}
-              className="flex items-center text-blue-600 dark:text-blue-400 hover:underline"
+      <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        {/* Navigation */}
+        <nav
+          className="content-wide py-6 flex items-center justify-between"
+          style={{ borderBottom: '1px solid var(--border-light)' }}
+        >
+          <Link
+            href="/dashboard"
+            className="text-lg tracking-wide"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
+          >
+            Bible Notes Journal
+          </Link>
+          <div className="flex items-center gap-8">
+            <Link
+              href="/study"
+              className="text-sm transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Notes
-            </button>
+              Study Plans
+            </Link>
+            <span
+              className="text-sm"
+              style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
+            >
+              Notes
+            </span>
           </div>
+        </nav>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              {editingNote ? 'Edit Note' : 'Create New Note'}
-            </h1>
+        <main className="content-narrow py-12">
+          <button
+            onClick={() => {
+              setIsCreating(false);
+              setEditingNote(null);
+            }}
+            className="inline-block mb-8 text-sm transition-colors"
+            style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            &larr; Back to Notes
+          </button>
 
-            <NoteEditor
-              initialTitle={editingNote?.title}
-              initialContent={editingNote?.content}
-              initialTags={editingNote?.tags}
-              initialReferences={editingNote?.bibleReferences}
-              onSave={handleSaveNote}
-              onCancel={() => {
-                setIsCreating(false);
-                setEditingNote(null);
-              }}
-            />
-          </div>
-        </div>
+          <h1
+            className="text-3xl mb-8"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+          >
+            {editingNote ? 'Edit Note' : 'New Note'}
+          </h1>
+
+          <NoteEditor
+            initialTitle={editingNote?.title}
+            initialContent={editingNote?.content}
+            initialTags={editingNote?.tags}
+            initialReferences={editingNote?.bibleReferences}
+            onSave={handleSaveNote}
+            onCancel={() => {
+              setIsCreating(false);
+              setEditingNote(null);
+            }}
+          />
+        </main>
       </div>
     );
   }
 
+  // Notes List View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      {/* Navigation */}
+      <nav
+        className="content-wide py-6 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-light)' }}
+      >
+        <Link
+          href="/dashboard"
+          className="text-lg tracking-wide"
+          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
+        >
+          Bible Notes Journal
+        </Link>
+        <div className="flex items-center gap-8">
           <Link
-            href="/dashboard"
-            className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline mb-4"
+            href="/study"
+            className="text-sm transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
+            Study Plans
           </Link>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                Study Notes
-              </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300">
-                Capture insights and track your Bible study journey
-              </p>
-            </div>
-
-            <button
-              onClick={() => setIsCreating(true)}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              New Note
-            </button>
-          </div>
+          <span
+            className="text-sm"
+            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
+          >
+            Notes
+          </span>
         </div>
+      </nav>
 
-        {/* Error Message */}
+      {/* Header */}
+      <header className="content-narrow py-12">
+        <Link
+          href="/dashboard"
+          className="inline-block mb-6 text-sm transition-colors"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          &larr; Dashboard
+        </Link>
+
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <h1
+              className="text-3xl mb-2"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            >
+              Study Notes
+            </h1>
+            <p style={{ color: 'var(--text-secondary)' }}>
+              Capture insights from your Bible study
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsCreating(true)}
+            className="btn-primary text-sm"
+          >
+            New Note
+          </button>
+        </div>
+      </header>
+
+      <main className="content-narrow pb-16">
+        {/* Error */}
         {error && (
-          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <p className="text-red-800 dark:text-red-200">{error}</p>
+          <div
+            className="mb-6 p-4"
+            style={{
+              backgroundColor: 'var(--highlight-peach)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '2px',
+            }}
+          >
+            <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
           </div>
         )}
 
-        {/* Search Bar */}
-        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search notes by title, content, or tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 dark:text-white"
-            />
-          </div>
+        {/* Search */}
+        <div className="mb-8">
+          <input
+            type="text"
+            placeholder="Search notes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full"
+            style={{ height: '3rem' }}
+          />
         </div>
 
-        {/* Notes Grid */}
+        {/* Notes List */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-300">Loading notes...</p>
+            <div className="spinner mx-auto mb-4" />
+            <p style={{ color: 'var(--text-secondary)' }}>Loading notes...</p>
           </div>
         ) : filteredNotes.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-            <div className="text-6xl mb-4">📝</div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          <div
+            className="text-center py-16"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: '2px',
+            }}
+          >
+            <h3
+              className="text-xl mb-2"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            >
               {searchQuery ? 'No notes found' : 'No notes yet'}
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
+            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
               {searchQuery
                 ? 'Try a different search term'
                 : 'Start capturing your Bible study insights'}
@@ -234,102 +301,140 @@ export default function NotesPage() {
             {!searchQuery && (
               <button
                 onClick={() => setIsCreating(true)}
-                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                className="btn-primary text-sm"
               >
-                <Plus className="w-5 h-5" />
                 Create Your First Note
               </button>
             )}
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-1">
             {filteredNotes.map((note) => (
               <div
                 key={note.$id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all"
+                className="py-5"
+                style={{ borderBottom: '1px solid var(--border-light)' }}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex-1 line-clamp-2">
-                    {note.title}
-                  </h3>
-                  <div className="flex gap-2 ml-2">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3
+                        className="text-lg truncate"
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          color: 'var(--text-primary)',
+                          fontWeight: 400,
+                        }}
+                      >
+                        {note.title}
+                      </h3>
+                    </div>
+
+                    <p
+                      className="text-sm mb-3 line-clamp-2"
+                      style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}
+                    >
+                      {note.contentPlain}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      {note.bibleReferences.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {note.bibleReferences.slice(0, 3).map((ref, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs px-2 py-0.5"
+                              style={{
+                                backgroundColor: 'var(--highlight-sage)',
+                                color: 'var(--text-secondary)',
+                                borderRadius: '2px',
+                              }}
+                            >
+                              {ref}
+                            </span>
+                          ))}
+                          {note.bibleReferences.length > 3 && (
+                            <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                              +{note.bibleReferences.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {note.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {note.tags.slice(0, 3).map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs px-2 py-0.5"
+                              style={{
+                                backgroundColor: 'var(--highlight-gold)',
+                                color: 'var(--text-secondary)',
+                                borderRadius: '2px',
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        {new Date(note.$createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     <button
                       onClick={() => setEditingNote(note)}
-                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                      className="text-sm transition-colors"
+                      style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
                     >
-                      <Edit className="w-4 h-4" />
+                      Edit
                     </button>
                     <button
                       onClick={() => handleDeleteNote(note.$id)}
-                      className="text-red-600 hover:text-red-700 dark:text-red-400"
+                      className="text-sm transition-colors"
+                      style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      Delete
                     </button>
                   </div>
-                </div>
-
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
-                  {note.contentPlain}
-                </p>
-
-                {note.bibleReferences.length > 0 && (
-                  <div className="mb-3">
-                    <div className="flex flex-wrap gap-1">
-                      {note.bibleReferences.slice(0, 3).map((ref, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded"
-                        >
-                          {ref}
-                        </span>
-                      ))}
-                      {note.bibleReferences.length > 3 && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
-                          +{note.bibleReferences.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {note.tags.length > 0 && (
-                  <div className="mb-3">
-                    <div className="flex flex-wrap gap-1">
-                      {note.tags.slice(0, 3).map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded flex items-center gap-1"
-                        >
-                          <Tag className="w-3 h-3" />
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 pt-3 border-t border-gray-200 dark:border-gray-700">
-                  <Calendar className="w-3 h-3" />
-                  {new Date(note.$createdAt).toLocaleDateString()}
                 </div>
               </div>
             ))}
           </div>
         )}
+      </main>
 
-        {/* Info Banner */}
-        <div className="mt-12 bg-green-50 dark:bg-gray-800 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            💡 Note-Taking Tips
-          </h3>
-          <ul className="text-gray-700 dark:text-gray-300 space-y-1">
-            <li>• Bible references are automatically detected (e.g., "John 3:16")</li>
-            <li>• Use tags to organize notes by topic or theme</li>
-            <li>• Notes can be linked to knowledge graph nodes</li>
-            <li>• Search works across titles, content, and tags</li>
+      {/* Tips */}
+      <section
+        style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-light)' }}
+      >
+        <div className="content-narrow py-12">
+          <h2
+            className="text-xl mb-6"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+          >
+            Note-taking tips
+          </h2>
+          <ul className="space-y-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            <li>Bible references are automatically detected (e.g., "John 3:16")</li>
+            <li>Use tags to organize notes by topic or theme</li>
+            <li>Notes can be linked to knowledge graph nodes</li>
+            <li>Search works across titles, content, and tags</li>
           </ul>
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        className="py-8 text-center text-sm"
+        style={{ color: 'var(--text-tertiary)' }}
+      >
+        Bible Notes Journal
+      </footer>
     </div>
   );
 }
