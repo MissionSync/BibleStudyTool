@@ -34,20 +34,20 @@ git clone <your-repo-url>
 cd BibleStudyTool
 ```
 
-2. **Install dependencies**
+2.**Install dependencies**
 
 ```bash
 npm install
 ```
 
-3. **Set up Appwrite Cloud**
+3.**Set up Appwrite Cloud**
 
-   - Go to https://cloud.appwrite.io
-   - Create a free account
-   - Create a new project named `bible-study-tool`
-   - Copy your Project ID
+- Go to <https://cloud.appwrite.io>
+- Create a free account
+- Create a new project named `bible-study-tool`
+- Copy your Project ID
 
-4. **Configure environment variables**
+4.**Configure environment variables**
 
 Create a `.env.local` file in the root directory:
 
@@ -56,9 +56,10 @@ NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 ```
 
-5. **Create database collections**
+5.**Create database collections**
 
 In your Appwrite Cloud console, create the following collections in a database named `bible_study`:
+
 - `notes`
 - `graph_nodes`
 - `graph_edges`
@@ -66,7 +67,7 @@ In your Appwrite Cloud console, create the following collections in a database n
 
 See `Deployment_Alternatives.md` for detailed schema specifications.
 
-6. **Run the development server**
+6.**Run the development server**
 
 ```bash
 npm run dev
@@ -82,7 +83,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Project Structure
 
-```
+```md
 src/
 ├── app/                    # Next.js app directory
 │   ├── study/[planId]/     # Study plan pages
@@ -121,11 +122,13 @@ Full schema details are in `Deployment_Alternatives.md`.
 ## Deployment
 
 ### Backend (Appwrite Cloud)
-- Sign up at https://cloud.appwrite.io
+
+- Sign up at <https://cloud.appwrite.io>
 - Use the free tier (75K MAU, 2GB storage)
 - Follow setup guide in `Deployment_Alternatives.md`
 
 ### Frontend Options
+
 - **Vercel** (Recommended) - `vercel deploy`
 - **Netlify** - `netlify deploy`
 - **Cloudflare Pages** - Connect GitHub repo

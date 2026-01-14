@@ -43,7 +43,7 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 
 ### Step 1: Create Account (2 minutes)
 
-1. Go to https://cloud.appwrite.io
+1. Go to <https://cloud.appwrite.io>
 2. Click "Get Started"
 3. Sign up with email or GitHub
 4. Verify your email address
@@ -71,7 +71,8 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 
 #### Create Collections
 
-> **📝 Important Notes:**
+##### 📝 **Important Notes**
+
 > - Appwrite automatically creates `$id`, `$createdAt`, and `$updatedAt` for every collection
 > - You only need to manually add the attributes listed under "Manual Attributes"
 > - For Boolean attributes, set Required to "No" if you want a default value
@@ -80,7 +81,7 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=<your-project-id>
 
 You need to create 4 collections:
 
-**1. Notes Collection**
+#### 1.Notes Collection
 
 ```md
 Collection ID: notes
@@ -111,7 +112,7 @@ Permissions (in Settings tab):
 - Delete: user:$userId
 ```
 
-**2. Graph Nodes Collection**
+#### 2. Graph Nodes Collection
 
 ```md
 Collection ID: graph_nodes
@@ -141,7 +142,7 @@ Permissions (in Settings tab):
 - Delete: user:$userId
 ```
 
-**3. Graph Edges Collection**
+#### 3. Graph Edges Collection
 
 ```md
 Collection ID: graph_edges
@@ -171,7 +172,7 @@ Permissions (in Settings tab):
 - Delete: user:$userId
 ```
 
-**4. Themes Collection**
+#### 4. Themes Collection
 
 ```md
 Collection ID: themes
@@ -252,16 +253,19 @@ export default client;
 If you need full control, you can self-host Appwrite. However, this requires:
 
 ### Requirements
+
 - **Minimum 2GB RAM** (4GB recommended)
 - **20GB disk space**
 - **Docker & Docker Compose**
 - **Server management skills**
 
 ### Monthly Costs
+
 - DigitalOcean 2GB Droplet: $12/month (minimum)
 - DigitalOcean 4GB Droplet: $24/month (recommended)
 
 ### When to Self-Host
+
 - Data residency requirements
 - Custom compliance needs
 - Very high usage (above free tier limits)
@@ -293,7 +297,7 @@ For most users, **Appwrite Cloud is the better choice** due to zero maintenance,
 
 ## 📋 Quick Setup Checklist
 
-- [ ] Create Appwrite Cloud account at https://cloud.appwrite.io
+- [ ] Create Appwrite Cloud account at <https://cloud.appwrite.io>
 - [ ] Create new project and note the Project ID
 - [ ] Create database named `bible_study`
 - [ ] Create 4 collections (notes, graph_nodes, graph_edges, themes)
@@ -308,9 +312,9 @@ For most users, **Appwrite Cloud is the better choice** due to zero maintenance,
 
 ## 🆘 Need Help?
 
-- **Appwrite Documentation:** https://appwrite.io/docs
-- **Appwrite Discord:** https://appwrite.io/discord
-- **Appwrite GitHub:** https://github.com/appwrite/appwrite
+- **Appwrite Documentation:** <https://appwrite.io/docs>
+- **Appwrite Discord:** <https://appwrite.io/discord>
+- **Appwrite GitHub:** <https://github.com/appwrite/appwrite>
 
 ---
 
