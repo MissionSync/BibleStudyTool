@@ -101,7 +101,7 @@ export async function getUserNotes(userId: string, includeArchived = false): Pro
 }
 
 /**
- * Update a note
+ * Update a note and regenerate graph nodes
  */
 export async function updateNote(noteId: string, data: UpdateNoteData): Promise<Note> {
   const response = await databases.updateDocument(
@@ -111,7 +111,17 @@ export async function updateNote(noteId: string, data: UpdateNoteData): Promise<
     data
   );
 
-  return response as unknown as Note;
+  const note = response as unknown as Note;
+
+  // Regenerate graph nodes for this note (async, don't block)
+  try {
+    await generateGraphForNote(note);
+  } catch (error) {
+    console.error('Failed to regenerate graph for note:', error);
+    // Don't throw - note update succeeded
+  }
+
+  return note;
 }
 
 /**

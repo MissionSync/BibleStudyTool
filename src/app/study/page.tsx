@@ -175,12 +175,21 @@ export default function StudyPlanPage() {
 
       {/* Guidelines */}
       <section
-        style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-light)' }}
+        style={{
+          backgroundColor: 'var(--bg-secondary)',
+          borderTop: '1px solid var(--border-light)',
+          marginTop: '2rem',
+        }}
       >
-        <div className="content-narrow py-12">
+        <div className="content-narrow" style={{ padding: '3rem 1.5rem' }}>
           <h2
-            className="text-xl mb-6"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            className="text-xl"
+            style={{
+              fontFamily: 'var(--font-serif)',
+              color: 'var(--text-primary)',
+              fontWeight: 400,
+              marginBottom: '1.5rem',
+            }}
           >
             Study guidelines
           </h2>
