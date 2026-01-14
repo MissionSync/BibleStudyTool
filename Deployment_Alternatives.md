@@ -238,13 +238,13 @@ export default client;
 
 ## 📊 Cost Comparison
 
-| Solution | Monthly Cost | Setup Time | Management | Best For |
-|----------|--------------|------------|------------|----------|
-| **Appwrite Cloud** | **FREE** / $15 Pro | 5 min | Zero | ⭐ Most users |
-| Self-hosted (DigitalOcean) | $24+ | 1 hour | High | Full control needs |
-| Supabase | FREE / $25 Pro | 15 min | Low | PostgreSQL preference |
-| Firebase | FREE / PAYG | 15 min | Low | Google ecosystem |
-| PocketBase (Railway) | $5-10 | 20 min | Low | Minimal features |
+| Solution                    | Monthly Cost   | Setup Time | Management | Best For              |
+| --------------------------- | :------------: | :--------: | :--------: | --------------------- |
+| **Appwrite Cloud**          | FREE / $15 Pro | 5 min      | Zero       | ⭐ Most users         |
+| Self-hosted (DigitalOcean)  | $24+           | 1 hour     | High       | Full control needs    |
+| Supabase                    | FREE / $25 Pro | 15 min     | Low        | PostgreSQL preference |
+| Firebase                    | FREE / PAYG    | 15 min     | Low        | Google ecosystem      |
+| PocketBase (Railway)        | $5-10          | 20 min     | Low        | Minimal features      |
 
 ---
 
@@ -310,7 +310,7 @@ For most users, **Appwrite Cloud is the better choice** due to zero maintenance,
 
 ---
 
-## 🆘 Need Help?
+### 🆘 Need Help?
 
 - **Appwrite Documentation:** <https://appwrite.io/docs>
 - **Appwrite Discord:** <https://appwrite.io/discord>
