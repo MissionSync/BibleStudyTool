@@ -9,7 +9,7 @@ import * as path from 'path';
 // Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
-import { Client, Databases } from 'appwrite';
+import { Client, Databases } from 'node-appwrite';
 import {
   ONE_JOHN_THEMES,
   ONE_JOHN_PASSAGES,
@@ -44,7 +44,7 @@ client
   .setKey(apiKey);
 
 const databases = new Databases(client);
-const DATABASE_ID = 'bible_study';
+const DATABASE_ID = '6966a14a0026e990c14b';
 
 // Use a system user ID for seeded data
 const SYSTEM_USER_ID = 'system';
@@ -80,9 +80,11 @@ async function seedThemes(): Promise<Map<string, CreatedNode>> {
         type: 'theme',
       });
 
-      console.log(`  ✓ Created theme: ${theme.name}`);
+      console.log(`  ✓ Created theme: ${theme.name} (ID: ${response.$id})`);
     } catch (error: any) {
       console.error(`  ✗ Failed to create theme ${theme.name}:`, error.message);
+      if (error.code) console.error(`     Error code: ${error.code}`);
+      if (error.type) console.error(`     Error type: ${error.type}`);
     }
   }
 
@@ -213,7 +215,7 @@ async function seedGraphEdges(
             userId: SYSTEM_USER_ID,
             sourceNodeId: bookNode.id,
             targetNodeId: node.id,
-            edgeType: 'contains',
+            edgeTyp: 'references',
             weight: 1.0,
           }
         );
@@ -242,7 +244,7 @@ async function seedGraphEdges(
             userId: SYSTEM_USER_ID,
             sourceNodeId: passageNode.id,
             targetNodeId: themeNode.id,
-            edgeType: 'theme_connection',
+            edgeTyp: 'theme_connection',
             weight: 1.0,
           }
         );
@@ -265,7 +267,7 @@ async function seedGraphEdges(
           userId: SYSTEM_USER_ID,
           sourceNodeId: johnNode.id,
           targetNodeId: bookNode.id,
-          edgeType: 'authored',
+          edgeTyp: 'mentions',
           weight: 1.0,
         }
       );
@@ -288,7 +290,7 @@ async function seedGraphEdges(
           userId: SYSTEM_USER_ID,
           sourceNodeId: passage1.id,
           targetNodeId: passage4.id,
-          edgeType: 'cross_reference',
+          edgeTyp: 'cross_ref',
           weight: 0.8,
         }
       );
