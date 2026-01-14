@@ -59,7 +59,7 @@ export default function NotesPage() {
         const newNote = await createNote({
           title: noteData.title,
           content: noteData.content,
-          contentPlain: noteData.content.replace(/<[^>]*>/g, ''),
+          contentPlan: noteData.content.replace(/<[^>]*>/g, ''),
           userId: user.$id,
           bibleReferences: noteData.references,
           tags: noteData.tags,
@@ -97,7 +97,7 @@ export default function NotesPage() {
     const query = searchQuery.toLowerCase();
     return (
       note.title.toLowerCase().includes(query) ||
-      note.contentPlain.toLowerCase().includes(query) ||
+      note.contentPlan.toLowerCase().includes(query) ||
       note.tags.some(tag => tag.toLowerCase().includes(query))
     );
   });
@@ -334,7 +334,7 @@ export default function NotesPage() {
                       className="text-sm mb-3 line-clamp-2"
                       style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}
                     >
-                      {note.contentPlain}
+                      {note.contentPlan}
                     </p>
 
                     <div className="flex flex-wrap items-center gap-3">

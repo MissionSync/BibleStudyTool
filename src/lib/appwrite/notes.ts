@@ -5,7 +5,7 @@ import { generateGraphForNote } from '../graphGenerator';
 export interface Note extends Models.Document {
   title: string;
   content: string;
-  contentPlain: string;
+  contentPlan: string;
   userId: string;
   bibleReferences: string[];
   tags: string[];
@@ -15,7 +15,7 @@ export interface Note extends Models.Document {
 export interface CreateNoteData {
   title: string;
   content: string;
-  contentPlain: string;
+  contentPlan: string;
   userId: string;
   bibleReferences?: string[];
   tags?: string[];
@@ -25,7 +25,7 @@ export interface CreateNoteData {
 export interface UpdateNoteData {
   title?: string;
   content?: string;
-  contentPlain?: string;
+  contentPlan?: string;
   bibleReferences?: string[];
   tags?: string[];
   isArchived?: boolean;
@@ -38,7 +38,7 @@ export async function createNote(data: CreateNoteData): Promise<Note> {
   const noteData = {
     title: data.title,
     content: data.content,
-    contentPlain: data.contentPlain,
+    contentPlan: data.contentPlan,
     userId: data.userId,
     bibleReferences: data.bibleReferences || [],
     tags: data.tags || [],
@@ -134,7 +134,7 @@ export async function searchNotes(userId: string, searchTerm: string): Promise<N
     COLLECTIONS.NOTES,
     [
       Query.equal('userId', userId),
-      Query.search('contentPlain', searchTerm),
+      Query.search('contentPlan', searchTerm),
       Query.orderDesc('$createdAt'),
     ]
   );
