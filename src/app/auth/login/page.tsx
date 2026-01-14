@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Mail, Lock, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -17,23 +16,20 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && user) {
       router.push('/dashboard');
     }
   }, [user, authLoading, router]);
 
-  // Show loading while checking auth
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
-  // Don't show login page if already authenticated
   if (user) {
     return null;
   }
@@ -46,123 +42,117 @@ export default function LoginPage() {
     try {
       await login(email, password);
       await refreshUser();
-      showToast('Welcome back! Great to see you again.', 'success');
+      showToast('Welcome back.', 'success');
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Failed to login. Please check your credentials.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to sign in. Please check your credentials.';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        {/* Back Link */}
+    <div className="min-h-screen flex items-center justify-center px-6 animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="w-full" style={{ maxWidth: '24rem' }}>
+        {/* Back */}
         <Link
           href="/"
-          className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:underline mb-8"
+          className="inline-block mb-10 text-sm transition-colors"
+          style={{ color: 'var(--text-secondary)' }}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
+          &larr; Back
         </Link>
 
-        {/* Login Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome Back
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Sign in to continue your Bible study journey
-            </p>
-          </div>
-
-          {error && (
-            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="your@email.com"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white"
-                />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account?{' '}
-              <Link
-                href="/auth/signup"
-                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
+        {/* Header */}
+        <div className="mb-10">
+          <h1
+            className="text-3xl mb-2"
+            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+          >
+            Welcome back
+          </h1>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            Continue your study
+          </p>
         </div>
 
-        {/* Info */}
-        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          By signing in, you agree to our Terms of Service and Privacy Policy
+        {/* Error */}
+        {error && (
+          <div
+            className="mb-6 p-4"
+            style={{
+              backgroundColor: 'var(--highlight-peach)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '2px',
+            }}
+          >
+            <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-5">
+            <label
+              htmlFor="email"
+              className="block text-sm mb-2"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className="w-full"
+              style={{ height: '3rem' }}
+            />
+          </div>
+
+          <div className="mb-8">
+            <label
+              htmlFor="password"
+              className="block text-sm mb-2"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              className="w-full"
+              style={{ height: '3rem' }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full flex items-center justify-center"
+            style={{ height: '3rem' }}
+          >
+            {loading ? (
+              <span className="spinner" style={{ width: '18px', height: '18px', borderColor: 'var(--bg-primary)', borderTopColor: 'var(--accent)' }} />
+            ) : (
+              'Sign In'
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="mt-8 text-sm text-center" style={{ color: 'var(--text-secondary)' }}>
+          No account?{' '}
+          <Link href="/auth/signup" style={{ color: 'var(--accent)' }}>
+            Create one
+          </Link>
         </p>
       </div>
     </div>
