@@ -10,9 +10,8 @@ import { getUserGraphEdges } from '@/lib/appwrite/graphEdges';
 import { databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { useAuth } from '@/contexts/AuthContext';
+import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import type { Node, Edge } from 'reactflow';
-
-const SYSTEM_USER_ID = 'system';
 
 function mapEdgeType(dbEdgeType: string): string {
   const typeMap: Record<string, string> = {
@@ -39,32 +38,47 @@ function calculateNodePositions(nodes: SimpleNode[]): Map<string, { x: number, y
     nodesByType[type].push(node);
   });
 
-  const books = nodesByType['book'] || [];
-  books.forEach((node, i) => {
-    positions.set(node.$id, { x: 400 + i * 200, y: 50 });
+  // Notes at the top
+  const notes = nodesByType['note'] || [];
+  const noteWidth = Math.max(800, notes.length * 200);
+  notes.forEach((node, i) => {
+    const x = (800 - noteWidth) / 2 + 100 + i * (noteWidth / Math.max(notes.length, 1));
+    positions.set(node.$id, { x, y: 50 });
   });
 
+  // Books below notes
+  const books = nodesByType['book'] || [];
+  const bookWidth = Math.max(800, books.length * 180);
+  books.forEach((node, i) => {
+    const x = (800 - bookWidth) / 2 + 100 + i * (bookWidth / Math.max(books.length, 1));
+    positions.set(node.$id, { x, y: 180 });
+  });
+
+  // Passages below books
   const passages = nodesByType['passage'] || [];
   const passageWidth = Math.max(800, passages.length * 150);
   passages.forEach((node, i) => {
     const x = (800 - passageWidth) / 2 + 100 + i * (passageWidth / Math.max(passages.length, 1));
-    positions.set(node.$id, { x, y: 200 });
+    positions.set(node.$id, { x, y: 320 });
   });
 
+  // Themes below passages
   const themes = nodesByType['theme'] || [];
   const themeWidth = Math.max(800, themes.length * 120);
   themes.forEach((node, i) => {
     const x = (800 - themeWidth) / 2 + 100 + i * (themeWidth / Math.max(themes.length, 1));
-    positions.set(node.$id, { x, y: 380 });
+    positions.set(node.$id, { x, y: 460 });
   });
 
+  // People below themes
   const people = nodesByType['person'] || [];
   people.forEach((node, i) => {
-    positions.set(node.$id, { x: 200 + i * 250, y: 550 });
+    positions.set(node.$id, { x: 200 + i * 250, y: 600 });
   });
 
-  const otherTypes = Object.keys(nodesByType).filter(t => !['book', 'passage', 'theme', 'person'].includes(t));
-  let otherY = 700;
+  // Other types at the bottom
+  const otherTypes = Object.keys(nodesByType).filter(t => !['note', 'book', 'passage', 'theme', 'person'].includes(t));
+  let otherY = 740;
   otherTypes.forEach(type => {
     const typeNodes = nodesByType[type];
     typeNodes.forEach((node, i) => {
@@ -107,9 +121,9 @@ async function fetchThemes(): Promise<ThemeNodeData[]> {
   }
 }
 
-async function fetchGraphData(): Promise<{ nodes: Node[], edges: Edge[] }> {
+async function fetchGraphData(userId: string): Promise<{ nodes: Node[], edges: Edge[] }> {
   try {
-    const dbNodes = await getUserGraphNodes(SYSTEM_USER_ID);
+    const dbNodes = await getUserGraphNodes(userId);
     const themeNodes = await fetchThemes();
 
     const allNodesForLayout: SimpleNode[] = [
@@ -117,7 +131,7 @@ async function fetchGraphData(): Promise<{ nodes: Node[], edges: Edge[] }> {
       ...themeNodes.map(n => ({ $id: n.$id, nodeType: n.nodeType })),
     ];
 
-    const dbEdges = await getUserGraphEdges(SYSTEM_USER_ID);
+    const dbEdges = await getUserGraphEdges(userId);
     const positions = calculateNodePositions(allNodesForLayout);
 
     const graphNodesMapped: Node[] = dbNodes.map(dbNode => {
@@ -179,6 +193,8 @@ export default function GraphPage({ params }: PageProps) {
 
   const [graphData, setGraphData] = useState<{ nodes: Node[], edges: Edge[] } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasNotes, setHasNotes] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -188,10 +204,16 @@ export default function GraphPage({ params }: PageProps) {
 
   useEffect(() => {
     async function loadGraphData() {
+      if (!user) return;
+
       setLoading(true);
       try {
-        const data = await fetchGraphData();
+        const data = await fetchGraphData(user.$id);
         setGraphData(data);
+
+        // Check if user has notes (for empty state messaging)
+        const notesExist = await userHasNotes(user.$id);
+        setHasNotes(notesExist);
       } catch (error) {
         console.error('Failed to load graph data:', error);
         setGraphData({ nodes: [], edges: [] });
@@ -204,6 +226,22 @@ export default function GraphPage({ params }: PageProps) {
       loadGraphData();
     }
   }, [weekNumber, user]);
+
+  const handleGenerateGraph = async () => {
+    if (!user || generating) return;
+
+    setGenerating(true);
+    try {
+      await generateGraphFromNotes(user.$id);
+      // Reload graph data after generation
+      const data = await fetchGraphData(user.$id);
+      setGraphData(data);
+    } catch (error) {
+      console.error('Failed to generate graph:', error);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   if (authLoading) {
     return (
@@ -291,11 +329,47 @@ export default function GraphPage({ params }: PageProps) {
             className="absolute inset-0 flex items-center justify-center"
             style={{ backgroundColor: 'var(--bg-secondary)' }}
           >
-            <div className="text-center">
-              <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>No graph data available.</p>
-              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                Run the seed script to populate the knowledge graph.
-              </p>
+            <div className="text-center" style={{ maxWidth: '400px', padding: '2rem' }}>
+              {hasNotes ? (
+                <>
+                  <h3
+                    className="text-xl mb-3"
+                    style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+                  >
+                    Generate Your Knowledge Graph
+                  </h3>
+                  <p className="mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    Your notes are ready to be visualized. Generate the knowledge graph to see connections between Bible passages, themes, and your study notes.
+                  </p>
+                  <button
+                    onClick={handleGenerateGraph}
+                    disabled={generating}
+                    className="btn-primary text-sm"
+                    style={{ minWidth: '160px' }}
+                  >
+                    {generating ? 'Generating...' : 'Generate Graph'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3
+                    className="text-xl mb-3"
+                    style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+                  >
+                    No Notes Yet
+                  </h3>
+                  <p className="mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    Start by creating study notes with Bible references and tags. Your knowledge graph will be generated automatically from your notes.
+                  </p>
+                  <Link
+                    href="/notes"
+                    className="btn-primary text-sm inline-block"
+                    style={{ minWidth: '160px', textDecoration: 'none' }}
+                  >
+                    Create Your First Note
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         ) : (
