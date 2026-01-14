@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:1john": "tsx src/scripts/seedOneJohn.ts"
+    "seed:1john": "tsx src/scripts/seedOneJohn.ts",
+    "clear:graph": "tsx src/scripts/clearGraphData.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",
@@ -16,7 +17,6 @@
     "appwrite": "^21.5.0",
     "dagre": "^0.8.5",
     "lucide-react": "^0.556.0",
-    "next": "16.0.10",
     "next": "^16.1.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",

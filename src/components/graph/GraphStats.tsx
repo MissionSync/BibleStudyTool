@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, Network, Eye } from 'lucide-react';
 
 interface GraphStatsProps {
   stats: {
@@ -25,89 +24,110 @@ const NODE_TYPE_LABELS: Record<string, string> = {
 };
 
 export function GraphStats({ stats }: GraphStatsProps) {
-  const mostCommonNodeType = Object.entries(stats.nodeTypeCounts)
-    .sort(([, a], [, b]) => b - a)[0];
-
-  const mostCommonEdgeType = Object.entries(stats.edgeTypeCounts)
-    .sort(([, a], [, b]) => b - a)[0];
-
   return (
-    <div className="space-y-4 w-64">
+    <div className="space-y-5 w-48">
       {/* Overview */}
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <BarChart3 className="w-4 h-4 text-gray-700" />
-          <h3 className="text-sm font-semibold text-gray-900">Graph Overview</h3>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-blue-50 rounded-lg p-3">
-            <div className="text-2xl font-bold text-blue-900">{stats.totalNodes}</div>
-            <div className="text-xs text-blue-600">Total Nodes</div>
+        <h3
+          className="text-xs uppercase tracking-wider mb-3"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Overview
+        </h3>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div
+            className="p-3"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: '2px',
+            }}
+          >
+            <div
+              className="text-xl font-medium"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+            >
+              {stats.totalNodes}
+            </div>
+            <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              Nodes
+            </div>
           </div>
-          <div className="bg-purple-50 rounded-lg p-3">
-            <div className="text-2xl font-bold text-purple-900">{stats.totalEdges}</div>
-            <div className="text-xs text-purple-600">Total Edges</div>
+          <div
+            className="p-3"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: '2px',
+            }}
+          >
+            <div
+              className="text-xl font-medium"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+            >
+              {stats.totalEdges}
+            </div>
+            <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              Edges
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Currently Visible */}
+      {/* Visible */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <Eye className="w-4 h-4 text-gray-700" />
-          <h3 className="text-sm font-semibold text-gray-900">Currently Visible</h3>
-        </div>
-        
-        <div className="bg-gray-50 rounded-lg p-3 space-y-1">
+        <h3
+          className="text-xs uppercase tracking-wider mb-3"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Visible
+        </h3>
+
+        <div
+          className="p-3 space-y-2"
+          style={{
+            backgroundColor: 'var(--bg-secondary)',
+            borderRadius: '2px',
+          }}
+        >
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">Nodes</span>
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Nodes</span>
+            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
               {stats.visibleNodes} / {stats.totalNodes}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">Connections</span>
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Connections</span>
+            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
               {stats.visibleEdges} / {stats.totalEdges}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Node Breakdown */}
+      {/* Breakdown */}
       <div>
-        <div className="flex items-center gap-2 mb-2">
-          <Network className="w-4 h-4 text-gray-700" />
-          <h3 className="text-sm font-semibold text-gray-900">Node Breakdown</h3>
-        </div>
-        
+        <h3
+          className="text-xs uppercase tracking-wider mb-3"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Breakdown
+        </h3>
+
         <div className="space-y-2">
           {Object.entries(stats.nodeTypeCounts)
             .sort(([, a], [, b]) => b - a)
             .map(([type, count]) => (
               <div key={type} className="flex justify-between items-center">
-                <span className="text-sm text-gray-600 capitalize">
+                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   {NODE_TYPE_LABELS[type] || type}
                 </span>
-                <span className="text-sm font-semibold text-gray-900">{count}</span>
+                <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                  {count}
+                </span>
               </div>
             ))}
         </div>
       </div>
-
-      {/* Insights */}
-      {mostCommonNodeType && (
-        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-3">
-          <div className="text-xs font-medium text-gray-600 mb-1">💡 Insight</div>
-          <div className="text-sm text-gray-900">
-            Most common: <span className="font-semibold capitalize">
-              {NODE_TYPE_LABELS[mostCommonNodeType[0]] || mostCommonNodeType[0]}
-            </span>
-            {' '}({mostCommonNodeType[1]})
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -3,15 +3,15 @@ active: true
 iteration: 1
 max_iterations: 30
 completion_promise: "COMPLETE"
-started_at: "2026-01-14T08:04:27Z"
+started_at: "2026-01-14T08:56:32Z"
 ---
 
-Implement [FEATURE_NAME].
+Database and /notes cleanup .
 
 Requirements:
-- Create welcome message when login successful, and goodbye message when logging out
-- Implement the note page to create notes
-- Organized Repo and place all .md files, except the README.md files in docs folders.
+- Find why there are multiple records of 1 john data in graphs
+- Delete data from graph, I will start adding notes manually to fill graphs
+- Refactor the /notes page; create new note form is hard to read and all cells do not accept text.
 
 Success criteria:
 1. npm run build passes
