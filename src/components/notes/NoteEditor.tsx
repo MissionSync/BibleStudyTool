@@ -114,9 +114,9 @@ export function NoteEditor({
   return (
     <div
       style={{
-        backgroundColor: 'var(--bg-primary)',
+        backgroundColor: 'var(--bg-card)',
         border: '1px solid var(--border-light)',
-        borderRadius: '2px',
+        borderRadius: '4px',
       }}
     >
       {/* Title */}
@@ -124,7 +124,7 @@ export function NoteEditor({
         <label
           htmlFor="note-title"
           className="block text-xs uppercase tracking-wider mb-2"
-          style={{ color: 'var(--text-tertiary)' }}
+          style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
         >
           Title
         </label>
@@ -138,9 +138,11 @@ export function NoteEditor({
           style={{
             fontFamily: 'var(--font-serif)',
             fontSize: '1.25rem',
-            border: 'none',
-            padding: 0,
-            background: 'transparent',
+            border: '1px solid var(--border-light)',
+            borderRadius: '4px',
+            padding: '0.75rem 1rem',
+            backgroundColor: 'var(--bg-primary)',
+            color: 'var(--text-primary)',
           }}
         />
       </div>
@@ -152,9 +154,10 @@ export function NoteEditor({
       >
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
+          type="button"
           className="p-2 transition-colors"
           style={{
-            borderRadius: '2px',
+            borderRadius: '4px',
             background: editor.isActive('bold') ? 'var(--bg-tertiary)' : 'transparent',
             color: 'var(--text-secondary)',
             border: 'none',
@@ -166,9 +169,10 @@ export function NoteEditor({
         </button>
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
+          type="button"
           className="p-2 transition-colors"
           style={{
-            borderRadius: '2px',
+            borderRadius: '4px',
             background: editor.isActive('italic') ? 'var(--bg-tertiary)' : 'transparent',
             color: 'var(--text-secondary)',
             border: 'none',
@@ -183,9 +187,10 @@ export function NoteEditor({
 
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
+          type="button"
           className="p-2 transition-colors text-sm"
           style={{
-            borderRadius: '2px',
+            borderRadius: '4px',
             background: editor.isActive('bulletList') ? 'var(--bg-tertiary)' : 'transparent',
             color: 'var(--text-secondary)',
             border: 'none',
@@ -197,9 +202,10 @@ export function NoteEditor({
         </button>
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          type="button"
           className="p-2 transition-colors text-sm"
           style={{
-            borderRadius: '2px',
+            borderRadius: '4px',
             background: editor.isActive('blockquote') ? 'var(--bg-tertiary)' : 'transparent',
             color: 'var(--text-secondary)',
             border: 'none',
@@ -214,10 +220,11 @@ export function NoteEditor({
 
         <button
           onClick={() => editor.chain().focus().undo().run()}
+          type="button"
           disabled={!editor.can().undo()}
           className="p-2 transition-colors text-sm"
           style={{
-            borderRadius: '2px',
+            borderRadius: '4px',
             color: 'var(--text-tertiary)',
             border: 'none',
             cursor: 'pointer',
@@ -229,10 +236,11 @@ export function NoteEditor({
         </button>
         <button
           onClick={() => editor.chain().focus().redo().run()}
+          type="button"
           disabled={!editor.can().redo()}
           className="p-2 transition-colors text-sm"
           style={{
-            borderRadius: '2px',
+            borderRadius: '4px',
             color: 'var(--text-tertiary)',
             border: 'none',
             cursor: 'pointer',
@@ -245,15 +253,21 @@ export function NoteEditor({
       </div>
 
       {/* Editor */}
-      <div style={{ borderBottom: '1px solid var(--border-light)' }}>
+      <div
+        style={{
+          borderBottom: '1px solid var(--border-light)',
+          backgroundColor: 'var(--bg-primary)',
+          minHeight: '300px',
+        }}
+      >
         <EditorContent editor={editor} />
       </div>
 
       {/* Tags */}
-      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
+      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-card)' }}>
         <label
           className="block text-xs uppercase tracking-wider mb-3"
-          style={{ color: 'var(--text-tertiary)' }}
+          style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
         >
           Tags
         </label>
@@ -263,17 +277,18 @@ export function NoteEditor({
             {tags.map(tag => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-2 py-1 text-sm"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm"
                 style={{
                   backgroundColor: 'var(--highlight-gold)',
                   color: 'var(--text-secondary)',
-                  borderRadius: '2px',
+                  borderRadius: '4px',
                 }}
               >
                 {tag}
                 <button
+                  type="button"
                   onClick={() => handleRemoveTag(tag)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: '0 2px' }}
                 >
                   &times;
                 </button>
@@ -295,9 +310,17 @@ export function NoteEditor({
               }
             }}
             className="flex-1 text-sm"
-            style={{ height: '2.5rem' }}
+            style={{
+              height: '2.75rem',
+              border: '1px solid var(--border-light)',
+              borderRadius: '4px',
+              padding: '0 0.75rem',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
+            }}
           />
           <button
+            type="button"
             onClick={handleAddTag}
             disabled={!tagInput.trim()}
             className="btn-secondary text-sm"
@@ -309,10 +332,10 @@ export function NoteEditor({
       </div>
 
       {/* Bible References */}
-      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
+      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-card)' }}>
         <label
           className="block text-xs uppercase tracking-wider mb-3"
-          style={{ color: 'var(--text-tertiary)' }}
+          style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
         >
           Bible References
         </label>
@@ -322,17 +345,18 @@ export function NoteEditor({
             {references.map(ref => (
               <span
                 key={ref}
-                className="inline-flex items-center gap-1 px-2 py-1 text-sm"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm"
                 style={{
                   backgroundColor: 'var(--highlight-sage)',
                   color: 'var(--text-secondary)',
-                  borderRadius: '2px',
+                  borderRadius: '4px',
                 }}
               >
                 {ref}
                 <button
+                  type="button"
                   onClick={() => handleRemoveReference(ref)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: '0 2px' }}
                 >
                   &times;
                 </button>
@@ -346,7 +370,8 @@ export function NoteEditor({
             className="mb-3 p-3"
             style={{
               backgroundColor: 'var(--bg-secondary)',
-              borderRadius: '2px',
+              borderRadius: '4px',
+              border: '1px solid var(--border-light)',
             }}
           >
             <div className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>
@@ -357,13 +382,14 @@ export function NoteEditor({
                 .filter(ref => !references.includes(ref))
                 .map(ref => (
                   <button
+                    type="button"
                     key={ref}
                     onClick={() => handleAddReference(ref)}
                     className="px-2 py-1 text-sm transition-colors"
                     style={{
                       backgroundColor: 'var(--bg-tertiary)',
                       color: 'var(--text-secondary)',
-                      borderRadius: '2px',
+                      borderRadius: '4px',
                       border: 'none',
                       cursor: 'pointer',
                     }}
@@ -388,9 +414,17 @@ export function NoteEditor({
               }
             }}
             className="flex-1 text-sm"
-            style={{ height: '2.5rem' }}
+            style={{
+              height: '2.75rem',
+              border: '1px solid var(--border-light)',
+              borderRadius: '4px',
+              padding: '0 0.75rem',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
+            }}
           />
           <button
+            type="button"
             onClick={() => handleAddReference(referenceInput)}
             disabled={!referenceInput.trim()}
             className="btn-secondary text-sm"
@@ -401,16 +435,17 @@ export function NoteEditor({
         </div>
 
         {references.length === 0 && detectedReferences.length === 0 && (
-          <p className="text-sm mt-2" style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+          <p className="text-sm mt-3" style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
             Bible references will be automatically detected as you type
           </p>
         )}
       </div>
 
       {/* Actions */}
-      <div className="p-6 flex justify-end gap-3">
+      <div className="p-6 flex justify-end gap-3" style={{ backgroundColor: 'var(--bg-card)' }}>
         {onCancel && (
           <button
+            type="button"
             onClick={onCancel}
             className="btn-secondary text-sm"
           >
@@ -418,6 +453,7 @@ export function NoteEditor({
           </button>
         )}
         <button
+          type="button"
           onClick={handleSave}
           disabled={!title.trim() || isSaving}
           className="btn-primary text-sm"
