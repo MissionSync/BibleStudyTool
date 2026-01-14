@@ -197,13 +197,14 @@ export function KnowledgeGraph({
           maskColor="rgba(0, 0, 0, 0.1)"
         />
 
-        <Panel position="top-left" className="m-4">
+        <Panel position="top-left" className="m-4" style={{ overflow: 'visible' }}>
           <div
             className="p-4"
             style={{
               backgroundColor: 'var(--bg-primary)',
               border: '1px solid var(--border-light)',
               borderRadius: '2px',
+              overflow: 'visible',
             }}
           >
             <GraphControls
