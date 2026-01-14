@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Mail, Lock, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function LoginPage() {
   const { user, loading: authLoading, refreshUser } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,6 +46,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       await refreshUser();
+      showToast('Welcome back! Great to see you again.', 'success');
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please check your credentials.');
