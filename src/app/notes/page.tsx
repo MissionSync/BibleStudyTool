@@ -281,19 +281,21 @@ export default function NotesPage() {
           </div>
         ) : filteredNotes.length === 0 ? (
           <div
-            className="text-center py-16"
+            className="text-center"
             style={{
               backgroundColor: 'var(--bg-secondary)',
-              borderRadius: '2px',
+              borderRadius: '4px',
+              padding: '3rem 2rem',
+              marginBottom: '3rem',
             }}
           >
             <h3
-              className="text-xl mb-2"
+              className="text-xl mb-3"
               style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               {searchQuery ? 'No notes found' : 'No notes yet'}
             </h3>
-            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               {searchQuery
                 ? 'Try a different search term'
                 : 'Start capturing your Bible study insights'}
@@ -410,17 +412,26 @@ export default function NotesPage() {
 
       {/* Tips */}
       <section
-        style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-light)' }}
+        style={{
+          backgroundColor: 'var(--bg-secondary)',
+          borderTop: '1px solid var(--border-light)',
+          marginTop: '2rem',
+        }}
       >
-        <div className="content-narrow py-12">
+        <div className="content-narrow" style={{ padding: '3rem 1.5rem' }}>
           <h2
-            className="text-xl mb-6"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            className="text-xl"
+            style={{
+              fontFamily: 'var(--font-serif)',
+              color: 'var(--text-primary)',
+              fontWeight: 400,
+              marginBottom: '1.5rem',
+            }}
           >
             Note-taking tips
           </h2>
           <ul className="space-y-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            <li>Bible references are automatically detected (e.g., "John 3:16")</li>
+            <li>Bible references are automatically detected (e.g., &quot;John 3:16&quot;)</li>
             <li>Use tags to organize notes by topic or theme</li>
             <li>Notes can be linked to knowledge graph nodes</li>
             <li>Search works across titles, content, and tags</li>
