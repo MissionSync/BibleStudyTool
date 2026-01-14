@@ -20,6 +20,7 @@ import { PassageNode } from './nodes/PassageNode';
 import { NoteNode } from './nodes/NoteNode';
 import { ThemeNode } from './nodes/ThemeNode';
 import { PersonNode } from './nodes/PersonNode';
+import { PlaceNode } from './nodes/PlaceNode';
 import { BookNode } from './nodes/BookNode';
 import { GraphControls } from './GraphControls';
 import { GraphStats } from './GraphStats';
@@ -30,6 +31,7 @@ const nodeTypes = {
   note: NoteNode,
   theme: ThemeNode,
   person: PersonNode,
+  place: PlaceNode,
   book: BookNode,
 };
 
