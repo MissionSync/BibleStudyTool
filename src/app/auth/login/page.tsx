@@ -1,17 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Mail, Lock, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
+  const { user, loading: authLoading, refreshUser } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, authLoading, router]);
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Don't show login page if already authenticated
+  if (user) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +43,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
+      await refreshUser();
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please check your credentials.');
