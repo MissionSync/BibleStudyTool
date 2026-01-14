@@ -11,50 +11,54 @@
   --font-serif: 'Crimson Pro', Georgia, serif;
   --font-sans: 'Source Sans 3', system-ui, sans-serif;
 
-  /* Light Mode - Warm Paper */
-  --bg-primary: #faf8f5;         /* Warm cream paper */
-  --bg-secondary: #f5f2ed;       /* Slightly darker paper */
-  --bg-tertiary: #ede9e3;        /* Card backgrounds */
+  /* Light Mode - Soft Warm Neutrals */
+  --bg-primary: #FAF9F7;         /* Soft warm white */
+  --bg-secondary: #F4F3F0;       /* Light warm gray */
+  --bg-tertiary: #EEECEA;        /* Subtle distinction */
+  --bg-card: #FFFFFF;            /* Pure white for cards */
 
-  --text-primary: #2c2825;       /* Deep charcoal - not pure black */
-  --text-secondary: #5c5650;     /* Muted brown-gray */
-  --text-tertiary: #8a847d;      /* Light gray for hints */
+  /* Text - Warm Browns */
+  --text-primary: #2D2A26;       /* Warm dark brown, not black */
+  --text-secondary: #6B665D;     /* Muted brown-gray */
+  --text-tertiary: #9A958C;      /* Light for metadata */
 
-  /* Accent - Leather Brown */
-  --accent: #7d6b5d;             /* Muted leather brown */
-  --accent-hover: #655749;       /* Darker on hover */
-  --accent-light: #a69788;       /* Light accent */
+  /* Accent - Soft Sage Green (calming, natural) */
+  --accent: #7C9082;             /* Muted sage */
+  --accent-hover: #6A7D70;       /* Darker on hover */
+  --accent-light: #E8EDEA;       /* Very light sage for backgrounds */
 
-  /* Scripture Highlights */
-  --highlight-gold: #f5e6c8;     /* Soft gold */
-  --highlight-sage: #e2ebe4;     /* Pale sage */
-  --highlight-peach: #f5e4db;    /* Warm peach */
+  /* Scripture Highlights - Soft Pastels */
+  --highlight-gold: #FBF7E9;     /* Soft cream */
+  --highlight-sage: #EFF5F0;     /* Pale sage */
+  --highlight-peach: #F9F2F0;    /* Warm blush */
+  --highlight-blue: #EEF2F5;     /* Cool gray-blue */
 
   /* Borders & Lines */
-  --border-light: #e5e0d8;       /* Subtle border */
-  --border-medium: #d4cec4;      /* Medium emphasis border */
+  --border-light: #E8E6E3;       /* Subtle separation */
+  --border-medium: #D9D6D0;      /* More visible borders */
 
   /* Functional Colors */
-  --success: #6b8f71;            /* Muted sage green */
-  --error: #b56b6b;              /* Muted rose */
-  --info: #6b7f8f;               /* Muted slate */
+  --success: #7C9082;            /* Sage green */
+  --error: #B07878;              /* Muted rose */
+  --info: #7A8B9C;               /* Dusty blue */
 
   /* Graph Node Colors - Muted Palette */
-  --node-book: #8fa3b5;          /* Muted blue-gray */
-  --node-passage: #8fb59e;       /* Muted sage */
-  --node-theme: #a38fb5;         /* Muted lavender */
-  --node-person: #b5a38f;        /* Muted tan */
-  --node-note: #c4b896;          /* Muted gold */
-  --node-place: #8fb5b0;         /* Muted teal */
+  --node-book: #8B9EAC;          /* Muted blue-gray */
+  --node-passage: #8CAC9A;       /* Muted sage */
+  --node-theme: #9E8BAC;         /* Muted lavender */
+  --node-person: #AC9E8B;        /* Muted tan */
+  --node-note: #B8AD8E;          /* Muted gold */
+  --node-place: #8BACA7;         /* Muted teal */
 
-  /* Spacing Scale */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
+  /* Spacing Scale - Expanded */
+  --space-xs: 0.5rem;            /* 8px */
+  --space-sm: 0.75rem;           /* 12px */
+  --space-md: 1rem;              /* 16px */
+  --space-lg: 1.5rem;            /* 24px */
+  --space-xl: 2rem;              /* 32px */
+  --space-2xl: 3rem;             /* 48px */
+  --space-3xl: 4rem;             /* 64px */
+  --space-4xl: 6rem;             /* 96px */
 
   /* Content Width */
   --content-narrow: 42rem;       /* ~672px - for reading */
@@ -68,69 +72,73 @@
 /* Dark Mode - Evening Study */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary: #1a1816;       /* Deep warm black */
-    --bg-secondary: #242220;     /* Slightly lighter */
-    --bg-tertiary: #2e2b28;      /* Card backgrounds */
+    --bg-primary: #1C1B19;       /* Deep warm charcoal */
+    --bg-secondary: #252422;     /* Slightly lighter */
+    --bg-tertiary: #2E2C29;      /* Subtle distinction */
+    --bg-card: #232220;          /* Card backgrounds */
 
-    --text-primary: #e8e4df;     /* Warm off-white */
-    --text-secondary: #a8a29b;   /* Muted text */
-    --text-tertiary: #6e6962;    /* Hints */
+    --text-primary: #E8E6E2;     /* Warm off-white */
+    --text-secondary: #A5A19A;   /* Muted text */
+    --text-tertiary: #706C66;    /* Light for metadata */
 
-    --accent: #b5a18f;           /* Lighter leather */
-    --accent-hover: #c4b5a5;     /* Even lighter on hover */
-    --accent-light: #8f8070;     /* Darker accent */
+    --accent: #9DB5A5;           /* Lighter sage */
+    --accent-hover: #B0C5B8;     /* Even lighter on hover */
+    --accent-light: #3A4540;     /* Dark sage background */
 
-    --highlight-gold: #3d3625;   /* Muted gold */
-    --highlight-sage: #2a3330;   /* Muted sage */
-    --highlight-peach: #3d3028;  /* Muted peach */
+    --highlight-gold: #3A3628;   /* Muted cream */
+    --highlight-sage: #2E3830;   /* Muted sage */
+    --highlight-peach: #3A3230;  /* Muted blush */
+    --highlight-blue: #2E3238;   /* Muted blue */
 
-    --border-light: #3a3633;     /* Subtle border */
-    --border-medium: #4a4540;    /* Medium border */
+    --border-light: #3A3835;     /* Subtle border */
+    --border-medium: #4A4744;    /* More visible border */
 
-    --success: #7a9f80;
-    --error: #c57a7a;
-    --info: #7a8f9f;
+    --success: #9DB5A5;
+    --error: #C49090;
+    --info: #9AA8B5;
 
-    --node-book: #6a7d8a;
-    --node-passage: #6a8a78;
-    --node-theme: #7d6a8a;
-    --node-person: #8a7d6a;
-    --node-note: #9a8f6a;
-    --node-place: #6a8a85;
+    --node-book: #7A8D9A;
+    --node-passage: #7A9A8A;
+    --node-theme: #8D7A9A;
+    --node-person: #9A8D7A;
+    --node-note: #A89A7A;
+    --node-place: #7A9A95;
   }
 }
 
 /* Manual dark mode class support */
 .dark {
-  --bg-primary: #1a1816;
-  --bg-secondary: #242220;
-  --bg-tertiary: #2e2b28;
+  --bg-primary: #1C1B19;
+  --bg-secondary: #252422;
+  --bg-tertiary: #2E2C29;
+  --bg-card: #232220;
 
-  --text-primary: #e8e4df;
-  --text-secondary: #a8a29b;
-  --text-tertiary: #6e6962;
+  --text-primary: #E8E6E2;
+  --text-secondary: #A5A19A;
+  --text-tertiary: #706C66;
 
-  --accent: #b5a18f;
-  --accent-hover: #c4b5a5;
-  --accent-light: #8f8070;
+  --accent: #9DB5A5;
+  --accent-hover: #B0C5B8;
+  --accent-light: #3A4540;
 
-  --highlight-gold: #3d3625;
-  --highlight-sage: #2a3330;
-  --highlight-peach: #3d3028;
+  --highlight-gold: #3A3628;
+  --highlight-sage: #2E3830;
+  --highlight-peach: #3A3230;
+  --highlight-blue: #2E3238;
 
-  --border-light: #3a3633;
-  --border-medium: #4a4540;
+  --border-light: #3A3835;
+  --border-medium: #4A4744;
 
-  --success: #7a9f80;
-  --error: #c57a7a;
-  --info: #7a8f9f;
+  --success: #9DB5A5;
+  --error: #C49090;
+  --info: #9AA8B5;
 
-  --node-book: #6a7d8a;
-  --node-passage: #6a8a78;
-  --node-theme: #7d6a8a;
-  --node-person: #8a7d6a;
-  --node-note: #9a8f6a;
-  --node-place: #6a8a85;
+  --node-book: #7A8D9A;
+  --node-passage: #7A9A8A;
+  --node-theme: #8D7A9A;
+  --node-person: #9A8D7A;
+  --node-note: #A89A7A;
+  --node-place: #7A9A95;
 }
 
 /* Tailwind Theme Integration */
@@ -138,6 +146,7 @@
   --color-bg-primary: var(--bg-primary);
   --color-bg-secondary: var(--bg-secondary);
   --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-card: var(--bg-card);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
@@ -153,6 +162,7 @@
   --color-highlight-gold: var(--highlight-gold);
   --color-highlight-sage: var(--highlight-sage);
   --color-highlight-peach: var(--highlight-peach);
+  --color-highlight-blue: var(--highlight-blue);
 
   --color-success: var(--success);
   --color-error: var(--error);
@@ -167,6 +177,16 @@
 
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
+
+  /* Spacing scale for Tailwind */
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+  --spacing-3xl: var(--space-3xl);
+  --spacing-4xl: var(--space-4xl);
 }
 
 /* Base Styles */
@@ -333,11 +353,18 @@ button {
   color: var(--accent-hover);
 }
 
-/* Cards - minimal */
+/* Cards - minimal with white background */
 .card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: var(--space-lg);
+}
+
+.card-muted {
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-light);
-  border-radius: 2px;
+  border-radius: 4px;
   padding: var(--space-lg);
 }
 
@@ -405,6 +432,45 @@ button {
 
 .highlight-peach {
   background-color: var(--highlight-peach);
+}
+
+.highlight-blue {
+  background-color: var(--highlight-blue);
+}
+
+/* Section Spacing - Consistent vertical rhythm */
+.section {
+  padding-top: var(--space-3xl);
+  padding-bottom: var(--space-3xl);
+}
+
+.section-sm {
+  padding-top: var(--space-2xl);
+  padding-bottom: var(--space-2xl);
+}
+
+.section-lg {
+  padding-top: var(--space-4xl);
+  padding-bottom: var(--space-4xl);
+}
+
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+/* Stack spacing utility */
+.stack > * + * {
+  margin-top: var(--space-lg);
+}
+
+.stack-sm > * + * {
+  margin-top: var(--space-md);
+}
+
+.stack-lg > * + * {
+  margin-top: var(--space-xl);
 }
 
 /* Loading spinner - minimal */

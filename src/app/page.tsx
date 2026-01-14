@@ -55,16 +55,29 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="content-narrow pt-24 pb-20 text-center">
+      <section className="content-narrow text-center" style={{ paddingTop: 'var(--space-4xl)', paddingBottom: 'var(--space-4xl)' }}>
         <h1
-          className="text-4xl md:text-5xl mb-6 leading-tight"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+          className="leading-tight"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            color: 'var(--text-primary)',
+            fontWeight: 400,
+            fontSize: '2.25rem',
+            marginBottom: 'var(--space-md)',
+          }}
         >
           A quiet place for<br />Scripture and reflection
         </h1>
         <p
-          className="text-lg mb-10 leading-relaxed"
-          style={{ color: 'var(--text-secondary)', maxWidth: '32rem', margin: '0 auto 2.5rem' }}
+          className="leading-relaxed"
+          style={{
+            color: 'var(--text-secondary)',
+            maxWidth: '30rem',
+            margin: '0 auto',
+            marginBottom: 'var(--space-xl)',
+            fontSize: '1.0625rem',
+            lineHeight: 1.7,
+          }}
         >
           Discover connections between passages, themes, and people through
           interactive knowledge graphs. Keep your insights organized
@@ -85,66 +98,100 @@ export default function LandingPage() {
 
       {/* Divider */}
       <div className="content-narrow">
-        <hr className="divider" />
+        <hr className="divider" style={{ margin: 0 }} />
       </div>
 
       {/* Features - Typography Driven */}
-      <section className="content-narrow py-16">
+      <section className="content-narrow section">
         <h2
-          className="text-2xl mb-12 text-center"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+          className="text-center"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            color: 'var(--text-primary)',
+            fontWeight: 400,
+            fontSize: '1.5rem',
+            marginBottom: 'var(--space-2xl)',
+          }}
         >
           Tools for deeper study
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
-          <div>
+        <div className="feature-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+          <div
+            className="card"
+            style={{ padding: 'var(--space-lg)' }}
+          >
             <h3
-              className="text-lg mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+              style={{
+                fontFamily: 'var(--font-serif)',
+                color: 'var(--text-primary)',
+                fontSize: '1.25rem',
+                marginBottom: 'var(--space-sm)',
+              }}
             >
               Knowledge Graph
             </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
               Visualize how passages, themes, and people interconnect.
               See relationships in Scripture you may have missed.
             </p>
           </div>
 
-          <div>
+          <div
+            className="card"
+            style={{ padding: 'var(--space-lg)' }}
+          >
             <h3
-              className="text-lg mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+              style={{
+                fontFamily: 'var(--font-serif)',
+                color: 'var(--text-primary)',
+                fontSize: '1.25rem',
+                marginBottom: 'var(--space-sm)',
+              }}
             >
               Study Notes
             </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
               Capture insights with automatic Bible reference detection.
               Your reflections, searchable and organized.
             </p>
           </div>
 
-          <div>
+          <div
+            className="card"
+            style={{ padding: 'var(--space-lg)' }}
+          >
             <h3
-              className="text-lg mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+              style={{
+                fontFamily: 'var(--font-serif)',
+                color: 'var(--text-primary)',
+                fontSize: '1.25rem',
+                marginBottom: 'var(--space-sm)',
+              }}
             >
               Study Plans
             </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
               Follow guided weekly readings through the New Testament.
               Each week builds thematic connections.
             </p>
           </div>
 
-          <div>
+          <div
+            className="card"
+            style={{ padding: 'var(--space-lg)' }}
+          >
             <h3
-              className="text-lg mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+              style={{
+                fontFamily: 'var(--font-serif)',
+                color: 'var(--text-primary)',
+                fontSize: '1.25rem',
+                marginBottom: 'var(--space-sm)',
+              }}
             >
               Theme Discovery
             </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
               Explore how Love, Grace, Faith, and Redemption
               weave through different books and passages.
             </p>
@@ -154,18 +201,26 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section
-        className="py-20 mt-8"
-        style={{ backgroundColor: 'var(--bg-secondary)' }}
+        className="section-lg"
+        style={{
+          backgroundColor: 'var(--bg-secondary)',
+          marginTop: 'var(--space-3xl)',
+        }}
       >
         <div className="content-narrow text-center">
           <p
-            className="scripture text-xl md:text-2xl mb-8 italic"
-            style={{ color: 'var(--text-primary)' }}
+            className="scripture italic"
+            style={{
+              color: 'var(--text-primary)',
+              fontSize: '1.375rem',
+              marginBottom: 'var(--space-md)',
+            }}
           >
             &ldquo;Your word is a lamp to my feet and a light to my path.&rdquo;
           </p>
           <p
-            className="scripture-reference mb-8"
+            className="scripture-reference"
+            style={{ marginBottom: 'var(--space-xl)' }}
           >
             Psalm 119:105
           </p>
@@ -177,8 +232,13 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer
-        className="py-8 text-center text-sm"
-        style={{ borderTop: '1px solid var(--border-light)', color: 'var(--text-tertiary)' }}
+        className="text-center text-sm"
+        style={{
+          borderTop: '1px solid var(--border-light)',
+          color: 'var(--text-tertiary)',
+          paddingTop: 'var(--space-xl)',
+          paddingBottom: 'var(--space-xl)',
+        }}
       >
         <div className="content-wide">
           Bible Notes Journal
