@@ -4,86 +4,184 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Hero } from '@/components/landing/Hero';
-import { Features } from '@/components/landing/Features';
-import { Loader2 } from 'lucide-react';
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect authenticated users to dashboard
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
 
-  // Show loading while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="spinner" />
       </div>
     );
   }
 
-  // Show landing page for unauthenticated users
   if (user) {
-    return null; // Will redirect
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Navigation */}
-      <nav className="container mx-auto px-4 py-6 flex items-center justify-between">
-        <div className="text-xl font-bold text-gray-900 dark:text-white">
+      <nav className="content-wide py-6 flex items-center justify-between">
+        <span
+          className="text-lg tracking-wide"
+          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+        >
           Bible Notes Journal
-        </div>
-        <div className="flex items-center gap-4">
+        </span>
+        <div className="flex items-center gap-6">
           <Link
             href="/auth/login"
-            className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+            className="text-sm tracking-wide transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
           >
             Sign In
           </Link>
           <Link
             href="/auth/signup"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+            className="btn-primary text-sm"
           >
-            Sign Up
+            Create Account
           </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <Hero />
-
-      {/* Features Section */}
-      <Features />
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            Ready to Transform Your Bible Study?
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-            Join today and start building your personal knowledge graph of Scripture.
-          </p>
+      {/* Hero */}
+      <section className="content-narrow pt-24 pb-20 text-center">
+        <h1
+          className="text-4xl md:text-5xl mb-6 leading-tight"
+          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+        >
+          A quiet place for<br />Scripture and reflection
+        </h1>
+        <p
+          className="text-lg mb-10 leading-relaxed"
+          style={{ color: 'var(--text-secondary)', maxWidth: '32rem', margin: '0 auto 2.5rem' }}
+        >
+          Discover connections between passages, themes, and people through
+          interactive knowledge graphs. Keep your insights organized
+          in a space designed for contemplation.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link href="/auth/signup" className="btn-primary">
+            Begin Your Study
+          </Link>
           <Link
-            href="/auth/signup"
-            className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg shadow-lg hover:shadow-xl"
+            href="/auth/login"
+            className="btn-secondary"
           >
-            Create Free Account
+            Sign In
+          </Link>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="content-narrow">
+        <hr className="divider" />
+      </div>
+
+      {/* Features - Typography Driven */}
+      <section className="content-narrow py-16">
+        <h2
+          className="text-2xl mb-12 text-center"
+          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+        >
+          Tools for deeper study
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
+          <div>
+            <h3
+              className="text-lg mb-2"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+            >
+              Knowledge Graph
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+              Visualize how passages, themes, and people interconnect.
+              See relationships in Scripture you may have missed.
+            </p>
+          </div>
+
+          <div>
+            <h3
+              className="text-lg mb-2"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+            >
+              Study Notes
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+              Capture insights with automatic Bible reference detection.
+              Your reflections, searchable and organized.
+            </p>
+          </div>
+
+          <div>
+            <h3
+              className="text-lg mb-2"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+            >
+              Study Plans
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+              Follow guided weekly readings through the New Testament.
+              Each week builds thematic connections.
+            </p>
+          </div>
+
+          <div>
+            <h3
+              className="text-lg mb-2"
+              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+            >
+              Theme Discovery
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+              Explore how Love, Grace, Faith, and Redemption
+              weave through different books and passages.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section
+        className="py-20 mt-8"
+        style={{ backgroundColor: 'var(--bg-secondary)' }}
+      >
+        <div className="content-narrow text-center">
+          <p
+            className="scripture text-xl md:text-2xl mb-8 italic"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            &ldquo;Your word is a lamp to my feet and a light to my path.&rdquo;
+          </p>
+          <p
+            className="scripture-reference mb-8"
+          >
+            Psalm 119:105
+          </p>
+          <Link href="/auth/signup" className="btn-primary">
+            Start Your Journey
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="container mx-auto text-center text-gray-600 dark:text-gray-400">
-          <p>Powered by Appwrite Cloud &bull; Built with Next.js</p>
+      <footer
+        className="py-8 text-center text-sm"
+        style={{ borderTop: '1px solid var(--border-light)', color: 'var(--text-tertiary)' }}
+      >
+        <div className="content-wide">
+          Bible Notes Journal
         </div>
       </footer>
     </div>
