@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -36,25 +35,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const getIcon = (type: ToastType) => {
+  const getBackgroundColor = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return 'var(--highlight-sage)';
       case 'error':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return 'var(--highlight-peach)';
       case 'info':
-        return <Info className="w-5 h-5 text-blue-500" />;
-    }
-  };
-
-  const getStyles = (type: ToastType) => {
-    switch (type) {
-      case 'success':
-        return 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800';
-      case 'error':
-        return 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800';
-      case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800';
+        return 'var(--highlight-gold)';
     }
   };
 
@@ -67,18 +55,33 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-slide-in ${getStyles(toast.type)}`}
+            className="flex items-center gap-3 px-4 py-3 animate-slide-in"
+            style={{
+              backgroundColor: getBackgroundColor(toast.type),
+              border: '1px solid var(--border-light)',
+              borderRadius: '2px',
+              minWidth: '200px',
+              maxWidth: '360px',
+            }}
             role="alert"
           >
-            {getIcon(toast.type)}
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
+            <p
+              className="text-sm flex-1"
+              style={{ color: 'var(--text-primary)' }}
+            >
               {toast.message}
             </p>
             <button
               onClick={() => dismissToast(toast.id)}
-              className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              style={{
+                color: 'var(--text-tertiary)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '4px',
+              }}
             >
-              <X className="w-4 h-4" />
+              &times;
             </button>
           </div>
         ))}
