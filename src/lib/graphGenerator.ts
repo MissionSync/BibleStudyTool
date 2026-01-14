@@ -6,6 +6,7 @@
 import { Query } from 'appwrite';
 import { databases, DATABASE_ID, COLLECTIONS } from './appwrite';
 import { extractBookName } from './bibleParser';
+import { findPeopleInText, findPlacesInText } from './bibleEntities';
 import {
   createGraphNode,
   getUserGraphNodes,
@@ -111,6 +112,8 @@ export async function generateGraphForNote(note: Note): Promise<{
   passageNodes: GraphNode[];
   bookNodes: GraphNode[];
   themeNodes: GraphNode[];
+  personNodes: GraphNode[];
+  placeNodes: GraphNode[];
   edges: GraphEdge[];
 }> {
   const userId = note.userId;
@@ -118,6 +121,8 @@ export async function generateGraphForNote(note: Note): Promise<{
   const passageNodes: GraphNode[] = [];
   const bookNodes: GraphNode[] = [];
   const themeNodes: GraphNode[] = [];
+  const personNodes: GraphNode[] = [];
+  const placeNodes: GraphNode[] = [];
 
   // 1. Create note node
   const noteNode = await createOrGetNode(
@@ -199,11 +204,60 @@ export async function generateGraphForNote(note: Note): Promise<{
     if (noteToThemeEdge) edges.push(noteToThemeEdge);
   }
 
+  // 4. Detect and process people mentioned in content
+  const noteText = `${note.title} ${note.contentPlan || note.content || ''}`;
+  const detectedPeople = findPeopleInText(noteText);
+
+  for (const person of detectedPeople) {
+    const personNode = await createOrGetNode(
+      userId,
+      'person',
+      person.name,
+      person.name.toLowerCase(),
+      person.role ? `${person.role}` : `Bible figure: ${person.name}`
+    );
+    personNodes.push(personNode);
+
+    // Create edge: note -> person (mentions)
+    const noteToPersonEdge = await createEdgeIfNotExists(
+      userId,
+      noteNode.$id,
+      personNode.$id,
+      'mentions'
+    );
+    if (noteToPersonEdge) edges.push(noteToPersonEdge);
+  }
+
+  // 5. Detect and process places mentioned in content
+  const detectedPlaces = findPlacesInText(noteText);
+
+  for (const place of detectedPlaces) {
+    const placeNode = await createOrGetNode(
+      userId,
+      'place',
+      place.name,
+      place.name.toLowerCase(),
+      place.region ? `Region: ${place.region}` : `Bible place: ${place.name}`
+    );
+    placeNodes.push(placeNode);
+
+    // Create edge: note -> place (mentions)
+    const noteToPlaceEdge = await createEdgeIfNotExists(
+      userId,
+      noteNode.$id,
+      placeNode.$id,
+      'mentions'
+    );
+    if (noteToPlaceEdge) edges.push(noteToPlaceEdge);
+  }
+
   return {
     noteNode,
     passageNodes,
     bookNodes,
     themeNodes,
+    personNodes,
+    placeNodes,
     edges,
   };
 }
@@ -219,6 +273,8 @@ export async function generateGraphFromNotes(userId: string): Promise<{
     passageCount: number;
     bookCount: number;
     themeCount: number;
+    personCount: number;
+    placeCount: number;
     edgeCount: number;
   };
 }> {
@@ -241,6 +297,8 @@ export async function generateGraphFromNotes(userId: string): Promise<{
   const passageNodes: GraphNode[] = [];
   const bookNodes: GraphNode[] = [];
   const themeNodes: GraphNode[] = [];
+  const personNodes: GraphNode[] = [];
+  const placeNodes: GraphNode[] = [];
 
   // Process each note
   for (const note of notes) {
@@ -250,12 +308,14 @@ export async function generateGraphFromNotes(userId: string): Promise<{
     passageNodes.push(...result.passageNodes);
     bookNodes.push(...result.bookNodes);
     themeNodes.push(...result.themeNodes);
+    personNodes.push(...result.personNodes);
+    placeNodes.push(...result.placeNodes);
     allEdges.push(...result.edges);
   }
 
   // Deduplicate nodes by ID
   const nodeMap = new Map<string, GraphNode>();
-  [...noteNodes, ...passageNodes, ...bookNodes, ...themeNodes].forEach(node => {
+  [...noteNodes, ...passageNodes, ...bookNodes, ...themeNodes, ...personNodes, ...placeNodes].forEach(node => {
     nodeMap.set(node.$id, node);
   });
   allNodes.push(...nodeMap.values());
@@ -268,6 +328,8 @@ export async function generateGraphFromNotes(userId: string): Promise<{
       passageCount: new Set(passageNodes.map(n => n.referenceId)).size,
       bookCount: new Set(bookNodes.map(n => n.referenceId)).size,
       themeCount: new Set(themeNodes.map(n => n.referenceId)).size,
+      personCount: new Set(personNodes.map(n => n.referenceId)).size,
+      placeCount: new Set(placeNodes.map(n => n.referenceId)).size,
       edgeCount: allEdges.length,
     },
   };

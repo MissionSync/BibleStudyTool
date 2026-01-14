@@ -72,13 +72,23 @@ function calculateNodePositions(nodes: SimpleNode[]): Map<string, { x: number, y
 
   // People below themes
   const people = nodesByType['person'] || [];
+  const peopleWidth = Math.max(800, people.length * 150);
   people.forEach((node, i) => {
-    positions.set(node.$id, { x: 200 + i * 250, y: 600 });
+    const x = (800 - peopleWidth) / 2 + 100 + i * (peopleWidth / Math.max(people.length, 1));
+    positions.set(node.$id, { x, y: 600 });
+  });
+
+  // Places below people
+  const places = nodesByType['place'] || [];
+  const placeWidth = Math.max(800, places.length * 150);
+  places.forEach((node, i) => {
+    const x = (800 - placeWidth) / 2 + 100 + i * (placeWidth / Math.max(places.length, 1));
+    positions.set(node.$id, { x, y: 740 });
   });
 
   // Other types at the bottom
-  const otherTypes = Object.keys(nodesByType).filter(t => !['note', 'book', 'passage', 'theme', 'person'].includes(t));
-  let otherY = 740;
+  const otherTypes = Object.keys(nodesByType).filter(t => !['note', 'book', 'passage', 'theme', 'person', 'place'].includes(t));
+  let otherY = 880;
   otherTypes.forEach(type => {
     const typeNodes = nodesByType[type];
     typeNodes.forEach((node, i) => {
