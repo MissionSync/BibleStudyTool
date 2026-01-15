@@ -204,10 +204,21 @@ export default function StudyPlanPage() {
 
       {/* Footer */}
       <footer
-        className="py-8 text-center text-sm"
+        className="py-12 text-center text-sm"
         style={{ color: 'var(--text-tertiary)' }}
       >
-        Bible Notes Journal
+        <div>Bible Notes Journal</div>
+        <div style={{ marginTop: '0.5rem' }}>
+          developed by{' '}
+          <a
+            href="https://missionsynclab.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--accent)', textDecoration: 'none' }}
+          >
+            MissionSync Lab
+          </a>
+        </div>
       </footer>
     </div>
   );

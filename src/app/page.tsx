@@ -236,12 +236,23 @@ export default function LandingPage() {
         style={{
           borderTop: '1px solid var(--border-light)',
           color: 'var(--text-tertiary)',
-          paddingTop: 'var(--space-xl)',
-          paddingBottom: 'var(--space-xl)',
+          paddingTop: '3rem',
+          paddingBottom: '3rem',
         }}
       >
         <div className="content-wide">
-          Bible Notes Journal
+          <div>Bible Notes Journal</div>
+          <div style={{ marginTop: '0.5rem' }}>
+            developed by{' '}
+            <a
+              href="https://missionsynclab.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--accent)', textDecoration: 'none' }}
+            >
+              MissionSync Lab
+            </a>
+          </div>
         </div>
       </footer>
     </div>
