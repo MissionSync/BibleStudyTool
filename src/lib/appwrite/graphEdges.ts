@@ -35,40 +35,36 @@ export async function createGraphEdge(data: CreateGraphEdgeData): Promise<GraphE
     weight: data.weight || 1.0,
   };
 
-  const response = await databases.createDocument(
+  return databases.createDocument<GraphEdge>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_EDGES,
     ID.unique(),
     edgeData
   );
-
-  return response as unknown as GraphEdge;
 }
 
 /**
  * Get a single graph edge by ID
  */
 export async function getGraphEdge(edgeId: string): Promise<GraphEdge> {
-  const response = await databases.getDocument(
+  return databases.getDocument<GraphEdge>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_EDGES,
     edgeId
   );
-
-  return response as unknown as GraphEdge;
 }
 
 /**
  * Get all graph edges for a user
  */
 export async function getUserGraphEdges(userId: string): Promise<GraphEdge[]> {
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<GraphEdge>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_EDGES,
     [Query.equal('userId', userId)]
   );
 
-  return response.documents as unknown as GraphEdge[];
+  return response.documents;
 }
 
 /**
@@ -77,7 +73,7 @@ export async function getUserGraphEdges(userId: string): Promise<GraphEdge[]> {
 export async function getNodeEdges(userId: string, nodeId: string): Promise<GraphEdge[]> {
   // Get edges where the node is either source or target
   const [sourceEdges, targetEdges] = await Promise.all([
-    databases.listDocuments(
+    databases.listDocuments<GraphEdge>(
       DATABASE_ID,
       COLLECTIONS.GRAPH_EDGES,
       [
@@ -85,7 +81,7 @@ export async function getNodeEdges(userId: string, nodeId: string): Promise<Grap
         Query.equal('sourceNodeId', nodeId),
       ]
     ),
-    databases.listDocuments(
+    databases.listDocuments<GraphEdge>(
       DATABASE_ID,
       COLLECTIONS.GRAPH_EDGES,
       [
@@ -95,21 +91,19 @@ export async function getNodeEdges(userId: string, nodeId: string): Promise<Grap
     ),
   ]);
 
-  return [...sourceEdges.documents, ...targetEdges.documents] as unknown as GraphEdge[];
+  return [...sourceEdges.documents, ...targetEdges.documents];
 }
 
 /**
  * Update a graph edge
  */
 export async function updateGraphEdge(edgeId: string, data: UpdateGraphEdgeData): Promise<GraphEdge> {
-  const response = await databases.updateDocument(
+  return databases.updateDocument<GraphEdge>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_EDGES,
     edgeId,
     data
   );
-
-  return response as unknown as GraphEdge;
 }
 
 /**
@@ -131,7 +125,7 @@ export async function edgeExists(
   sourceNodeId: string,
   targetNodeId: string
 ): Promise<boolean> {
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<GraphEdge>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_EDGES,
     [

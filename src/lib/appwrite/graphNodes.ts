@@ -12,19 +12,21 @@ export interface GraphNode extends Models.Document {
   metadata?: string; // JSON string
 }
 
+export type NodeMetadata = Record<string, string | number | boolean | null>;
+
 export interface CreateGraphNodeData {
   userId: string;
   nodeType: NodeType;
   label: string;
   referenceId?: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: NodeMetadata;
 }
 
 export interface UpdateGraphNodeData {
   label?: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: NodeMetadata;
 }
 
 /**
@@ -40,27 +42,23 @@ export async function createGraphNode(data: CreateGraphNodeData): Promise<GraphN
     metadata: data.metadata ? JSON.stringify(data.metadata) : '',
   };
 
-  const response = await databases.createDocument(
+  return databases.createDocument<GraphNode>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_NODES,
     ID.unique(),
     nodeData
   );
-
-  return response as unknown as GraphNode;
 }
 
 /**
  * Get a single graph node by ID
  */
 export async function getGraphNode(nodeId: string): Promise<GraphNode> {
-  const response = await databases.getDocument(
+  return databases.getDocument<GraphNode>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_NODES,
     nodeId
   );
-
-  return response as unknown as GraphNode;
 }
 
 /**
@@ -73,33 +71,31 @@ export async function getUserGraphNodes(userId: string, nodeType?: NodeType): Pr
     queries.push(Query.equal('nodeType', nodeType));
   }
 
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<GraphNode>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_NODES,
     queries
   );
 
-  return response.documents as unknown as GraphNode[];
+  return response.documents;
 }
 
 /**
  * Update a graph node
  */
 export async function updateGraphNode(nodeId: string, data: UpdateGraphNodeData): Promise<GraphNode> {
-  const updateData: any = {};
+  const updateData: Partial<{ label: string; description: string; metadata: string }> = {};
 
   if (data.label !== undefined) updateData.label = data.label;
   if (data.description !== undefined) updateData.description = data.description;
   if (data.metadata !== undefined) updateData.metadata = JSON.stringify(data.metadata);
 
-  const response = await databases.updateDocument(
+  return databases.updateDocument<GraphNode>(
     DATABASE_ID,
     COLLECTIONS.GRAPH_NODES,
     nodeId,
     updateData
   );
-
-  return response as unknown as GraphNode;
 }
 
 /**
@@ -116,7 +112,7 @@ export async function deleteGraphNode(nodeId: string): Promise<void> {
 /**
  * Parse metadata JSON string
  */
-export function parseNodeMetadata(node: GraphNode): Record<string, any> | null {
+export function parseNodeMetadata(node: GraphNode): NodeMetadata | null {
   if (!node.metadata) return null;
 
   try {

@@ -27,8 +27,9 @@ export async function signUp(email: string, password: string, name: string): Pro
       email: response.email,
       name: response.name,
     };
-  } catch (error: any) {
-    throw new Error(error.message || 'Failed to create account');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to create account';
+    throw new Error(message);
   }
 }
 
@@ -45,8 +46,9 @@ export async function login(email: string, password: string): Promise<User> {
       email: user.email,
       name: user.name,
     };
-  } catch (error: any) {
-    throw new Error(error.message || 'Failed to login');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to login';
+    throw new Error(message);
   }
 }
 
@@ -56,8 +58,9 @@ export async function login(email: string, password: string): Promise<User> {
 export async function logout(): Promise<void> {
   try {
     await account.deleteSession('current');
-  } catch (error: any) {
-    throw new Error(error.message || 'Failed to logout');
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to logout';
+    throw new Error(message);
   }
 }
 

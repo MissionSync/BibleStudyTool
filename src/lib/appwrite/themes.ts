@@ -35,27 +35,23 @@ export async function createTheme(data: CreateThemeData): Promise<Theme> {
     userId: data.userId || '',
   };
 
-  const response = await databases.createDocument(
+  return databases.createDocument<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     ID.unique(),
     themeData
   );
-
-  return response as unknown as Theme;
 }
 
 /**
  * Get a single theme by ID
  */
 export async function getTheme(themeId: string): Promise<Theme> {
-  const response = await databases.getDocument(
+  return databases.getDocument<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     themeId
   );
-
-  return response as unknown as Theme;
 }
 
 /**
@@ -70,33 +66,33 @@ export async function getAllThemes(userId?: string): Promise<Theme[]> {
     queries.push(Query.equal('userId', userId));
   }
 
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     queries
   );
 
-  return response.documents as unknown as Theme[];
+  return response.documents;
 }
 
 /**
  * Get only system themes
  */
 export async function getSystemThemes(): Promise<Theme[]> {
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     [Query.equal('isSystem', true)]
   );
 
-  return response.documents as unknown as Theme[];
+  return response.documents;
 }
 
 /**
  * Get user's custom themes
  */
 export async function getUserThemes(userId: string): Promise<Theme[]> {
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     [
@@ -105,21 +101,19 @@ export async function getUserThemes(userId: string): Promise<Theme[]> {
     ]
   );
 
-  return response.documents as unknown as Theme[];
+  return response.documents;
 }
 
 /**
  * Update a theme
  */
 export async function updateTheme(themeId: string, data: UpdateThemeData): Promise<Theme> {
-  const response = await databases.updateDocument(
+  return databases.updateDocument<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     themeId,
     data
   );
-
-  return response as unknown as Theme;
 }
 
 /**
@@ -145,11 +139,11 @@ export async function searchThemes(searchTerm: string, userId?: string): Promise
     queries.push(Query.equal('userId', userId));
   }
 
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<Theme>(
     DATABASE_ID,
     COLLECTIONS.THEMES,
     queries
   );
 
-  return response.documents as unknown as Theme[];
+  return response.documents;
 }

@@ -30,7 +30,7 @@ async function findNodeByReference(
   referenceId: string
 ): Promise<GraphNode | null> {
   try {
-    const response = await databases.listDocuments(
+    const response = await databases.listDocuments<GraphNode>(
       DATABASE_ID,
       COLLECTIONS.GRAPH_NODES,
       [
@@ -42,7 +42,7 @@ async function findNodeByReference(
     );
 
     if (response.documents.length > 0) {
-      return response.documents[0] as unknown as GraphNode;
+      return response.documents[0];
     }
     return null;
   } catch (error) {
@@ -298,7 +298,7 @@ export async function generateGraphFromNotes(userId: string): Promise<{
   };
 }> {
   // Fetch all user's notes
-  const notesResponse = await databases.listDocuments(
+  const notesResponse = await databases.listDocuments<Note>(
     DATABASE_ID,
     COLLECTIONS.NOTES,
     [
@@ -308,7 +308,7 @@ export async function generateGraphFromNotes(userId: string): Promise<{
     ]
   );
 
-  const notes = notesResponse.documents as unknown as Note[];
+  const notes = notesResponse.documents;
   const allNodes: GraphNode[] = [];
   const allEdges: GraphEdge[] = [];
 

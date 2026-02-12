@@ -45,14 +45,12 @@ export async function createNote(data: CreateNoteData): Promise<Note> {
     isArchived: data.isArchived || false,
   };
 
-  const response = await databases.createDocument(
+  const note = await databases.createDocument<Note>(
     DATABASE_ID,
     COLLECTIONS.NOTES,
     ID.unique(),
     noteData
   );
-
-  const note = response as unknown as Note;
 
   // Generate graph nodes for this note (async, don't block)
   try {
@@ -69,13 +67,11 @@ export async function createNote(data: CreateNoteData): Promise<Note> {
  * Get a single note by ID
  */
 export async function getNote(noteId: string): Promise<Note> {
-  const response = await databases.getDocument(
+  return databases.getDocument<Note>(
     DATABASE_ID,
     COLLECTIONS.NOTES,
     noteId
   );
-
-  return response as unknown as Note;
 }
 
 /**
@@ -91,27 +87,25 @@ export async function getUserNotes(userId: string, includeArchived = false): Pro
     queries.push(Query.equal('isArchived', false));
   }
 
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<Note>(
     DATABASE_ID,
     COLLECTIONS.NOTES,
     queries
   );
 
-  return response.documents as unknown as Note[];
+  return response.documents;
 }
 
 /**
  * Update a note and regenerate graph nodes
  */
 export async function updateNote(noteId: string, data: UpdateNoteData): Promise<Note> {
-  const response = await databases.updateDocument(
+  const note = await databases.updateDocument<Note>(
     DATABASE_ID,
     COLLECTIONS.NOTES,
     noteId,
     data
   );
-
-  const note = response as unknown as Note;
 
   // Regenerate graph nodes for this note (async, don't block)
   try {
@@ -139,7 +133,7 @@ export async function deleteNote(noteId: string): Promise<void> {
  * Search notes by content or title
  */
 export async function searchNotes(userId: string, searchTerm: string): Promise<Note[]> {
-  const response = await databases.listDocuments(
+  const response = await databases.listDocuments<Note>(
     DATABASE_ID,
     COLLECTIONS.NOTES,
     [
@@ -149,5 +143,5 @@ export async function searchNotes(userId: string, searchTerm: string): Promise<N
     ]
   );
 
-  return response.documents as unknown as Note[];
+  return response.documents;
 }
