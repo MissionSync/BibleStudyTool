@@ -24,7 +24,10 @@ export const account = new Account(client);
 export default client;
 
 // Database and collection IDs
-export const DATABASE_ID = '6966a14a0026e990c14b';
+if (!process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID) {
+  throw new Error('Missing NEXT_PUBLIC_APPWRITE_DATABASE_ID environment variable');
+}
+export const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 export const COLLECTIONS = {
   NOTES: 'notes',
   GRAPH_NODES: 'graph_nodes',

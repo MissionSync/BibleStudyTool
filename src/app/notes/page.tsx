@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { NoteEditor } from '@/components/notes/NoteEditor';
-import { createNote, getUserNotes, deleteNote, type Note } from '@/lib/appwrite/notes';
+import { createNote, getUserNotes, deleteNote, updateNote, type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function NotesPage() {
@@ -54,7 +54,14 @@ export default function NotesPage() {
       setError(null);
 
       if (editingNote) {
-        console.log('Update note:', noteData);
+        const updated = await updateNote(editingNote.$id, {
+          title: noteData.title,
+          content: noteData.content,
+          contentPlan: noteData.content.replace(/<[^>]*>/g, ''),
+          bibleReferences: noteData.references,
+          tags: noteData.tags,
+        });
+        setNotes(notes.map(n => n.$id === updated.$id ? updated : n));
       } else if (user) {
         const newNote = await createNote({
           title: noteData.title,

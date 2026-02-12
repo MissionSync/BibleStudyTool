@@ -136,8 +136,15 @@ export async function generateGraphForNote(note: Note): Promise<{
   // 2. Process Bible references
   const bibleReferences = note.bibleReferences || [];
   const processedBooks = new Set<string>();
+  const processedPassages = new Set<string>();
+  const processedThemes = new Set<string>();
+  const processedPeople = new Set<string>();
+  const processedPlaces = new Set<string>();
 
   for (const ref of bibleReferences) {
+    if (processedPassages.has(ref)) continue;
+    processedPassages.add(ref);
+
     // Create passage node
     const passageNode = await createOrGetNode(
       userId,
@@ -185,6 +192,10 @@ export async function generateGraphForNote(note: Note): Promise<{
   // 3. Process tags as themes
   const tags = note.tags || [];
   for (const tag of tags) {
+    const tagKey = tag.toLowerCase();
+    if (processedThemes.has(tagKey)) continue;
+    processedThemes.add(tagKey);
+
     const themeNode = await createOrGetNode(
       userId,
       'theme',
@@ -209,6 +220,10 @@ export async function generateGraphForNote(note: Note): Promise<{
   const detectedPeople = findPeopleInText(noteText);
 
   for (const person of detectedPeople) {
+    const personKey = person.name.toLowerCase();
+    if (processedPeople.has(personKey)) continue;
+    processedPeople.add(personKey);
+
     const personNode = await createOrGetNode(
       userId,
       'person',
@@ -232,6 +247,10 @@ export async function generateGraphForNote(note: Note): Promise<{
   const detectedPlaces = findPlacesInText(noteText);
 
   for (const place of detectedPlaces) {
+    const placeKey = place.name.toLowerCase();
+    if (processedPlaces.has(placeKey)) continue;
+    processedPlaces.add(placeKey);
+
     const placeNode = await createOrGetNode(
       userId,
       'place',
