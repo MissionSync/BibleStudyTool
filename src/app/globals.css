@@ -69,7 +69,40 @@
   --transition-base: 200ms ease;
 }
 
-/* Dark mode disabled - always use light theme */
+/* Dark Mode - Warm Dark Neutrals */
+[data-theme="dark"] {
+  --bg-primary: #1A1918;
+  --bg-secondary: #232220;
+  --bg-tertiary: #2B2A28;
+  --bg-card: #1F1E1C;
+
+  --text-primary: #E8E5E0;
+  --text-secondary: #A09A90;
+  --text-tertiary: #706A60;
+
+  --accent: #8FAA98;
+  --accent-hover: #A0BBA8;
+  --accent-light: #2A332D;
+
+  --highlight-gold: #332E1F;
+  --highlight-sage: #232E26;
+  --highlight-peach: #2E2422;
+  --highlight-blue: #222830;
+
+  --border-light: #333230;
+  --border-medium: #444240;
+
+  --success: #8FAA98;
+  --error: #C08888;
+  --info: #8A9BAC;
+
+  --node-book: #9BAEBF;
+  --node-passage: #9CBFAC;
+  --node-theme: #B09BBF;
+  --node-person: #BFAE9B;
+  --node-note: #C8BD9E;
+  --node-place: #9BBFBA;
+}
 
 /* Tailwind Theme Integration */
 @theme inline {
@@ -235,7 +268,7 @@ select {
   background-color: var(--bg-primary);
   padding-right: 2.5rem;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239A958C' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   cursor: pointer;
