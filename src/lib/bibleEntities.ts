@@ -25,7 +25,7 @@ export const BIBLE_PEOPLE: BiblePerson[] = [
   { name: 'Sarah', aliases: ['Sarai'], role: 'Matriarch' },
   { name: 'Isaac', aliases: [], role: 'Patriarch' },
   { name: 'Rebekah', aliases: ['Rebecca'], role: 'Matriarch' },
-  { name: 'Jacob', aliases: ['Israel'], role: 'Patriarch' },
+  { name: 'Jacob', aliases: [], role: 'Patriarch' },
   { name: 'Joseph', aliases: [], role: 'Patriarch' },
   { name: 'Moses', aliases: [], role: 'Prophet' },
   { name: 'Aaron', aliases: [], role: 'High Priest' },
@@ -50,11 +50,11 @@ export const BIBLE_PEOPLE: BiblePerson[] = [
   { name: 'Job', aliases: [], role: 'Righteous Man' },
 
   // New Testament
-  { name: 'Jesus', aliases: ['Christ', 'Jesus Christ', 'Messiah', 'Lord', 'Savior'], role: 'Son of God' },
+  { name: 'Jesus', aliases: ['Christ', 'Jesus Christ', 'Messiah', 'Savior'], role: 'Son of God' },
   { name: 'Mary', aliases: ['Virgin Mary'], role: 'Mother of Jesus' },
   { name: 'Joseph', aliases: [], role: 'Earthly Father of Jesus' },
   { name: 'John the Baptist', aliases: ['John Baptist', 'Baptist'], role: 'Prophet' },
-  { name: 'Peter', aliases: ['Simon Peter', 'Simon', 'Cephas'], role: 'Apostle' },
+  { name: 'Peter', aliases: ['Simon Peter', 'Cephas'], role: 'Apostle' },
   { name: 'Andrew', aliases: [], role: 'Apostle' },
   { name: 'James', aliases: [], role: 'Apostle' },
   { name: 'John', aliases: [], role: 'Apostle' },
@@ -114,7 +114,7 @@ export const BIBLE_PLACES: BiblePlace[] = [
   { name: 'Sea of Galilee', aliases: ['Lake Galilee', 'Galilee Sea'], region: 'Galilee' },
   { name: 'Dead Sea', aliases: ['Salt Sea'], region: 'Judea' },
   { name: 'Mount Sinai', aliases: ['Sinai', 'Horeb'], region: 'Sinai Peninsula' },
-  { name: 'Mount Zion', aliases: ['Zion'], region: 'Jerusalem' },
+  { name: 'Mount Zion', aliases: [], region: 'Jerusalem' },
   { name: 'Mount of Olives', aliases: ['Olivet'], region: 'Jerusalem' },
   { name: 'Garden of Eden', aliases: ['Eden'], region: 'Unknown' },
   { name: 'Garden of Gethsemane', aliases: ['Gethsemane'], region: 'Jerusalem' },
@@ -126,13 +126,17 @@ export const BIBLE_PLACES: BiblePlace[] = [
  * Find people mentioned in text
  */
 export function findPeopleInText(text: string): BiblePerson[] {
+  if (text.length < 3) return [];
+
   const found: BiblePerson[] = [];
   const textLower = text.toLowerCase();
   const foundNames = new Set<string>();
 
   for (const person of BIBLE_PEOPLE) {
+    if (foundNames.has(person.name)) continue;
+
     // Check main name
-    if (matchesWord(textLower, person.name.toLowerCase()) && !foundNames.has(person.name)) {
+    if (matchesNameOrPhrase(textLower, person.name.toLowerCase())) {
       found.push(person);
       foundNames.add(person.name);
       continue;
@@ -140,7 +144,7 @@ export function findPeopleInText(text: string): BiblePerson[] {
 
     // Check aliases
     for (const alias of person.aliases) {
-      if (matchesWord(textLower, alias.toLowerCase()) && !foundNames.has(person.name)) {
+      if (matchesNameOrPhrase(textLower, alias.toLowerCase())) {
         found.push(person);
         foundNames.add(person.name);
         break;
@@ -155,13 +159,17 @@ export function findPeopleInText(text: string): BiblePerson[] {
  * Find places mentioned in text
  */
 export function findPlacesInText(text: string): BiblePlace[] {
+  if (text.length < 3) return [];
+
   const found: BiblePlace[] = [];
   const textLower = text.toLowerCase();
   const foundNames = new Set<string>();
 
   for (const place of BIBLE_PLACES) {
+    if (foundNames.has(place.name)) continue;
+
     // Check main name
-    if (matchesWord(textLower, place.name.toLowerCase()) && !foundNames.has(place.name)) {
+    if (matchesNameOrPhrase(textLower, place.name.toLowerCase())) {
       found.push(place);
       foundNames.add(place.name);
       continue;
@@ -169,7 +177,7 @@ export function findPlacesInText(text: string): BiblePlace[] {
 
     // Check aliases
     for (const alias of place.aliases) {
-      if (matchesWord(textLower, alias.toLowerCase()) && !foundNames.has(place.name)) {
+      if (matchesNameOrPhrase(textLower, alias.toLowerCase())) {
         found.push(place);
         foundNames.add(place.name);
         break;
@@ -181,11 +189,12 @@ export function findPlacesInText(text: string): BiblePlace[] {
 }
 
 /**
- * Check if a word exists as a whole word in text (not part of another word)
+ * Match a name or multi-word phrase as a complete unit in text.
+ * For multi-word names (e.g. "John the Baptist", "Pontius Pilate"),
+ * matches the full phrase — not partial fragments.
  */
-function matchesWord(text: string, word: string): boolean {
-  // Use word boundary regex to match whole words only
-  const regex = new RegExp(`\\b${escapeRegex(word)}\\b`, 'i');
+function matchesNameOrPhrase(text: string, nameOrPhrase: string): boolean {
+  const regex = new RegExp(`\\b${escapeRegex(nameOrPhrase)}\\b`, 'i');
   return regex.test(text);
 }
 

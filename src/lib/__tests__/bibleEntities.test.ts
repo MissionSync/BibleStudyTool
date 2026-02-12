@@ -56,6 +56,31 @@ describe('findPeopleInText', () => {
     const result = findPeopleInText('Pilate washed his hands');
     expect(result.map((p) => p.name)).toContain('Pontius Pilate');
   });
+
+  it('"Lord" alone does NOT match Jesus (removed as too generic)', () => {
+    const result = findPeopleInText('The Lord is my shepherd');
+    const names = result.map((p) => p.name);
+    expect(names).not.toContain('Jesus');
+  });
+
+  it('"Simon" alone does NOT match Peter, but "Simon Peter" does', () => {
+    const onlySimon = findPeopleInText('Simon was a common name');
+    expect(onlySimon.map((p) => p.name)).not.toContain('Peter');
+
+    const simonPeter = findPeopleInText('Simon Peter followed Jesus');
+    expect(simonPeter.map((p) => p.name)).toContain('Peter');
+  });
+
+  it('"Israel" does NOT match Jacob (removed as ambiguous)', () => {
+    const result = findPeopleInText('The nation of Israel was strong');
+    const names = result.map((p) => p.name);
+    expect(names).not.toContain('Jacob');
+  });
+
+  it('returns empty for text shorter than 3 characters', () => {
+    expect(findPeopleInText('Jo')).toEqual([]);
+    expect(findPeopleInText('AB')).toEqual([]);
+  });
 });
 
 describe('findPlacesInText', () => {
@@ -96,5 +121,14 @@ describe('findPlacesInText', () => {
     const result = findPlacesInText('From Jerusalem, the city of Zion');
     const jerusalemResults = result.filter((p) => p.name === 'Jerusalem');
     expect(jerusalemResults).toHaveLength(1);
+  });
+
+  it('"Israel" matches as a place, not as a person alias', () => {
+    const places = findPlacesInText('The land of Israel');
+    expect(places.map((p) => p.name)).toContain('Israel');
+  });
+
+  it('returns empty for text shorter than 3 characters', () => {
+    expect(findPlacesInText('AB')).toEqual([]);
   });
 });
