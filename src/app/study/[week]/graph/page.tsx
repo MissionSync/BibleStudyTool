@@ -9,6 +9,7 @@ import { getStudyWeek } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useGraphData } from '@/hooks/useGraphData';
+import { useGraphPositions, clearPositions } from '@/hooks/useGraphPositions';
 import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import { queryKeys } from '@/lib/queryKeys';
 
@@ -26,6 +27,7 @@ export default function GraphPage({ params }: PageProps) {
   const week = getStudyWeek(weekNumber);
 
   const { data: graphData, isLoading, error: graphError } = useGraphData(user?.$id);
+  const { savePositions } = useGraphPositions(user?.$id);
   const [hasNotes, setHasNotes] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -228,6 +230,14 @@ export default function GraphPage({ params }: PageProps) {
             }}
             onNodeDoubleClick={(node) => {
               console.log('Node double-clicked:', node);
+            }}
+            onNodePositionChange={(nodes) => savePositions(nodes)}
+            onResetLayout={() => {
+              if (user) {
+                clearPositions(user.$id);
+                queryClient.invalidateQueries({ queryKey: queryKeys.graph.full(user.$id) });
+                showToast('Layout reset to default.', 'info');
+              }
             }}
           />
         )}

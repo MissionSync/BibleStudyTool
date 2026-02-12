@@ -5,6 +5,7 @@ import { getAllUserGraphNodes, parseNodeMetadata } from '@/lib/appwrite/graphNod
 import { getAllUserGraphEdges } from '@/lib/appwrite/graphEdges';
 import { queryKeys } from '@/lib/queryKeys';
 import { mapEdgeType, calculateNodePositions, fetchThemeNodes, type SimpleNode } from '@/lib/graphTransform';
+import { getSavedPositions } from '@/hooks/useGraphPositions';
 import type { Node, Edge } from 'reactflow';
 
 async function fetchFullGraphData(userId: string): Promise<{ nodes: Node[]; edges: Edge[] }> {
@@ -19,9 +20,16 @@ async function fetchFullGraphData(userId: string): Promise<{ nodes: Node[]; edge
   const dbEdges = await getAllUserGraphEdges(userId);
   const positions = calculateNodePositions(allNodesForLayout);
 
+  // Overlay saved positions from localStorage
+  let savedPositions: Record<string, { x: number; y: number }> = {};
+  if (typeof window !== 'undefined') {
+    savedPositions = getSavedPositions(userId);
+  }
+
   const graphNodesMapped: Node[] = dbNodes.map((dbNode) => {
     const metadata = parseNodeMetadata(dbNode) || {};
-    const position = positions.get(dbNode.$id) || { x: Math.random() * 600, y: Math.random() * 400 };
+    const calculated = positions.get(dbNode.$id) || { x: Math.random() * 600, y: Math.random() * 400 };
+    const position = savedPositions[dbNode.$id] || calculated;
 
     return {
       id: dbNode.$id,
@@ -37,7 +45,8 @@ async function fetchFullGraphData(userId: string): Promise<{ nodes: Node[]; edge
 
   const themeNodesMapped: Node[] = themeNodes.map((themeNode) => {
     const metadata = themeNode.metadata ? JSON.parse(themeNode.metadata) : {};
-    const position = positions.get(themeNode.$id) || { x: Math.random() * 600, y: Math.random() * 400 };
+    const calculated = positions.get(themeNode.$id) || { x: Math.random() * 600, y: Math.random() * 400 };
+    const position = savedPositions[themeNode.$id] || calculated;
 
     return {
       id: themeNode.$id,
