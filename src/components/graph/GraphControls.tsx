@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { Download } from 'lucide-react';
 
 interface GraphControlsProps {
   filteredNodeTypes: Set<string>;
@@ -10,6 +11,10 @@ interface GraphControlsProps {
   onLayoutChange: (layout: 'force' | 'hierarchical' | 'radial') => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onExportJSON?: () => void;
+  onExportCSV?: () => void;
+  onExportPNG?: () => void;
+  onResetLayout?: () => void;
 }
 
 const NODE_TYPE_CONFIG = [
@@ -28,6 +33,10 @@ export function GraphControls({
   onLayoutChange,
   searchQuery,
   onSearchChange,
+  onExportJSON,
+  onExportCSV,
+  onExportPNG,
+  onResetLayout,
 }: GraphControlsProps) {
   return (
     <div className="space-y-5 w-56">
@@ -105,6 +114,65 @@ export function GraphControls({
         </select>
       </div>
 
+      {/* Export */}
+      {(onExportJSON || onExportCSV || onExportPNG) && (
+        <div>
+          <label
+            className="block text-xs uppercase tracking-wider mb-2"
+            style={{ color: 'var(--text-tertiary)' }}
+          >
+            Export
+          </label>
+          <div className="flex gap-2">
+            {onExportJSON && (
+              <button
+                onClick={onExportJSON}
+                className="flex-1 py-1.5 text-xs transition-colors flex items-center justify-center gap-1"
+                style={{
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: '2px',
+                  background: 'none',
+                }}
+              >
+                <Download size={12} />
+                JSON
+              </button>
+            )}
+            {onExportCSV && (
+              <button
+                onClick={onExportCSV}
+                className="flex-1 py-1.5 text-xs transition-colors flex items-center justify-center gap-1"
+                style={{
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: '2px',
+                  background: 'none',
+                }}
+              >
+                <Download size={12} />
+                CSV
+              </button>
+            )}
+            {onExportPNG && (
+              <button
+                onClick={onExportPNG}
+                className="flex-1 py-1.5 text-xs transition-colors flex items-center justify-center gap-1"
+                style={{
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border-light)',
+                  borderRadius: '2px',
+                  background: 'none',
+                }}
+              >
+                <Download size={12} />
+                PNG
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Reset */}
       <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1rem' }}>
         <button
@@ -121,6 +189,19 @@ export function GraphControls({
         >
           Reset Filters
         </button>
+        {onResetLayout && (
+          <button
+            onClick={onResetLayout}
+            className="w-full py-2 text-sm transition-colors"
+            style={{
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+            }}
+          >
+            Reset Layout
+          </button>
+        )}
       </div>
     </div>
   );

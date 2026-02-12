@@ -1,7 +1,7 @@
 // components/graph/KnowledgeGraph.tsx
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -10,11 +10,14 @@ import ReactFlow, {
   MiniMap,
   useNodesState,
   useEdgesState,
+  NodeChange,
   ConnectionMode,
   Panel,
   MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { toPng } from 'html-to-image';
+import { exportGraphAsJSON, exportGraphAsCSV } from '@/lib/graphExport';
 
 import { PassageNode } from './nodes/PassageNode';
 import { NoteNode } from './nodes/NoteNode';
@@ -74,6 +77,8 @@ interface KnowledgeGraphProps {
   initialEdges: Edge[];
   onNodeClick?: (node: Node) => void;
   onNodeDoubleClick?: (node: Node) => void;
+  onNodePositionChange?: (nodes: Node[]) => void;
+  onResetLayout?: () => void;
   studyPlanId?: string;
 }
 
@@ -82,8 +87,11 @@ export function KnowledgeGraph({
   initialEdges,
   onNodeClick,
   onNodeDoubleClick,
+  onNodePositionChange,
+  onResetLayout,
   studyPlanId,
 }: KnowledgeGraphProps) {
+  const graphRef = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     initialEdges.map(edge => ({
@@ -165,12 +173,57 @@ export function KnowledgeGraph({
     };
   }, [nodes, edges, visibleNodes, visibleEdges]);
 
+  const handleNodesChange = useCallback((changes: NodeChange[]) => {
+    onNodesChange(changes);
+    // Detect drag end and notify parent
+    if (onNodePositionChange) {
+      const hasDragEnd = changes.some(
+        (c) => c.type === 'position' && 'dragging' in c && c.dragging === false
+      );
+      if (hasDragEnd) {
+        // Use setTimeout to get nodes after state update
+        setTimeout(() => {
+          setNodes((currentNodes) => {
+            onNodePositionChange(currentNodes);
+            return currentNodes;
+          });
+        }, 0);
+      }
+    }
+  }, [onNodesChange, onNodePositionChange, setNodes]);
+
+  const handleExportJSON = useCallback(() => {
+    exportGraphAsJSON(visibleNodes, visibleEdges);
+  }, [visibleNodes, visibleEdges]);
+
+  const handleExportCSV = useCallback(() => {
+    exportGraphAsCSV(visibleNodes, visibleEdges);
+  }, [visibleNodes, visibleEdges]);
+
+  const handleExportPNG = useCallback(async () => {
+    if (!graphRef.current) return;
+    try {
+      const dataUrl = await toPng(graphRef.current, {
+        backgroundColor: '#FAF9F7',
+        quality: 1,
+      });
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'graph-export.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to export PNG:', err);
+    }
+  }, []);
+
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative" ref={graphRef}>
       <ReactFlow
         nodes={visibleNodes}
         edges={visibleEdges}
-        onNodesChange={onNodesChange}
+        onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={handleNodeClick}
         onNodeDoubleClick={handleNodeDoubleClick}
@@ -216,6 +269,10 @@ export function KnowledgeGraph({
               onLayoutChange={setLayoutAlgorithm}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
+              onExportJSON={handleExportJSON}
+              onExportCSV={handleExportCSV}
+              onExportPNG={handleExportPNG}
+              onResetLayout={onResetLayout}
             />
           </div>
         </Panel>
