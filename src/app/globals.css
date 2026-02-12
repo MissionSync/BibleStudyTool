@@ -470,6 +470,21 @@ button {
   }
 }
 
+/* Loading skeleton */
+.skeleton {
+  background-color: var(--bg-tertiary);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    background-color: var(--bg-tertiary);
+  }
+  50% {
+    background-color: var(--bg-secondary);
+  }
+}
+
 /* Graph-specific overrides for ReactFlow */
 .react-flow__node {
   font-family: var(--font-sans);

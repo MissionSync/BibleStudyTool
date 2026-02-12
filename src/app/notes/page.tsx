@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
 
 export default function NotesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -326,9 +327,11 @@ export default function NotesPage() {
 
         {/* Notes List */}
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="spinner mx-auto mb-4" />
-            <p style={{ color: 'var(--text-secondary)' }}>Loading notes...</p>
+          <div className="space-y-1">
+            <NoteCardSkeleton />
+            <NoteCardSkeleton />
+            <NoteCardSkeleton />
+            <NoteCardSkeleton />
           </div>
         ) : filteredNotes.length === 0 ? (
           <div

@@ -12,6 +12,7 @@ import { useGraphData } from '@/hooks/useGraphData';
 import { useGraphPositions, clearPositions } from '@/hooks/useGraphPositions';
 import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import { queryKeys } from '@/lib/queryKeys';
+import { GraphSkeleton } from '@/components/ui/GraphSkeleton';
 
 interface PageProps {
   params: Promise<{ week: string }>;
@@ -163,15 +164,7 @@ export default function GraphPage({ params }: PageProps) {
       {/* Graph Container */}
       <div className="flex-1 relative min-h-0">
         {isLoading ? (
-          <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ backgroundColor: 'var(--bg-secondary)' }}
-          >
-            <div className="text-center">
-              <div className="spinner mx-auto mb-4" />
-              <p style={{ color: 'var(--text-secondary)' }}>Loading knowledge graph...</p>
-            </div>
-          </div>
+          <GraphSkeleton />
         ) : !graphData || graphData.nodes.length === 0 ? (
           <div
             className="absolute inset-0 flex items-center justify-center"
