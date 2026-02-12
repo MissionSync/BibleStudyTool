@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
+import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
 
 const crimsonPro = Crimson_Pro({
   variable: "--font-crimson",
@@ -47,10 +48,12 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>
-              <ToastProvider>
-                <OfflineBanner />
-                {children}
-              </ToastProvider>
+              <RealtimeProvider>
+                <ToastProvider>
+                  <OfflineBanner />
+                  {children}
+                </ToastProvider>
+              </RealtimeProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryProvider>
