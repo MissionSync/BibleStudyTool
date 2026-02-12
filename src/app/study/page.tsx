@@ -3,13 +3,17 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { STUDY_PLAN, getCompletionPercentage } from '@/data/studyPlan';
+import { STUDY_PLAN } from '@/data/studyPlan';
+import { Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 export default function StudyPlanPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const currentWeek = 1;
+  const { currentWeek, isWeekCompleted, completedWeeks } = useStudyProgress();
+  const progressPercentage = Math.round((completedWeeks.length / 38) * 100);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -57,6 +61,7 @@ export default function StudyPlanPage() {
           >
             Notes
           </Link>
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -91,10 +96,10 @@ export default function StudyPlanPage() {
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Week {currentWeek} of 38
+              {completedWeeks.length} of 38 weeks completed
             </span>
             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              {getCompletionPercentage(currentWeek)}% complete
+              {progressPercentage}% complete
             </span>
           </div>
           <div
@@ -104,7 +109,7 @@ export default function StudyPlanPage() {
             <div
               className="h-1 transition-all"
               style={{
-                width: `${getCompletionPercentage(currentWeek)}%`,
+                width: `${progressPercentage}%`,
                 backgroundColor: 'var(--accent)',
                 borderRadius: '2px',
               }}
@@ -118,6 +123,7 @@ export default function StudyPlanPage() {
         <div className="space-y-1">
           {STUDY_PLAN.map((week) => {
             const isCurrent = week.week === currentWeek;
+            const isCompleted = isWeekCompleted(week.week);
 
             return (
               <Link
@@ -132,13 +138,16 @@ export default function StudyPlanPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
+                      {isCompleted && (
+                        <Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                      )}
                       <span
                         className="text-xs uppercase tracking-wider"
                         style={{ color: 'var(--text-tertiary)' }}
                       >
                         Week {week.week}
                       </span>
-                      {isCurrent && (
+                      {isCurrent && !isCompleted && (
                         <span
                           className="text-xs px-2 py-0.5"
                           style={{

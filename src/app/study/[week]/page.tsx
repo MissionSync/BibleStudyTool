@@ -3,8 +3,11 @@
 import { use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Check } from 'lucide-react';
 import { getStudyWeek } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
+import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 interface PageProps {
   params: Promise<{ week: string }>;
@@ -12,6 +15,8 @@ interface PageProps {
 
 export default function WeekDetailPage({ params }: PageProps) {
   const { user, loading } = useAuth();
+  const { showToast } = useToast();
+  const { isWeekCompleted, markWeekComplete, unmarkWeekComplete } = useStudyProgress();
   const router = useRouter();
   const resolvedParams = use(params);
   const weekNumber = parseInt(resolvedParams.week);
@@ -148,6 +153,29 @@ export default function WeekDetailPage({ params }: PageProps) {
             >
               Create Note
             </Link>
+            {isWeekCompleted(weekNumber) ? (
+              <button
+                onClick={() => {
+                  unmarkWeekComplete(weekNumber);
+                  showToast('Week marked as incomplete.', 'info');
+                }}
+                className="btn-secondary text-center"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+              >
+                <Check size={16} />
+                Completed
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  markWeekComplete(weekNumber);
+                  showToast('Week marked as complete!', 'success');
+                }}
+                className="btn-secondary text-center"
+              >
+                Mark as Complete
+              </button>
+            )}
           </div>
         </section>
 

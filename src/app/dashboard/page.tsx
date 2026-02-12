@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { getStudyWeek, STUDY_PLAN } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -39,7 +41,7 @@ export default function DashboardPage() {
     return null;
   }
 
-  const currentWeekNumber = 1;
+  const { currentWeek: currentWeekNumber } = useStudyProgress();
   const currentWeek = getStudyWeek(currentWeekNumber) || STUDY_PLAN[0];
 
   return (
@@ -71,6 +73,7 @@ export default function DashboardPage() {
           >
             Notes
           </Link>
+          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="text-sm transition-colors"
