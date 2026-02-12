@@ -1,0 +1,23 @@
+{
+  "name": "Bible Notes Journal",
+  "short_name": "Bible Notes",
+  "description": "A contemplative space for Scripture study and personal reflection",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "theme_color": "#7C9082",
+  "background_color": "#FAF9F7",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

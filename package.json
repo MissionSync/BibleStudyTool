@@ -4,16 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
     "seed:1john": "tsx src/scripts/seedOneJohn.ts",
     "clear:graph": "tsx src/scripts/clearGraphData.ts",
-    "analyze": "ANALYZE=true next build"
+    "analyze": "ANALYZE=true next build --webpack"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@tanstack/react-query": "^5.90.21",
     "@tiptap/react": "^3.13.0",
     "@tiptap/starter-kit": "^3.13.0",

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Crimson_Pro, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
@@ -23,6 +23,16 @@ const sourceSans = Source_Sans_3({
 export const metadata: Metadata = {
   title: "Bible Notes Journal",
   description: "A contemplative space for Scripture study and personal reflection",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Bible Notes",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7C9082",
 };
 
 export default function RootLayout({
