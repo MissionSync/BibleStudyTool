@@ -109,7 +109,7 @@ export default function DashboardPage() {
           }}
         >
           <p className="text-xs uppercase tracking-wider mb-3" style={{ color: 'var(--text-tertiary)' }}>
-            Week {currentWeek.week} of 38
+            Week {currentWeek.week} of {STUDY_PLAN.length}
           </p>
           <h2
             className="text-2xl mb-3"
@@ -121,10 +121,10 @@ export default function DashboardPage() {
             {currentWeek.reading}
           </p>
           <div className="flex gap-3">
-            <Link href={`/study/${currentWeek.week}`} className="btn-primary text-sm">
+            <Link href={`/study/nt/${currentWeek.week}`} className="btn-primary text-sm">
               Begin Reading
             </Link>
-            <Link href={`/study/${currentWeek.week}/graph`} className="btn-secondary text-sm">
+            <Link href={`/study/nt/${currentWeek.week}/graph`} className="btn-secondary text-sm">
               View Graph
             </Link>
           </div>
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                     Study Plans
                   </h4>
                   <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    38 weeks through the New Testament
+                    Multiple plans for deeper study
                   </p>
                 </div>
                 <span style={{ color: 'var(--text-tertiary)' }}>&rarr;</span>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link
-              href="/study/1/graph"
+              href="/study/nt/1/graph"
               className="block p-5 transition-colors"
               style={{
                 border: '1px solid var(--border-light)',

@@ -4,23 +4,27 @@ import { use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
-import { getStudyWeek } from '@/data/studyPlan';
+import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 interface PageProps {
-  params: Promise<{ week: string }>;
+  params: Promise<{ planId: string; week: string }>;
 }
 
 export default function WeekDetailPage({ params }: PageProps) {
   const { user, loading } = useAuth();
   const { showToast } = useToast();
-  const { isWeekCompleted, markWeekComplete, unmarkWeekComplete } = useStudyProgress();
   const router = useRouter();
-  const resolvedParams = use(params);
-  const weekNumber = parseInt(resolvedParams.week);
-  const week = getStudyWeek(weekNumber);
+  const { planId, week: weekParam } = use(params);
+  const plan = getStudyPlan(planId);
+  const weekNumber = parseInt(weekParam);
+  const week = plan?.weeks.find((w) => w.week === weekNumber);
+  const { isWeekCompleted, markWeekComplete, unmarkWeekComplete } = useStudyProgress(
+    planId,
+    plan?.totalWeeks ?? 1
+  );
 
   useEffect(() => {
     if (!loading && !user) {
@@ -40,7 +44,7 @@ export default function WeekDetailPage({ params }: PageProps) {
     return null;
   }
 
-  if (!week) {
+  if (!plan || !week) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="text-center">
@@ -51,15 +55,15 @@ export default function WeekDetailPage({ params }: PageProps) {
             Week not found
           </h1>
           <Link href="/study" style={{ color: 'var(--accent)' }}>
-            Back to Study Plan
+            Back to Study Plans
           </Link>
         </div>
       </div>
     );
   }
 
-  const prevWeek = weekNumber > 1 ? getStudyWeek(weekNumber - 1) : null;
-  const nextWeek = weekNumber < 38 ? getStudyWeek(weekNumber + 1) : null;
+  const prevWeek = weekNumber > 1 ? plan.weeks.find((w) => w.week === weekNumber - 1) : null;
+  const nextWeek = weekNumber < plan.totalWeeks ? plan.weeks.find((w) => w.week === weekNumber + 1) : null;
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -97,7 +101,7 @@ export default function WeekDetailPage({ params }: PageProps) {
       <main className="content-narrow py-12">
         {/* Back */}
         <Link
-          href="/study"
+          href={`/study/${planId}`}
           className="inline-block mb-8 text-sm transition-colors"
           style={{ color: 'var(--text-secondary)' }}
         >
@@ -110,7 +114,7 @@ export default function WeekDetailPage({ params }: PageProps) {
             className="text-xs uppercase tracking-wider mb-3"
             style={{ color: 'var(--text-tertiary)' }}
           >
-            Week {week.week} of 38
+            Week {week.week} of {plan.totalWeeks}
           </p>
           <h1
             className="text-3xl md:text-4xl mb-4"
@@ -142,7 +146,7 @@ export default function WeekDetailPage({ params }: PageProps) {
         <section className="mb-12">
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href={`/study/${week.week}/graph`}
+              href={`/study/${planId}/${week.week}/graph`}
               className="btn-primary text-center"
             >
               View Knowledge Graph
@@ -207,7 +211,7 @@ export default function WeekDetailPage({ params }: PageProps) {
           <div className="flex justify-between">
             {prevWeek ? (
               <Link
-                href={`/study/${prevWeek.week}`}
+                href={`/study/${planId}/${prevWeek.week}`}
                 className="text-sm transition-colors"
                 style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
               >
@@ -220,7 +224,7 @@ export default function WeekDetailPage({ params }: PageProps) {
 
             {nextWeek ? (
               <Link
-                href={`/study/${nextWeek.week}`}
+                href={`/study/${planId}/${nextWeek.week}`}
                 className="text-sm transition-colors"
                 style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
               >

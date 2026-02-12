@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useQueryClient } from '@tanstack/react-query';
-import { getStudyWeek } from '@/data/studyPlan';
+import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useGraphData } from '@/hooks/useGraphData';
@@ -20,7 +20,7 @@ const KnowledgeGraph = dynamic(
 );
 
 interface PageProps {
-  params: Promise<{ week: string }>;
+  params: Promise<{ planId: string; week: string }>;
 }
 
 export default function GraphPage({ params }: PageProps) {
@@ -28,9 +28,10 @@ export default function GraphPage({ params }: PageProps) {
   const { showToast } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const resolvedParams = use(params);
-  const weekNumber = parseInt(resolvedParams.week);
-  const week = getStudyWeek(weekNumber);
+  const { planId, week: weekParam } = use(params);
+  const plan = getStudyPlan(planId);
+  const weekNumber = parseInt(weekParam);
+  const week = plan?.weeks.find((w) => w.week === weekNumber);
 
   const { data: graphData, isLoading, error: graphError } = useGraphData(user?.$id);
   const { savePositions } = useGraphPositions(user?.$id);
@@ -96,7 +97,7 @@ export default function GraphPage({ params }: PageProps) {
     return null;
   }
 
-  if (!week) {
+  if (!plan || !week) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="text-center">
@@ -107,7 +108,7 @@ export default function GraphPage({ params }: PageProps) {
             Week not found
           </h1>
           <Link href="/study" style={{ color: 'var(--accent)' }}>
-            Back to Study Plan
+            Back to Study Plans
           </Link>
         </div>
       </div>
@@ -124,7 +125,7 @@ export default function GraphPage({ params }: PageProps) {
         <div className="flex items-center justify-between" style={{ maxWidth: 'var(--content-wide)', margin: '0 auto' }}>
           <div className="flex items-center gap-6">
             <Link
-              href={`/study/${weekNumber}`}
+              href={`/study/${planId}/${weekNumber}`}
               className="text-sm transition-colors"
               style={{ color: 'var(--text-secondary)' }}
             >
@@ -144,7 +145,7 @@ export default function GraphPage({ params }: PageProps) {
           </div>
 
           <Link
-            href="/study"
+            href={`/study/${planId}`}
             className="text-sm transition-colors"
             style={{ color: 'var(--text-secondary)' }}
           >
@@ -222,7 +223,7 @@ export default function GraphPage({ params }: PageProps) {
           <KnowledgeGraph
             initialNodes={graphData.nodes}
             initialEdges={graphData.edges}
-            studyPlanId={weekNumber.toString()}
+            studyPlanId={`${planId}-${weekNumber}`}
             onNodeClick={(node) => {
               console.log('Node clicked:', node);
             }}
