@@ -110,6 +110,38 @@ export async function deleteGraphNode(nodeId: string): Promise<void> {
 }
 
 /**
+ * Get ALL graph nodes for a user (paginated loop)
+ */
+export async function getAllUserGraphNodes(userId: string): Promise<GraphNode[]> {
+  const PAGE_SIZE = 100;
+  const allNodes: GraphNode[] = [];
+  let cursor: string | undefined;
+
+  while (true) {
+    const queries = [
+      Query.equal('userId', userId),
+      Query.limit(PAGE_SIZE),
+    ];
+    if (cursor) {
+      queries.push(Query.cursorAfter(cursor));
+    }
+
+    const response = await databases.listDocuments<GraphNode>(
+      DATABASE_ID,
+      COLLECTIONS.GRAPH_NODES,
+      queries
+    );
+
+    allNodes.push(...response.documents);
+
+    if (response.documents.length < PAGE_SIZE) break;
+    cursor = response.documents[response.documents.length - 1].$id;
+  }
+
+  return allNodes;
+}
+
+/**
  * Parse metadata JSON string
  */
 export function parseNodeMetadata(node: GraphNode): NodeMetadata | null {

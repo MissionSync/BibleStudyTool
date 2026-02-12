@@ -129,6 +129,51 @@ export async function deleteNote(noteId: string): Promise<void> {
   );
 }
 
+export interface PaginatedNotesResult {
+  notes: Note[];
+  hasMore: boolean;
+  lastId: string | undefined;
+  total: number;
+}
+
+/**
+ * Get paginated notes for a user
+ */
+export async function getUserNotesPaginated(
+  userId: string,
+  options: { limit?: number; cursor?: string; includeArchived?: boolean } = {}
+): Promise<PaginatedNotesResult> {
+  const { limit = 20, cursor, includeArchived = false } = options;
+
+  const queries = [
+    Query.equal('userId', userId),
+    Query.orderDesc('$createdAt'),
+    Query.limit(limit),
+  ];
+
+  if (!includeArchived) {
+    queries.push(Query.equal('isArchived', false));
+  }
+
+  if (cursor) {
+    queries.push(Query.cursorAfter(cursor));
+  }
+
+  const response = await databases.listDocuments<Note>(
+    DATABASE_ID,
+    COLLECTIONS.NOTES,
+    queries
+  );
+
+  const notes = response.documents;
+  return {
+    notes,
+    hasMore: notes.length === limit,
+    lastId: notes.length > 0 ? notes[notes.length - 1].$id : undefined,
+    total: response.total,
+  };
+}
+
 /**
  * Search notes by content or title
  */

@@ -118,6 +118,38 @@ export async function deleteGraphEdge(edgeId: string): Promise<void> {
 }
 
 /**
+ * Get ALL graph edges for a user (paginated loop)
+ */
+export async function getAllUserGraphEdges(userId: string): Promise<GraphEdge[]> {
+  const PAGE_SIZE = 100;
+  const allEdges: GraphEdge[] = [];
+  let cursor: string | undefined;
+
+  while (true) {
+    const queries = [
+      Query.equal('userId', userId),
+      Query.limit(PAGE_SIZE),
+    ];
+    if (cursor) {
+      queries.push(Query.cursorAfter(cursor));
+    }
+
+    const response = await databases.listDocuments<GraphEdge>(
+      DATABASE_ID,
+      COLLECTIONS.GRAPH_EDGES,
+      queries
+    );
+
+    allEdges.push(...response.documents);
+
+    if (response.documents.length < PAGE_SIZE) break;
+    cursor = response.documents[response.documents.length - 1].$id;
+  }
+
+  return allEdges;
+}
+
+/**
  * Check if an edge already exists between two nodes
  */
 export async function edgeExists(

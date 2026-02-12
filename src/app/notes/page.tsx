@@ -4,47 +4,26 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { NoteEditor } from '@/components/notes/NoteEditor';
-import { createNote, getUserNotes, deleteNote, updateNote, type Note } from '@/lib/appwrite/notes';
+import { type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useNotes } from '@/hooks/useNotes';
 
 export default function NotesPage() {
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { notes, isLoading, error: loadError, hasNextPage, fetchNextPage, isFetchingNextPage, createNote, updateNote, deleteNote } = useNotes(user?.$id);
   const [isCreating, setIsCreating] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/auth/login');
     }
   }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      loadNotes();
-    }
-  }, [user]);
-
-  const loadNotes = async () => {
-    if (!user) return;
-    try {
-      setLoading(true);
-      setError(null);
-      const fetchedNotes = await getUserNotes(user.$id);
-      setNotes(fetchedNotes);
-    } catch (err) {
-      console.error('Error loading notes:', err);
-      setError('Unable to load notes. Please ensure you are connected to Appwrite.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSaveNote = async (noteData: {
     title: string;
@@ -53,20 +32,22 @@ export default function NotesPage() {
     references: string[];
   }) => {
     try {
-      setError(null);
+      setSaveError(null);
 
       if (editingNote) {
-        const updated = await updateNote(editingNote.$id, {
-          title: noteData.title,
-          content: noteData.content,
-          contentPlan: noteData.content.replace(/<[^>]*>/g, ''),
-          bibleReferences: noteData.references,
-          tags: noteData.tags,
+        await updateNote.mutateAsync({
+          noteId: editingNote.$id,
+          data: {
+            title: noteData.title,
+            content: noteData.content,
+            contentPlan: noteData.content.replace(/<[^>]*>/g, ''),
+            bibleReferences: noteData.references,
+            tags: noteData.tags,
+          },
         });
-        setNotes(notes.map(n => n.$id === updated.$id ? updated : n));
         showToast('Note updated.', 'success');
       } else if (user) {
-        const newNote = await createNote({
+        await createNote.mutateAsync({
           title: noteData.title,
           content: noteData.content,
           contentPlan: noteData.content.replace(/<[^>]*>/g, ''),
@@ -75,8 +56,6 @@ export default function NotesPage() {
           tags: noteData.tags,
           isArchived: false,
         });
-
-        setNotes([newNote, ...notes]);
         showToast('Note created.', 'success');
       }
 
@@ -84,7 +63,7 @@ export default function NotesPage() {
       setEditingNote(null);
     } catch (err) {
       console.error('Error saving note:', err);
-      setError('Failed to save note. Please try again.');
+      setSaveError('Failed to save note. Please try again.');
       throw err;
     }
   };
@@ -95,13 +74,10 @@ export default function NotesPage() {
     }
 
     try {
-      setError(null);
-      await deleteNote(noteId);
-      setNotes(notes.filter(note => note.$id !== noteId));
+      await deleteNote.mutateAsync(noteId);
       showToast('Note deleted.', 'success');
     } catch (err) {
       console.error('Error deleting note:', err);
-      setError('Failed to delete note. Please try again.');
       showToast('Failed to delete note.', 'error');
     }
   };
@@ -190,12 +166,14 @@ export default function NotesPage() {
               setIsCreating(false);
               setEditingNote(null);
             }}
-            error={error}
+            error={saveError}
           />
         </main>
       </div>
     );
   }
+
+  const errorMessage = loadError ? 'Unable to load notes. Please ensure you are connected to Appwrite.' : null;
 
   // Notes List View
   return (
@@ -263,7 +241,7 @@ export default function NotesPage() {
 
       <main className="content-narrow pb-16">
         {/* Error */}
-        {error && (
+        {errorMessage && (
           <div
             className="mb-6 p-4"
             style={{
@@ -272,7 +250,7 @@ export default function NotesPage() {
               borderRadius: '2px',
             }}
           >
-            <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
+            <p className="text-sm" style={{ color: 'var(--error)' }}>{errorMessage}</p>
           </div>
         )}
 
@@ -289,7 +267,7 @@ export default function NotesPage() {
         </div>
 
         {/* Notes List */}
-        {loading ? (
+        {isLoading ? (
           <div className="text-center py-12">
             <div className="spinner mx-auto mb-4" />
             <p style={{ color: 'var(--text-secondary)' }}>Loading notes...</p>
@@ -421,6 +399,19 @@ export default function NotesPage() {
                 </div>
               </div>
             ))}
+
+            {/* Load More */}
+            {hasNextPage && !searchQuery && (
+              <div className="text-center py-8">
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  className="btn-secondary text-sm"
+                >
+                  {isFetchingNextPage ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>

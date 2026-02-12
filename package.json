@@ -11,6 +11,7 @@
     "clear:graph": "tsx src/scripts/clearGraphData.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.21",
     "@tiptap/react": "^3.13.0",
     "@tiptap/starter-kit": "^3.13.0",
     "appwrite": "^21.5.0",
