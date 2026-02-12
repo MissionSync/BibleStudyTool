@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import { NoteEditor } from '@/components/notes/NoteEditor';
 import { createNote, getUserNotes, deleteNote, updateNote, type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function NotesPage() {
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -62,6 +64,7 @@ export default function NotesPage() {
           tags: noteData.tags,
         });
         setNotes(notes.map(n => n.$id === updated.$id ? updated : n));
+        showToast('Note updated.', 'success');
       } else if (user) {
         const newNote = await createNote({
           title: noteData.title,
@@ -74,6 +77,7 @@ export default function NotesPage() {
         });
 
         setNotes([newNote, ...notes]);
+        showToast('Note created.', 'success');
       }
 
       setIsCreating(false);
@@ -81,6 +85,7 @@ export default function NotesPage() {
     } catch (err) {
       console.error('Error saving note:', err);
       setError('Failed to save note. Please try again.');
+      throw err;
     }
   };
 
@@ -93,9 +98,11 @@ export default function NotesPage() {
       setError(null);
       await deleteNote(noteId);
       setNotes(notes.filter(note => note.$id !== noteId));
+      showToast('Note deleted.', 'success');
     } catch (err) {
       console.error('Error deleting note:', err);
       setError('Failed to delete note. Please try again.');
+      showToast('Failed to delete note.', 'error');
     }
   };
 
@@ -183,6 +190,7 @@ export default function NotesPage() {
               setIsCreating(false);
               setEditingNote(null);
             }}
+            error={error}
           />
         </main>
       </div>

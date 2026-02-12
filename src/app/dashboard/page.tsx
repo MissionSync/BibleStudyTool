@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getStudyWeek, STUDY_PLAN } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,7 +19,11 @@ export default function DashboardPage() {
   }, [user, loading, router]);
 
   const handleLogout = async () => {
-    await logout();
+    try {
+      await logout();
+    } catch {
+      showToast('Signed out locally, but network call failed.', 'info');
+    }
     router.push('/');
   };
 

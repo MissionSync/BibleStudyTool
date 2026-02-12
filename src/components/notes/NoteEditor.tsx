@@ -4,6 +4,8 @@
 import React, { useState, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { validateNoteTitle } from '@/lib/validation';
+import { FieldError } from '@/components/ui/FieldError';
 
 interface NoteEditorProps {
   initialTitle?: string;
@@ -17,6 +19,7 @@ interface NoteEditorProps {
     references: string[];
   }) => Promise<void>;
   onCancel?: () => void;
+  error?: string | null;
 }
 
 export function NoteEditor({
@@ -26,8 +29,10 @@ export function NoteEditor({
   initialReferences = [],
   onSave,
   onCancel,
+  error: parentError,
 }: NoteEditorProps) {
   const [title, setTitle] = useState(initialTitle);
+  const [titleError, setTitleError] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>(initialTags);
   const [tagInput, setTagInput] = useState('');
   const [references, setReferences] = useState<string[]>(initialReferences);
@@ -89,9 +94,20 @@ export function NoteEditor({
     setReferences(references.filter(ref => ref !== refToRemove));
   }, [references]);
 
-  const handleSave = useCallback(async () => {
-    if (!title.trim() || !editor) return;
+  const handleTitleBlur = useCallback(() => {
+    const result = validateNoteTitle(title);
+    setTitleError(result.valid ? null : result.message ?? null);
+  }, [title]);
 
+  const handleSave = useCallback(async () => {
+    const validation = validateNoteTitle(title);
+    if (!validation.valid) {
+      setTitleError(validation.message ?? null);
+      return;
+    }
+    if (!editor) return;
+
+    setTitleError(null);
     setIsSaving(true);
     try {
       const content = editor.getHTML();
@@ -119,32 +135,57 @@ export function NoteEditor({
         borderRadius: '4px',
       }}
     >
+      {/* Parent error */}
+      {parentError && (
+        <div
+          className="p-4 m-6 mb-0"
+          style={{
+            backgroundColor: 'var(--highlight-peach)',
+            border: '1px solid var(--border-light)',
+            borderRadius: '2px',
+          }}
+        >
+          <p className="text-sm" style={{ color: 'var(--error)' }}>{parentError}</p>
+        </div>
+      )}
+
       {/* Title */}
       <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
-        <label
-          htmlFor="note-title"
-          className="block text-xs uppercase tracking-wider mb-2"
-          style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
-        >
-          Title
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label
+            htmlFor="note-title"
+            className="block text-xs uppercase tracking-wider"
+            style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
+          >
+            Title
+          </label>
+          <span className="text-xs" style={{ color: title.length > 200 ? 'var(--error)' : 'var(--text-tertiary)' }}>
+            {title.length}/200
+          </span>
+        </div>
         <input
           id="note-title"
           type="text"
           placeholder="Enter your note title..."
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (titleError) setTitleError(null);
+          }}
+          onBlur={handleTitleBlur}
+          maxLength={200}
           className="w-full"
           style={{
             fontFamily: 'var(--font-serif)',
             fontSize: '1.25rem',
-            border: '1px solid var(--border-light)',
+            border: `1px solid ${titleError ? 'var(--error)' : 'var(--border-light)'}`,
             borderRadius: '4px',
             padding: '0.75rem 1rem',
             backgroundColor: 'var(--bg-primary)',
             color: 'var(--text-primary)',
           }}
         />
+        <FieldError message={titleError} />
       </div>
 
       {/* Toolbar */}

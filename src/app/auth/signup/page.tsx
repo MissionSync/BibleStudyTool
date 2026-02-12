@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { signUp } from '@/lib/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { validateName, validateEmail, validatePassword, validatePasswordMatch, getPasswordStrength } from '@/lib/validation';
+import { FieldError } from '@/components/ui/FieldError';
 
 export default function SignupPage() {
   const { user, loading: authLoading, refreshUser } = useAuth();
@@ -15,8 +17,9 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<{ form?: string; name?: string; email?: string; password?: string; confirmPassword?: string }>({});
   const [loading, setLoading] = useState(false);
+  const passwordStrength = getPasswordStrength(password);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -36,17 +39,47 @@ export default function SignupPage() {
     return null;
   }
 
+  const validateField = (field: string) => {
+    switch (field) {
+      case 'name': {
+        const result = validateName(name);
+        setErrors(prev => ({ ...prev, name: result.valid ? undefined : result.message }));
+        break;
+      }
+      case 'email': {
+        const result = validateEmail(email);
+        setErrors(prev => ({ ...prev, email: result.valid ? undefined : result.message }));
+        break;
+      }
+      case 'password': {
+        const result = validatePassword(password);
+        setErrors(prev => ({ ...prev, password: result.valid ? undefined : result.message }));
+        break;
+      }
+      case 'confirmPassword': {
+        const result = validatePasswordMatch(password, confirmPassword);
+        setErrors(prev => ({ ...prev, confirmPassword: result.valid ? undefined : result.message }));
+        break;
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setErrors({});
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    const nameResult = validateName(name);
+    const emailResult = validateEmail(email);
+    const passwordResult = validatePassword(password);
+    const matchResult = validatePasswordMatch(password, confirmPassword);
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+    if (!nameResult.valid || !emailResult.valid || !passwordResult.valid || !matchResult.valid) {
+      setErrors({
+        name: nameResult.valid ? undefined : nameResult.message,
+        email: emailResult.valid ? undefined : emailResult.message,
+        password: passwordResult.valid ? undefined : passwordResult.message,
+        confirmPassword: matchResult.valid ? undefined : matchResult.message,
+      });
       return;
     }
 
@@ -59,7 +92,7 @@ export default function SignupPage() {
       router.push('/dashboard');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to create account. Please try again.';
-      setError(message);
+      setErrors({ form: message });
     } finally {
       setLoading(false);
     }
@@ -91,7 +124,7 @@ export default function SignupPage() {
         </div>
 
         {/* Error */}
-        {error && (
+        {errors.form && (
           <div
             className="mb-6 p-4"
             style={{
@@ -100,7 +133,7 @@ export default function SignupPage() {
               borderRadius: '2px',
             }}
           >
-            <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
+            <p className="text-sm" style={{ color: 'var(--error)' }}>{errors.form}</p>
           </div>
         )}
 
@@ -119,11 +152,13 @@ export default function SignupPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onBlur={() => validateField('name')}
               required
               autoComplete="name"
               className="w-full"
               style={{ height: '3rem' }}
             />
+            <FieldError message={errors.name} />
           </div>
 
           <div className="mb-5">
@@ -139,11 +174,13 @@ export default function SignupPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => validateField('email')}
               required
               autoComplete="email"
               className="w-full"
               style={{ height: '3rem' }}
             />
+            <FieldError message={errors.email} />
           </div>
 
           <div className="mb-5">
@@ -159,15 +196,29 @@ export default function SignupPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => validateField('password')}
               required
-              minLength={8}
               autoComplete="new-password"
               className="w-full"
               style={{ height: '3rem' }}
             />
-            <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-              At least 8 characters
-            </p>
+            <FieldError message={errors.password} />
+            <div className="mt-2 space-y-1">
+              {[
+                { met: passwordStrength.hasMinLength, label: 'At least 8 characters' },
+                { met: passwordStrength.hasUppercase, label: 'Uppercase letter' },
+                { met: passwordStrength.hasLowercase, label: 'Lowercase letter' },
+                { met: passwordStrength.hasNumber, label: 'Number' },
+              ].map(({ met, label }) => (
+                <p
+                  key={label}
+                  className="text-xs"
+                  style={{ color: met ? 'var(--accent)' : 'var(--text-tertiary)' }}
+                >
+                  {met ? '\u2713' : '\u2022'} {label}
+                </p>
+              ))}
+            </div>
           </div>
 
           <div className="mb-8">
@@ -183,11 +234,13 @@ export default function SignupPage() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onBlur={() => validateField('confirmPassword')}
               required
               autoComplete="new-password"
               className="w-full"
               style={{ height: '3rem' }}
             />
+            <FieldError message={errors.confirmPassword} />
           </div>
 
           <button

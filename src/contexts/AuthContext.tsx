@@ -32,9 +32,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await logoutUser();
-      setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setUser(null);
     }
   };
 

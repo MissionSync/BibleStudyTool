@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
+import { validateEmail } from '@/lib/validation';
+import { FieldError } from '@/components/ui/FieldError';
 
 export default function LoginPage() {
   const { user, loading: authLoading, refreshUser } = useAuth();
@@ -13,7 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<{ form?: string; email?: string }>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setErrors({});
+
+    const emailResult = validateEmail(email);
+    if (!emailResult.valid) {
+      setErrors({ email: emailResult.message });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -46,7 +55,7 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to sign in. Please check your credentials.';
-      setError(message);
+      setErrors({ form: message });
     } finally {
       setLoading(false);
     }
@@ -78,7 +87,7 @@ export default function LoginPage() {
         </div>
 
         {/* Error */}
-        {error && (
+        {errors.form && (
           <div
             className="mb-6 p-4"
             style={{
@@ -87,7 +96,7 @@ export default function LoginPage() {
               borderRadius: '2px',
             }}
           >
-            <p className="text-sm" style={{ color: 'var(--error)' }}>{error}</p>
+            <p className="text-sm" style={{ color: 'var(--error)' }}>{errors.form}</p>
           </div>
         )}
 
@@ -106,11 +115,16 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => {
+                const result = validateEmail(email);
+                setErrors(prev => ({ ...prev, email: result.valid ? undefined : result.message }));
+              }}
               required
               autoComplete="email"
               className="w-full"
               style={{ height: '3rem' }}
             />
+            <FieldError message={errors.email} />
           </div>
 
           <div className="mb-8">

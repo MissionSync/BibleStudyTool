@@ -10,6 +10,7 @@ import { getUserGraphEdges } from '@/lib/appwrite/graphEdges';
 import { databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import type { Node, Edge } from 'reactflow';
 
@@ -196,6 +197,7 @@ interface PageProps {
 
 export default function GraphPage({ params }: PageProps) {
   const { user, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const resolvedParams = use(params);
   const weekNumber = parseInt(resolvedParams.week);
@@ -203,6 +205,7 @@ export default function GraphPage({ params }: PageProps) {
 
   const [graphData, setGraphData] = useState<{ nodes: Node[], edges: Edge[] } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [hasNotes, setHasNotes] = useState(false);
   const [generating, setGenerating] = useState(false);
 
@@ -217,6 +220,7 @@ export default function GraphPage({ params }: PageProps) {
       if (!user) return;
 
       setLoading(true);
+      setError(null);
       try {
         const data = await fetchGraphData(user.$id);
         setGraphData(data);
@@ -224,9 +228,11 @@ export default function GraphPage({ params }: PageProps) {
         // Check if user has notes (for empty state messaging)
         const notesExist = await userHasNotes(user.$id);
         setHasNotes(notesExist);
-      } catch (error) {
-        console.error('Failed to load graph data:', error);
+      } catch (err) {
+        console.error('Failed to load graph data:', err);
         setGraphData({ nodes: [], edges: [] });
+        setError('Failed to load graph data.');
+        showToast('Failed to load graph data.', 'error');
       } finally {
         setLoading(false);
       }
@@ -241,13 +247,17 @@ export default function GraphPage({ params }: PageProps) {
     if (!user || generating) return;
 
     setGenerating(true);
+    setError(null);
     try {
       await generateGraphFromNotes(user.$id);
       // Reload graph data after generation
       const data = await fetchGraphData(user.$id);
       setGraphData(data);
-    } catch (error) {
-      console.error('Failed to generate graph:', error);
+      showToast('Knowledge graph generated.', 'success');
+    } catch (err) {
+      console.error('Failed to generate graph:', err);
+      setError('Failed to generate graph.');
+      showToast('Failed to generate graph.', 'error');
     } finally {
       setGenerating(false);
     }
@@ -321,6 +331,19 @@ export default function GraphPage({ params }: PageProps) {
           </Link>
         </div>
       </header>
+
+      {/* Error Banner */}
+      {error && (
+        <div
+          className="flex-shrink-0 px-6 py-3"
+          style={{
+            backgroundColor: 'var(--highlight-peach)',
+            borderBottom: '1px solid var(--border-light)',
+          }}
+        >
+          <p className="text-sm text-center" style={{ color: 'var(--error)' }}>{error}</p>
+        </div>
+      )}
 
       {/* Graph Container */}
       <div className="flex-1 relative min-h-0">
