@@ -18,7 +18,9 @@ async function fetchFullGraphData(userId: string): Promise<{ nodes: Node[]; edge
   ];
 
   const dbEdges = await getAllUserGraphEdges(userId);
-  const positions = calculateNodePositions(allNodesForLayout);
+
+  const simpleEdges = dbEdges.map((e) => ({ source: e.sourceNodeId, target: e.targetNodeId }));
+  const positions = calculateNodePositions(allNodesForLayout, simpleEdges);
 
   // Overlay saved positions from localStorage
   let savedPositions: Record<string, { x: number; y: number }> = {};
