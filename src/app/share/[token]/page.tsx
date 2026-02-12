@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Client, Databases, Query } from 'node-appwrite';
 
 interface SharedNote {
   title: string;
@@ -8,15 +9,43 @@ interface SharedNote {
   createdAt: string;
 }
 
+function getServerDatabases() {
+  const client = new Client();
+  client
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
+    .setKey(process.env.APPWRITE_API_KEY!);
+  return new Databases(client);
+}
+
 async function getSharedNote(token: string): Promise<SharedNote | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  if (!token || token.length < 16) return null;
+  if (!process.env.APPWRITE_API_KEY) {
+    console.error('APPWRITE_API_KEY not configured for sharing');
+    return null;
+  }
+
   try {
-    const res = await fetch(`${baseUrl}/api/share/${token}`, {
-      cache: 'no-store',
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
+    const databases = getServerDatabases();
+    const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
+
+    const response = await databases.listDocuments(databaseId, 'notes', [
+      Query.equal('shareToken', token),
+      Query.limit(1),
+    ]);
+
+    if (response.documents.length === 0) return null;
+
+    const doc = response.documents[0];
+    return {
+      title: doc.title as string,
+      content: doc.content as string,
+      bibleReferences: (doc.bibleReferences as string[]) || [],
+      tags: (doc.tags as string[]) || [],
+      createdAt: doc.$createdAt as string,
+    };
+  } catch (error) {
+    console.error('Failed to fetch shared note:', error);
     return null;
   }
 }

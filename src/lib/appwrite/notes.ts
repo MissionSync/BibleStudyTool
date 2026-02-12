@@ -1,7 +1,7 @@
 import { ID, Query, type Models } from 'appwrite';
 import { databases, DATABASE_ID, COLLECTIONS } from '../appwrite';
 import { generateGraphForNote } from '../graphGenerator';
-import { generateShareToken } from '../sharing';
+
 
 export interface Note extends Models.Document {
   title: string;
@@ -196,26 +196,24 @@ export async function searchNotes(userId: string, searchTerm: string): Promise<N
 }
 
 /**
- * Share a note by generating a share token
+ * Share a note by generating a share token (via server API route)
  */
-export async function shareNote(noteId: string): Promise<Note> {
-  const token = generateShareToken();
-  return databases.updateDocument<Note>(
-    DATABASE_ID,
-    COLLECTIONS.NOTES,
-    noteId,
-    { shareToken: token }
-  );
+export async function shareNote(noteId: string): Promise<{ shareToken: string; noteId: string }> {
+  const res = await fetch(`/api/notes/${noteId}/share`, { method: 'POST' });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || 'Failed to share note');
+  }
+  return res.json();
 }
 
 /**
- * Unshare a note by removing the share token
+ * Unshare a note by removing the share token (via server API route)
  */
-export async function unshareNote(noteId: string): Promise<Note> {
-  return databases.updateDocument<Note>(
-    DATABASE_ID,
-    COLLECTIONS.NOTES,
-    noteId,
-    { shareToken: null }
-  );
+export async function unshareNote(noteId: string): Promise<void> {
+  const res = await fetch(`/api/notes/${noteId}/share`, { method: 'DELETE' });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || 'Failed to unshare note');
+  }
 }

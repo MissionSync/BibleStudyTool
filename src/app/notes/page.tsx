@@ -111,13 +111,12 @@ export default function NotesPage() {
 
   const handleShareNote = async (noteId: string) => {
     try {
-      const updated = await shareNote.mutateAsync(noteId);
-      if (updated.shareToken) {
-        const url = getShareUrl(updated.shareToken);
-        await navigator.clipboard.writeText(url);
-        showToast('Share link copied to clipboard.', 'success');
-      }
-    } catch {
+      const result = await shareNote.mutateAsync(noteId);
+      const url = getShareUrl(result.shareToken);
+      await navigator.clipboard.writeText(url);
+      showToast('Share link copied to clipboard.', 'success');
+    } catch (err) {
+      console.error('Share note error:', err);
       showToast('Failed to share note.', 'error');
     }
   };
