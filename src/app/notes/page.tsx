@@ -10,6 +10,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
+import { getShareUrl } from '@/lib/sharing';
 
 const NoteEditor = dynamic(
   () => import('@/components/notes/NoteEditor').then((mod) => mod.NoteEditor),
@@ -21,7 +22,7 @@ export default function NotesPage() {
   const { showToast } = useToast();
   const router = useRouter();
   const [showArchived, setShowArchived] = useState(false);
-  const { notes, isLoading, error: loadError, hasNextPage, fetchNextPage, isFetchingNextPage, createNote, updateNote, deleteNote, archiveNote, unarchiveNote } = useNotes(user?.$id, { includeArchived: showArchived });
+  const { notes, isLoading, error: loadError, hasNextPage, fetchNextPage, isFetchingNextPage, createNote, updateNote, deleteNote, archiveNote, unarchiveNote, shareNote, unshareNote } = useNotes(user?.$id, { includeArchived: showArchived });
   const [isCreating, setIsCreating] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,6 +107,34 @@ export default function NotesPage() {
     } catch {
       showToast('Failed to unarchive note.', 'error');
     }
+  };
+
+  const handleShareNote = async (noteId: string) => {
+    try {
+      const updated = await shareNote.mutateAsync(noteId);
+      if (updated.shareToken) {
+        const url = getShareUrl(updated.shareToken);
+        await navigator.clipboard.writeText(url);
+        showToast('Share link copied to clipboard.', 'success');
+      }
+    } catch {
+      showToast('Failed to share note.', 'error');
+    }
+  };
+
+  const handleUnshareNote = async (noteId: string) => {
+    try {
+      await unshareNote.mutateAsync(noteId);
+      showToast('Note is no longer shared.', 'info');
+    } catch {
+      showToast('Failed to unshare note.', 'error');
+    }
+  };
+
+  const handleCopyShareLink = async (shareToken: string) => {
+    const url = getShareUrl(shareToken);
+    await navigator.clipboard.writeText(url);
+    showToast('Share link copied.', 'success');
   };
 
   const displayedNotes = showArchived
@@ -476,6 +505,32 @@ export default function NotesPage() {
                         >
                           Edit
                         </button>
+                        {note.shareToken ? (
+                          <>
+                            <button
+                              onClick={() => handleCopyShareLink(note.shareToken!)}
+                              className="text-sm transition-colors"
+                              style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
+                            >
+                              Copy Link
+                            </button>
+                            <button
+                              onClick={() => handleUnshareNote(note.$id)}
+                              className="text-sm transition-colors"
+                              style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                            >
+                              Unshare
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => handleShareNote(note.$id)}
+                            className="text-sm transition-colors"
+                            style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            Share
+                          </button>
+                        )}
                         <button
                           onClick={() => handleArchiveNote(note.$id)}
                           className="text-sm transition-colors"

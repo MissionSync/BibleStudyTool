@@ -6,6 +6,8 @@ import {
   createNote,
   updateNote,
   deleteNote,
+  shareNote,
+  unshareNote,
   type Note,
   type CreateNoteData,
   type UpdateNoteData,
@@ -63,6 +65,16 @@ export function useNotes(userId: string | undefined, options?: UseNotesOptions) 
     onSuccess: invalidateNotes,
   });
 
+  const shareMutation = useMutation({
+    mutationFn: (noteId: string) => shareNote(noteId),
+    onSuccess: invalidateNotes,
+  });
+
+  const unshareMutation = useMutation({
+    mutationFn: (noteId: string) => unshareNote(noteId),
+    onSuccess: invalidateNotes,
+  });
+
   return {
     notes,
     isLoading: notesQuery.isLoading,
@@ -75,5 +87,7 @@ export function useNotes(userId: string | undefined, options?: UseNotesOptions) 
     deleteNote: deleteMutation,
     archiveNote: archiveMutation,
     unarchiveNote: unarchiveMutation,
+    shareNote: shareMutation,
+    unshareNote: unshareMutation,
   };
 }

@@ -1,6 +1,7 @@
 import { ID, Query, type Models } from 'appwrite';
 import { databases, DATABASE_ID, COLLECTIONS } from '../appwrite';
 import { generateGraphForNote } from '../graphGenerator';
+import { generateShareToken } from '../sharing';
 
 export interface Note extends Models.Document {
   title: string;
@@ -10,6 +11,7 @@ export interface Note extends Models.Document {
   bibleReferences: string[];
   tags: string[];
   isArchived: boolean;
+  shareToken?: string | null;
 }
 
 export interface CreateNoteData {
@@ -20,6 +22,7 @@ export interface CreateNoteData {
   bibleReferences?: string[];
   tags?: string[];
   isArchived?: boolean;
+  shareToken?: string | null;
 }
 
 export interface UpdateNoteData {
@@ -29,6 +32,7 @@ export interface UpdateNoteData {
   bibleReferences?: string[];
   tags?: string[];
   isArchived?: boolean;
+  shareToken?: string | null;
 }
 
 /**
@@ -189,4 +193,29 @@ export async function searchNotes(userId: string, searchTerm: string): Promise<N
   );
 
   return response.documents;
+}
+
+/**
+ * Share a note by generating a share token
+ */
+export async function shareNote(noteId: string): Promise<Note> {
+  const token = generateShareToken();
+  return databases.updateDocument<Note>(
+    DATABASE_ID,
+    COLLECTIONS.NOTES,
+    noteId,
+    { shareToken: token }
+  );
+}
+
+/**
+ * Unshare a note by removing the share token
+ */
+export async function unshareNote(noteId: string): Promise<Note> {
+  return databases.updateDocument<Note>(
+    DATABASE_ID,
+    COLLECTIONS.NOTES,
+    noteId,
+    { shareToken: null }
+  );
 }
