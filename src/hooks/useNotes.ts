@@ -14,13 +14,18 @@ import { queryKeys } from '@/lib/queryKeys';
 
 const PAGE_SIZE = 20;
 
-export function useNotes(userId: string | undefined) {
+interface UseNotesOptions {
+  includeArchived?: boolean;
+}
+
+export function useNotes(userId: string | undefined, options?: UseNotesOptions) {
   const queryClient = useQueryClient();
+  const includeArchived = options?.includeArchived ?? false;
 
   const notesQuery = useInfiniteQuery({
-    queryKey: queryKeys.notes.list(userId ?? ''),
+    queryKey: [...queryKeys.notes.list(userId ?? ''), { includeArchived }],
     queryFn: ({ pageParam }) =>
-      getUserNotesPaginated(userId!, { limit: PAGE_SIZE, cursor: pageParam }),
+      getUserNotesPaginated(userId!, { limit: PAGE_SIZE, cursor: pageParam, includeArchived }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.lastId : undefined),
     enabled: !!userId,
@@ -28,26 +33,34 @@ export function useNotes(userId: string | undefined) {
 
   const notes = notesQuery.data?.pages.flatMap((page) => page.notes) ?? [];
 
+  const invalidateNotes = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.notes.list(userId ?? '') });
+  };
+
   const createMutation = useMutation({
     mutationFn: (data: CreateNoteData) => createNote(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notes.list(userId ?? '') });
-    },
+    onSuccess: invalidateNotes,
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ noteId, data }: { noteId: string; data: UpdateNoteData }) =>
       updateNote(noteId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notes.list(userId ?? '') });
-    },
+    onSuccess: invalidateNotes,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (noteId: string) => deleteNote(noteId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notes.list(userId ?? '') });
-    },
+    onSuccess: invalidateNotes,
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: (noteId: string) => updateNote(noteId, { isArchived: true }),
+    onSuccess: invalidateNotes,
+  });
+
+  const unarchiveMutation = useMutation({
+    mutationFn: (noteId: string) => updateNote(noteId, { isArchived: false }),
+    onSuccess: invalidateNotes,
   });
 
   return {
@@ -60,5 +73,7 @@ export function useNotes(userId: string | undefined) {
     createNote: createMutation,
     updateNote: updateMutation,
     deleteNote: deleteMutation,
+    archiveNote: archiveMutation,
+    unarchiveNote: unarchiveMutation,
   };
 }

@@ -8,12 +8,14 @@ import { type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function NotesPage() {
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
-  const { notes, isLoading, error: loadError, hasNextPage, fetchNextPage, isFetchingNextPage, createNote, updateNote, deleteNote } = useNotes(user?.$id);
+  const [showArchived, setShowArchived] = useState(false);
+  const { notes, isLoading, error: loadError, hasNextPage, fetchNextPage, isFetchingNextPage, createNote, updateNote, deleteNote, archiveNote, unarchiveNote } = useNotes(user?.$id, { includeArchived: showArchived });
   const [isCreating, setIsCreating] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -82,7 +84,29 @@ export default function NotesPage() {
     }
   };
 
-  const filteredNotes = notes.filter(note => {
+  const handleArchiveNote = async (noteId: string) => {
+    try {
+      await archiveNote.mutateAsync(noteId);
+      showToast('Note archived.', 'success');
+    } catch {
+      showToast('Failed to archive note.', 'error');
+    }
+  };
+
+  const handleUnarchiveNote = async (noteId: string) => {
+    try {
+      await unarchiveNote.mutateAsync(noteId);
+      showToast('Note unarchived.', 'success');
+    } catch {
+      showToast('Failed to unarchive note.', 'error');
+    }
+  };
+
+  const displayedNotes = showArchived
+    ? notes.filter(note => note.isArchived)
+    : notes.filter(note => !note.isArchived);
+
+  const filteredNotes = displayedNotes.filter(note => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -134,6 +158,7 @@ export default function NotesPage() {
             >
               Notes
             </span>
+            <ThemeToggle />
           </div>
         </nav>
 
@@ -204,6 +229,7 @@ export default function NotesPage() {
           >
             Notes
           </span>
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -255,7 +281,7 @@ export default function NotesPage() {
         )}
 
         {/* Search */}
-        <div className="mb-8">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="Search notes..."
@@ -264,6 +290,38 @@ export default function NotesPage() {
             className="w-full"
             style={{ height: '3rem' }}
           />
+        </div>
+
+        {/* Archive Tabs */}
+        <div className="flex gap-6 mb-8" style={{ borderBottom: '1px solid var(--border-light)' }}>
+          <button
+            onClick={() => setShowArchived(false)}
+            className="pb-3 text-sm transition-colors"
+            style={{
+              background: 'none',
+              border: 'none',
+              borderBottom: !showArchived ? '2px solid var(--text-primary)' : '2px solid transparent',
+              color: !showArchived ? 'var(--text-primary)' : 'var(--text-tertiary)',
+              cursor: 'pointer',
+              fontWeight: !showArchived ? 500 : 400,
+            }}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setShowArchived(true)}
+            className="pb-3 text-sm transition-colors"
+            style={{
+              background: 'none',
+              border: 'none',
+              borderBottom: showArchived ? '2px solid var(--text-primary)' : '2px solid transparent',
+              color: showArchived ? 'var(--text-primary)' : 'var(--text-tertiary)',
+              cursor: 'pointer',
+              fontWeight: showArchived ? 500 : 400,
+            }}
+          >
+            Archived
+          </button>
         </div>
 
         {/* Notes List */}
@@ -323,6 +381,18 @@ export default function NotesPage() {
                       >
                         {note.title}
                       </h3>
+                      {note.isArchived && (
+                        <span
+                          className="text-xs px-2 py-0.5 flex-shrink-0"
+                          style={{
+                            backgroundColor: 'var(--bg-tertiary)',
+                            color: 'var(--text-tertiary)',
+                            borderRadius: '2px',
+                          }}
+                        >
+                          Archived
+                        </span>
+                      )}
                     </div>
 
                     <p
@@ -381,20 +451,39 @@ export default function NotesPage() {
                   </div>
 
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <button
-                      onClick={() => setEditingNote(note)}
-                      className="text-sm transition-colors"
-                      style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteNote(note.$id)}
-                      className="text-sm transition-colors"
-                      style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
+                    {note.isArchived ? (
+                      <button
+                        onClick={() => handleUnarchiveNote(note.$id)}
+                        className="text-sm transition-colors"
+                        style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >
+                        Unarchive
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setEditingNote(note)}
+                          className="text-sm transition-colors"
+                          style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleArchiveNote(note.$id)}
+                          className="text-sm transition-colors"
+                          style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          Archive
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNote(note.$id)}
+                          className="text-sm transition-colors"
+                          style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
