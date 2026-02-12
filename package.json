@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed:1john": "tsx src/scripts/seedOneJohn.ts",
-    "clear:graph": "tsx src/scripts/clearGraphData.ts"
+    "clear:graph": "tsx src/scripts/clearGraphData.ts",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
@@ -26,6 +27,7 @@
     "reactflow": "^11.10.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.1.6",
     "@tailwindcss/postcss": "^4",
     "@types/dagre": "^0.7.53",
     "@types/node": "^20",

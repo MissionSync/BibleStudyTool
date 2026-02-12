@@ -2,14 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { NoteEditor } from '@/components/notes/NoteEditor';
 import { type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
+
+const NoteEditor = dynamic(
+  () => import('@/components/notes/NoteEditor').then((mod) => mod.NoteEditor),
+  { ssr: false },
+);
 
 export default function NotesPage() {
   const { user, loading: authLoading } = useAuth();

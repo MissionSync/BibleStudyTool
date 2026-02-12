@@ -3,8 +3,8 @@
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useQueryClient } from '@tanstack/react-query';
-import { KnowledgeGraph } from '@/components/graph/KnowledgeGraph';
 import { getStudyWeek } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -13,6 +13,11 @@ import { useGraphPositions, clearPositions } from '@/hooks/useGraphPositions';
 import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import { queryKeys } from '@/lib/queryKeys';
 import { GraphSkeleton } from '@/components/ui/GraphSkeleton';
+
+const KnowledgeGraph = dynamic(
+  () => import('@/components/graph/KnowledgeGraph').then((mod) => mod.KnowledgeGraph),
+  { ssr: false, loading: () => <GraphSkeleton /> },
+);
 
 interface PageProps {
   params: Promise<{ week: string }>;

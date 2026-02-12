@@ -16,7 +16,6 @@ import ReactFlow, {
   MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { toPng } from 'html-to-image';
 import { exportGraphAsJSON, exportGraphAsCSV } from '@/lib/graphExport';
 
 import { PassageNode } from './nodes/PassageNode';
@@ -203,6 +202,7 @@ export function KnowledgeGraph({
   const handleExportPNG = useCallback(async () => {
     if (!graphRef.current) return;
     try {
+      const { toPng } = await import('html-to-image');
       const dataUrl = await toPng(graphRef.current, {
         backgroundColor: '#FAF9F7',
         quality: 1,
