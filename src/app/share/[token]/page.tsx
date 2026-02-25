@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Client, Databases, Query } from 'node-appwrite';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface SharedNote {
   title: string;
@@ -156,7 +157,7 @@ export default async function SharedNotePage({ params }: PageProps) {
         <div
           className="scripture"
           style={{ color: 'var(--text-primary)', lineHeight: 1.8 }}
-          dangerouslySetInnerHTML={{ __html: note.content }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content) }}
         />
       </main>
 

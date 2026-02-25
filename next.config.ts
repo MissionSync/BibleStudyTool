@@ -17,7 +17,19 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async headers() {
+    return [
+      {
+        source: '/share/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withBundleAnalyzer(withPWA(nextConfig));

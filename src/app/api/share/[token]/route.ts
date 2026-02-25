@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client, Databases, Query } from 'node-appwrite';
+import DOMPurify from 'isomorphic-dompurify';
 
 function getServerClient() {
   const client = new Client();
@@ -54,7 +55,7 @@ export async function GET(
 
     return NextResponse.json({
       title: doc.title,
-      content: doc.content,
+      content: DOMPurify.sanitize(doc.content),
       bibleReferences: doc.bibleReferences,
       tags: doc.tags,
       createdAt: doc.$createdAt,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Client, Databases } from 'node-appwrite';
+import { Client, Databases, Account } from 'node-appwrite';
 import { generateShareToken } from '@/lib/sharing';
 
 function getServerDatabases() {
@@ -11,8 +11,29 @@ function getServerDatabases() {
   return new Databases(client);
 }
 
+async function getAuthenticatedUserId(request: NextRequest): Promise<string | null> {
+  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!;
+  const sessionCookie = request.cookies.get(`a_session_${projectId}`)
+    || request.cookies.get(`a_session_${projectId}_legacy`);
+
+  if (!sessionCookie?.value) return null;
+
+  try {
+    const client = new Client();
+    client
+      .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+      .setProject(projectId)
+      .setSession(sessionCookie.value);
+    const account = new Account(client);
+    const user = await account.get();
+    return user.$id;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ noteId: string }> }
 ) {
   const { noteId } = await params;
@@ -24,11 +45,21 @@ export async function POST(
     );
   }
 
+  const userId = await getAuthenticatedUserId(request);
+  if (!userId) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
   try {
     const databases = getServerDatabases();
     const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
-    const token = generateShareToken();
 
+    const note = await databases.getDocument(databaseId, 'notes', noteId);
+    if (note.userId !== userId) {
+      return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+    }
+
+    const token = generateShareToken();
     const doc = await databases.updateDocument(databaseId, 'notes', noteId, {
       shareToken: token,
     });
@@ -44,7 +75,7 @@ export async function POST(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ noteId: string }> }
 ) {
   const { noteId } = await params;
@@ -56,9 +87,19 @@ export async function DELETE(
     );
   }
 
+  const userId = await getAuthenticatedUserId(request);
+  if (!userId) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
   try {
     const databases = getServerDatabases();
     const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
+
+    const note = await databases.getDocument(databaseId, 'notes', noteId);
+    if (note.userId !== userId) {
+      return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+    }
 
     await databases.updateDocument(databaseId, 'notes', noteId, {
       shareToken: null,
