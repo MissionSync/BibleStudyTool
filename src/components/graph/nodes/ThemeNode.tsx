@@ -9,7 +9,7 @@ export const ThemeNode = memo(({ data, selected }: NodeProps) => {
     <div
       style={{
         padding: '10px 14px',
-        borderRadius: '2px',
+        borderRadius: 'var(--radius-md)',
         backgroundColor: 'var(--bg-primary)',
         border: selected ? '2px solid var(--node-theme)' : '1px solid var(--border-light)',
         minWidth: '110px',

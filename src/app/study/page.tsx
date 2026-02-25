@@ -18,7 +18,7 @@ function PlanCard({ plan }: { plan: { id: string; title: string; description: st
       className="block p-6 transition-colors"
       style={{
         border: '1px solid var(--border-light)',
-        borderRadius: '2px',
+        borderRadius: 'var(--radius-lg)',
         textDecoration: 'none',
       }}
     >
@@ -41,7 +41,7 @@ function PlanCard({ plan }: { plan: { id: string; title: string; description: st
         className="p-4"
         style={{
           backgroundColor: 'var(--bg-secondary)',
-          borderRadius: '2px',
+          borderRadius: 'var(--radius-md)',
         }}
       >
         <div className="flex items-center justify-between mb-2">
@@ -54,14 +54,14 @@ function PlanCard({ plan }: { plan: { id: string; title: string; description: st
         </div>
         <div
           className="h-1 w-full"
-          style={{ backgroundColor: 'var(--border-light)', borderRadius: '2px' }}
+          style={{ backgroundColor: 'var(--border-light)', borderRadius: 'var(--radius-pill)' }}
         >
           <div
             className="h-1 transition-all"
             style={{
               width: `${progressPercentage}%`,
               backgroundColor: 'var(--accent)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-pill)',
             }}
           />
         </div>
@@ -97,15 +97,15 @@ export default function StudyPlansPage() {
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Navigation */}
       <nav
-        className="content-wide py-6 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)' }}
+        className="content-wide py-4 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <Link
           href="/dashboard"
-          className="text-lg tracking-wide"
+          className="text-lg font-semibold tracking-tight"
           style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
         >
-          Bible Notes Journal
+          biblenotes
         </Link>
         <div className="flex items-center gap-8">
           <span

@@ -168,15 +168,15 @@ export default function NotesPage() {
       <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
         {/* Navigation */}
         <nav
-          className="content-wide py-6 flex items-center justify-between"
-          style={{ borderBottom: '1px solid var(--border-light)' }}
+          className="content-wide py-4 flex items-center justify-between"
+          style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
         >
           <Link
             href="/dashboard"
-            className="text-lg tracking-wide"
+            className="text-lg font-semibold tracking-tight"
             style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
           >
-            Bible Notes Journal
+            biblenotes
           </Link>
           <div className="flex items-center gap-8">
             <Link
@@ -307,7 +307,7 @@ export default function NotesPage() {
             style={{
               backgroundColor: 'var(--highlight-peach)',
               border: '1px solid var(--border-light)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
             }}
           >
             <p className="text-sm" style={{ color: 'var(--error)' }}>{errorMessage}</p>
@@ -423,7 +423,7 @@ export default function NotesPage() {
                           style={{
                             backgroundColor: 'var(--bg-tertiary)',
                             color: 'var(--text-tertiary)',
-                            borderRadius: '2px',
+                            borderRadius: 'var(--radius-pill)',
                           }}
                         >
                           Archived
@@ -448,7 +448,7 @@ export default function NotesPage() {
                               style={{
                                 backgroundColor: 'var(--highlight-sage)',
                                 color: 'var(--text-secondary)',
-                                borderRadius: '2px',
+                                borderRadius: 'var(--radius-pill)',
                               }}
                             >
                               {ref}
@@ -471,7 +471,7 @@ export default function NotesPage() {
                               style={{
                                 backgroundColor: 'var(--highlight-gold)',
                                 color: 'var(--text-secondary)',
-                                borderRadius: '2px',
+                                borderRadius: 'var(--radius-pill)',
                               }}
                             >
                               {tag}

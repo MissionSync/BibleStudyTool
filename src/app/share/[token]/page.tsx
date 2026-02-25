@@ -89,7 +89,7 @@ export default async function SharedNotePage({ params }: PageProps) {
           style={{
             backgroundColor: 'var(--highlight-sage)',
             color: 'var(--text-secondary)',
-            borderRadius: '2px',
+            borderRadius: 'var(--radius-pill)',
           }}
         >
           Shared Note
@@ -131,7 +131,7 @@ export default async function SharedNotePage({ params }: PageProps) {
                 style={{
                   backgroundColor: 'var(--highlight-sage)',
                   color: 'var(--text-secondary)',
-                  borderRadius: '2px',
+                  borderRadius: 'var(--radius-pill)',
                 }}
               >
                 {ref}
@@ -144,7 +144,7 @@ export default async function SharedNotePage({ params }: PageProps) {
                 style={{
                   backgroundColor: 'var(--highlight-gold)',
                   color: 'var(--text-secondary)',
-                  borderRadius: '2px',
+                  borderRadius: 'var(--radius-pill)',
                 }}
               >
                 {tag}

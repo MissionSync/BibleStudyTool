@@ -9,7 +9,7 @@ export const NoteNode = memo(({ data, selected }: NodeProps) => {
     <div
       style={{
         padding: '10px 14px',
-        borderRadius: '2px',
+        borderRadius: 'var(--radius-md)',
         backgroundColor: 'var(--bg-primary)',
         border: selected ? '2px solid var(--node-note)' : '1px solid var(--border-light)',
         minWidth: '140px',
@@ -53,7 +53,7 @@ export const NoteNode = memo(({ data, selected }: NodeProps) => {
               style={{
                 backgroundColor: 'var(--highlight-gold)',
                 color: 'var(--text-secondary)',
-                borderRadius: '2px',
+                borderRadius: 'var(--radius-pill)',
               }}
             >
               {tag}

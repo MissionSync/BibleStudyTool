@@ -204,7 +204,7 @@ export function KnowledgeGraph({
     try {
       const { toPng } = await import('html-to-image');
       const dataUrl = await toPng(graphRef.current, {
-        backgroundColor: '#FAF9F7',
+        backgroundColor: '#faf7f2',
         quality: 1,
       });
       const a = document.createElement('a');
@@ -258,7 +258,7 @@ export function KnowledgeGraph({
             style={{
               backgroundColor: 'var(--bg-primary)',
               border: '1px solid var(--border-light)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
               overflow: 'visible',
             }}
           >
@@ -283,7 +283,7 @@ export function KnowledgeGraph({
             style={{
               backgroundColor: 'var(--bg-primary)',
               border: '1px solid var(--border-light)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
             }}
           >
             <GraphStats stats={stats} />

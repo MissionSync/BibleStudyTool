@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Crimson_Pro, Source_Sans_3 } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -8,18 +8,18 @@ import { ToastProvider } from "@/contexts/ToastContext";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
 
-const crimsonPro = Crimson_Pro({
-  variable: "--font-crimson",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const sourceSans = Source_Sans_3({
-  variable: "--font-source-sans",
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#7C9082",
+  themeColor: "#c4a484",
 };
 
 export default function RootLayout({
@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${crimsonPro.variable} ${sourceSans.variable}`}>
+      <body className={`${outfit.variable} ${plusJakarta.variable}`}>
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>

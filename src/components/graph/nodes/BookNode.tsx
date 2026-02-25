@@ -9,7 +9,7 @@ export const BookNode = memo(({ data, selected }: NodeProps) => {
     <div
       style={{
         padding: '12px 16px',
-        borderRadius: '2px',
+        borderRadius: 'var(--radius-md)',
         backgroundColor: 'var(--bg-primary)',
         border: selected ? '2px solid var(--node-book)' : '1px solid var(--border-light)',
         minWidth: '140px',

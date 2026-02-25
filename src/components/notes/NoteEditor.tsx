@@ -142,7 +142,7 @@ export function NoteEditor({
           style={{
             backgroundColor: 'var(--highlight-peach)',
             border: '1px solid var(--border-light)',
-            borderRadius: '2px',
+            borderRadius: 'var(--radius-sm)',
           }}
         >
           <p className="text-sm" style={{ color: 'var(--error)' }}>{parentError}</p>

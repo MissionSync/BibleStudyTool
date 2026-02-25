@@ -131,7 +131,7 @@ export function GraphControls({
                 style={{
                   color: 'var(--text-secondary)',
                   border: '1px solid var(--border-light)',
-                  borderRadius: '2px',
+                  borderRadius: 'var(--radius-sm)',
                   background: 'none',
                 }}
               >
@@ -146,7 +146,7 @@ export function GraphControls({
                 style={{
                   color: 'var(--text-secondary)',
                   border: '1px solid var(--border-light)',
-                  borderRadius: '2px',
+                  borderRadius: 'var(--radius-sm)',
                   background: 'none',
                 }}
               >
@@ -161,7 +161,7 @@ export function GraphControls({
                 style={{
                   color: 'var(--text-secondary)',
                   border: '1px solid var(--border-light)',
-                  borderRadius: '2px',
+                  borderRadius: 'var(--radius-sm)',
                   background: 'none',
                 }}
               >

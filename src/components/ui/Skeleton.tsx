@@ -10,7 +10,7 @@ export function Skeleton({ width, height, className = '' }: SkeletonProps) {
   return (
     <div
       className={`skeleton ${className}`}
-      style={{ width, height, borderRadius: '2px' }}
+      style={{ width, height, borderRadius: 'var(--radius-sm)' }}
     />
   );
 }

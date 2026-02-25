@@ -4,8 +4,8 @@
   "description": "A contemplative space for Scripture study and personal reflection",
   "start_url": "/dashboard",
   "display": "standalone",
-  "theme_color": "#7C9082",
-  "background_color": "#FAF9F7",
+  "theme_color": "#c4a484",
+  "background_color": "#faf7f2",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

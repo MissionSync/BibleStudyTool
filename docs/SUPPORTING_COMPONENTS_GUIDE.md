@@ -10,7 +10,8 @@ These three components work together with the main `KnowledgeGraph` component to
 
 **Location:** `src/components/graph/GraphControls.tsx`
 
-### Features:
+### Features
+
 - **Search Input** - Find nodes by name/label
 - **Node Type Filters** - Show/hide different node types:
   - Books (blue)
@@ -25,7 +26,8 @@ These three components work together with the main `KnowledgeGraph` component to
   - Radial
 - **Reset Button** - Clear all filters and search
 
-### Props:
+### Props
+
 ```typescript
 interface GraphControlsProps {
   filteredNodeTypes: Set<string>;
@@ -37,7 +39,8 @@ interface GraphControlsProps {
 }
 ```
 
-### Usage Example:
+### Usage Example
+
 ```typescript
 <GraphControls
   filteredNodeTypes={filteredNodeTypes}
@@ -49,7 +52,8 @@ interface GraphControlsProps {
 />
 ```
 
-### Styling:
+### Styling
+
 - Fixed width: 256px (w-64)
 - White background with rounded borders
 - Hover effects on checkboxes
@@ -63,13 +67,15 @@ interface GraphControlsProps {
 
 **Location:** `src/components/graph/GraphStats.tsx`
 
-### Features:
+### Features.2
+
 - **Overview Cards** - Total nodes and edges count
 - **Visibility Tracker** - Shows currently visible vs total
 - **Node Breakdown** - Count of each node type
 - **Insights** - Highlights most common node type
 
-### Props:
+### Props.2
+
 ```typescript
 interface GraphStatsProps {
   stats: {
@@ -83,7 +89,8 @@ interface GraphStatsProps {
 }
 ```
 
-### Usage Example:
+### Usage Example.2
+
 ```typescript
 <GraphStats stats={{
   totalNodes: 15,
@@ -105,7 +112,8 @@ interface GraphStatsProps {
 }} />
 ```
 
-### Visual Design:
+### Visual Design
+
 - Blue cards for nodes
 - Purple cards for edges
 - Gray background for visibility stats
@@ -120,7 +128,8 @@ interface GraphStatsProps {
 
 **Location:** `src/components/graph/NodeDetailsPanel.tsx`
 
-### Features:
+### Features.3
+
 - **Dynamic Content** - Shows different info based on node type
 - **Color-Coded Header** - Matches node type colors
 - **Node-Specific Details:**
@@ -134,7 +143,8 @@ interface GraphStatsProps {
   - Read Passage (for passage nodes)
   - View Connections (all nodes)
 
-### Props:
+### Props.3
+
 ```typescript
 interface NodeDetailsPanelProps {
   node: Node;
@@ -143,7 +153,8 @@ interface NodeDetailsPanelProps {
 }
 ```
 
-### Usage Example:
+### Usage Example.3
+
 ```typescript
 {selectedNode && (
   <NodeDetailsPanel
@@ -154,7 +165,8 @@ interface NodeDetailsPanelProps {
 )}
 ```
 
-### Styling:
+### Styling.3
+
 - Fixed position on right side
 - 384px width (w-96)
 - Full height with shadow
@@ -250,6 +262,7 @@ All components follow the same design system:
 
 - **Colors:** Match node type colors (blue, emerald, amber, purple, rose, cyan)
 - **Spacing:** Consistent padding (p-4) and gaps (gap-2, gap-4)
+
 - **Typography:** 
   - Headers: font-semibold
   - Labels: text-sm text-gray-600
@@ -262,6 +275,7 @@ All components follow the same design system:
 ## Testing Tips
 
 ### GraphControls
+
 ```typescript
 // Test that filtering works
 onFilterChange('note', false); // Should hide all notes
@@ -273,6 +287,7 @@ onSearchChange('');     // Should show all nodes
 ```
 
 ### GraphStats
+
 ```typescript
 // Stats should update automatically when nodes/edges change
 // Check that counts are accurate
@@ -280,6 +295,7 @@ onSearchChange('');     // Should show all nodes
 ```
 
 ### NodeDetailsPanel
+
 ```typescript
 // Test with different node types
 setSelectedNode(noteNode);    // Should show note-specific fields
@@ -305,7 +321,7 @@ After implementing these components:
 
 ## Quick Reference: File Locations
 
-```
+```bash
 src/components/graph/
 ├── GraphControls.tsx        ✅ Created
 ├── GraphStats.tsx           ✅ Created

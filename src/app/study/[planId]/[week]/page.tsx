@@ -69,15 +69,15 @@ export default function WeekDetailPage({ params }: PageProps) {
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Navigation */}
       <nav
-        className="content-wide py-6 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)' }}
+        className="content-wide py-4 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <Link
           href="/dashboard"
-          className="text-lg tracking-wide"
+          className="text-lg font-semibold tracking-tight"
           style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
         >
-          Bible Notes Journal
+          biblenotes
         </Link>
         <div className="flex items-center gap-8">
           <Link
@@ -133,7 +133,7 @@ export default function WeekDetailPage({ params }: PageProps) {
             className="mb-10 p-6"
             style={{
               backgroundColor: 'var(--highlight-sage)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-lg)',
             }}
           >
             <p className="scripture" style={{ color: 'var(--text-primary)' }}>

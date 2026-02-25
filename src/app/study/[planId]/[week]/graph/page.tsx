@@ -120,7 +120,7 @@ export default function GraphPage({ params }: PageProps) {
       {/* Header */}
       <header
         className="flex-shrink-0 py-4 px-6"
-        style={{ backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-light)' }}
+        style={{ backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <div className="flex items-center justify-between" style={{ maxWidth: 'var(--content-wide)', margin: '0 auto' }}>
           <div className="flex items-center gap-6">

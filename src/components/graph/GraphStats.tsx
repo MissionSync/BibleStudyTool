@@ -40,7 +40,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
             className="p-3"
             style={{
               backgroundColor: 'var(--bg-secondary)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
             }}
           >
             <div
@@ -57,7 +57,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
             className="p-3"
             style={{
               backgroundColor: 'var(--bg-secondary)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
             }}
           >
             <div
@@ -86,7 +86,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
           className="p-3 space-y-2"
           style={{
             backgroundColor: 'var(--bg-secondary)',
-            borderRadius: '2px',
+            borderRadius: 'var(--radius-md)',
           }}
         >
           <div className="flex justify-between items-center">

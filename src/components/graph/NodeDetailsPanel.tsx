@@ -69,7 +69,7 @@ export function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
                       style={{
                         backgroundColor: 'var(--highlight-gold)',
                         color: 'var(--text-secondary)',
-                        borderRadius: '2px',
+                        borderRadius: 'var(--radius-pill)',
                       }}
                     >
                       {tag}

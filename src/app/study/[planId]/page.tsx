@@ -74,15 +74,15 @@ export default function PlanDetailPage({ params }: PageProps) {
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Navigation */}
       <nav
-        className="content-wide py-6 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)' }}
+        className="content-wide py-4 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <Link
           href="/dashboard"
-          className="text-lg tracking-wide"
+          className="text-lg font-semibold tracking-tight"
           style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
         >
-          Bible Notes Journal
+          biblenotes
         </Link>
         <div className="flex items-center gap-8">
           <Link
@@ -129,7 +129,7 @@ export default function PlanDetailPage({ params }: PageProps) {
           style={{
             backgroundColor: 'var(--bg-secondary)',
             border: '1px solid var(--border-light)',
-            borderRadius: '2px',
+            borderRadius: 'var(--radius-lg)',
           }}
         >
           <div className="flex items-center justify-between mb-3">
@@ -142,14 +142,14 @@ export default function PlanDetailPage({ params }: PageProps) {
           </div>
           <div
             className="h-1 w-full"
-            style={{ backgroundColor: 'var(--border-light)', borderRadius: '2px' }}
+            style={{ backgroundColor: 'var(--border-light)', borderRadius: 'var(--radius-pill)' }}
           >
             <div
               className="h-1 transition-all"
               style={{
                 width: `${progressPercentage}%`,
                 backgroundColor: 'var(--accent)',
-                borderRadius: '2px',
+                borderRadius: 'var(--radius-pill)',
               }}
             />
           </div>
@@ -191,7 +191,7 @@ export default function PlanDetailPage({ params }: PageProps) {
                           style={{
                             backgroundColor: 'var(--highlight-gold)',
                             color: 'var(--text-primary)',
-                            borderRadius: '2px',
+                            borderRadius: 'var(--radius-pill)',
                           }}
                         >
                           Current

@@ -59,7 +59,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             style={{
               backgroundColor: getBackgroundColor(toast.type),
               border: '1px solid var(--border-light)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
               minWidth: '200px',
               maxWidth: '360px',
             }}

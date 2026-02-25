@@ -93,7 +93,7 @@ export default function LoginPage() {
             style={{
               backgroundColor: 'var(--highlight-peach)',
               border: '1px solid var(--border-light)',
-              borderRadius: '2px',
+              borderRadius: 'var(--radius-md)',
             }}
           >
             <p className="text-sm" style={{ color: 'var(--error)' }}>{errors.form}</p>

@@ -7,6 +7,7 @@ This project implements an **interactive knowledge graph** for Bible study that 
 ### What's Been Built So Far
 
 ✅ **Complete Foundation (Phase 1)**
+
 - All required npm packages installed
 - Full directory structure created
 - 5 custom node components (Note, Passage, Theme, Person, Book)
@@ -17,6 +18,7 @@ This project implements an **interactive knowledge graph** for Bible study that 
 ### What's Next
 
 The remaining work involves:
+
 1. **Configuration** - Set up Supabase database
 2. **Integration** - Copy/adapt remaining graph components
 3. **API Routes** - Implement backend endpoints
@@ -25,7 +27,7 @@ The remaining work involves:
 
 ## 📁 Project Structure
 
-```
+```bash
 BibleStudyTool/
 ├── src/
 │   ├── components/
@@ -65,6 +67,7 @@ All the complex custom components are built:
 ### Step 2: Next Implementation Steps
 
 **Option A: Follow the Full Guide**
+
 1. Read `IMPLEMENTATION_STATUS.md` for current status
 2. Follow `INTEGRATION_GUIDE.md` for step-by-step instructions
 3. Reference `KNOWLEDGE_GRAPH_IMPLEMENTATION.md` for technical details
@@ -78,6 +81,7 @@ All the complex custom components are built:
    - Add credentials to `.env.local`
 
 2. **Copy remaining components** (30 minutes)
+
    ```bash
    # The main graph component code is in:
    # /tmp/bible_study_new_files/KnowledgeGraph.tsx
@@ -88,6 +92,7 @@ All the complex custom components are built:
    ```
 
 3. **Implement API routes** (45 minutes)
+
    ```bash
    # Split code from /tmp/bible_study_new_files/api-routes.ts into:
    # - src/app/api/notes/route.ts
@@ -96,12 +101,14 @@ All the complex custom components are built:
    ```
 
 4. **Create study page** (30 minutes)
+
    ```bash
    # Use template from INTEGRATION_GUIDE.md
    # Create src/app/study/[planId]/graph/page.tsx
    ```
 
 5. **Test** (30 minutes)
+
    ```bash
    npm run dev
    # Navigate to http://localhost:3000/study/1/graph
@@ -110,14 +117,17 @@ All the complex custom components are built:
 ## 📚 Documentation Guide
 
 ### For Getting Started
+
 - **QUICK_START.md** - High-level overview and 4-week timeline
 - **IMPLEMENTATION_STATUS.md** - What's done and what's next
 
 ### For Implementation
+
 - **INTEGRATION_GUIDE.md** - Step-by-step code and instructions
 - **KNOWLEDGE_GRAPH_IMPLEMENTATION.md** - Complete technical specification
 
 ### For Optimization
+
 - **BEST_PRACTICES.md** - Architecture patterns and performance tips
 
 ## 🛠 Key Technologies
@@ -133,7 +143,9 @@ All the complex custom components are built:
 ## 🎨 Features Overview
 
 ### Auto-Linking Magic
+
 When a user creates a note:
+
 1. **Auto-detects** Bible references (e.g., "1 John 3:16")
 2. **Creates** graph nodes for the note
 3. **Connects** note to passage nodes
@@ -141,6 +153,7 @@ When a user creates a note:
 5. **Updates** graph visualization in real-time
 
 ### Graph Visualization
+
 - **Interactive** - Zoom, pan, filter, search
 - **Color-coded** nodes by type
 - **Smart layouts** with automatic positioning
@@ -148,6 +161,7 @@ When a user creates a note:
 - **Details panel** for selected nodes
 
 ### Rich Note Editor
+
 - **Formatting** - Bold, italic, lists, quotes
 - **Auto-detection** of Bible references
 - **Tagging** system with autocomplete
@@ -183,12 +197,14 @@ When a user creates a note:
 ## 🔍 What Makes This Special
 
 ### For Users
+
 - **Discover connections** they wouldn't notice otherwise
 - **Visual learning** - see how themes connect across Scripture
 - **Quick navigation** between related concepts
 - **Progress tracking** - see study coverage visually
 
 ### For Developers
+
 - **Clean architecture** - Separation of concerns
 - **Type-safe** - Full TypeScript support
 - **Scalable** - Can handle thousands of notes
@@ -197,6 +213,7 @@ When a user creates a note:
 ## 📊 Database Schema
 
 The system uses 4 main tables:
+
 1. **notes** - User's study notes
 2. **graph_nodes** - Visual elements in the graph
 3. **graph_edges** - Connections between nodes
@@ -207,12 +224,14 @@ See `KNOWLEDGE_GRAPH_IMPLEMENTATION.md` for complete schema with SQL.
 ## 🎓 Learning Resources
 
 ### Understanding the Code
+
 - All components heavily commented
 - Follows React best practices
 - Uses modern React patterns (hooks, memo, etc.)
 
 ### Understanding the Architecture
-```
+
+```bash
 User Interface (React Flow)
         ↓
    Components (Node types, Editor)
@@ -225,6 +244,7 @@ User Interface (React Flow)
 ## ⚡ Performance Considerations
 
 Already optimized:
+
 - ✅ React.memo() for node components
 - ✅ Proper indexes on database tables
 - ✅ Efficient edge styling
@@ -233,6 +253,7 @@ Already optimized:
 ## 🤝 Contributing / Extending
 
 Easy to add:
+
 - **New node types** - Copy existing node pattern
 - **New themes** - Insert into themes table
 - **New analysis features** - Add to analyze API
@@ -248,6 +269,7 @@ Easy to add:
 ## 🎉 Success Criteria
 
 You'll know it's working when:
+
 - [x] npm run dev starts without errors
 - [ ] Can navigate to /study/1/graph
 - [ ] See 1 John graph with all pre-loaded nodes

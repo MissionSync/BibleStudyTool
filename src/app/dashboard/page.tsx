@@ -48,36 +48,40 @@ export default function DashboardPage() {
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Navigation */}
       <nav
-        className="content-wide py-6 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)' }}
+        className="content-wide py-4 flex items-center justify-between"
+        style={{
+          borderBottom: '1px solid var(--border-light)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
       >
         <Link
           href="/dashboard"
-          className="text-lg tracking-wide"
+          className="text-lg font-semibold tracking-tight"
           style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
         >
-          Bible Notes Journal
+          biblenotes
         </Link>
         <div className="flex items-center gap-8">
           <Link
             href="/study"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
+            className="text-sm"
+            style={{ color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
           >
             Study Plans
           </Link>
           <Link
             href="/notes"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
+            className="text-sm"
+            style={{ color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
           >
             Notes
           </Link>
           <ThemeToggle />
           <button
             onClick={handleLogout}
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', padding: 0 }}
+            className="text-sm"
+            style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', padding: 0, transition: 'var(--transition-smooth)' }}
           >
             Sign Out
           </button>
@@ -105,7 +109,7 @@ export default function DashboardPage() {
           style={{
             backgroundColor: 'var(--bg-secondary)',
             border: '1px solid var(--border-light)',
-            borderRadius: '2px',
+            borderRadius: 'var(--radius-lg)',
           }}
         >
           <p className="text-xs uppercase tracking-wider mb-3" style={{ color: 'var(--text-tertiary)' }}>
@@ -145,7 +149,7 @@ export default function DashboardPage() {
               className="block p-5 transition-colors"
               style={{
                 border: '1px solid var(--border-light)',
-                borderRadius: '2px',
+                borderRadius: 'var(--radius-lg)',
                 textDecoration: 'none',
               }}
             >
@@ -167,7 +171,7 @@ export default function DashboardPage() {
               className="block p-5 transition-colors"
               style={{
                 border: '1px solid var(--border-light)',
-                borderRadius: '2px',
+                borderRadius: 'var(--radius-lg)',
                 textDecoration: 'none',
               }}
             >
@@ -189,7 +193,7 @@ export default function DashboardPage() {
               className="block p-5 transition-colors"
               style={{
                 border: '1px solid var(--border-light)',
-                borderRadius: '2px',
+                borderRadius: 'var(--radius-lg)',
                 textDecoration: 'none',
               }}
             >
