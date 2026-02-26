@@ -16,6 +16,7 @@ export function useRealtimeSync(userId: string | undefined) {
       `databases.${DATABASE_ID}.collections.${COLLECTIONS.NOTES}.documents`,
       `databases.${DATABASE_ID}.collections.${COLLECTIONS.GRAPH_NODES}.documents`,
       `databases.${DATABASE_ID}.collections.${COLLECTIONS.GRAPH_EDGES}.documents`,
+      `databases.${DATABASE_ID}.collections.${COLLECTIONS.PRAYERS}.documents`,
     ];
 
     const unsubscribe = client.subscribe(channels, (response) => {

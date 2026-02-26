@@ -192,6 +192,13 @@ export default function NotesPage() {
             >
               Notes
             </span>
+            <Link
+              href="/prayer"
+              className="text-sm transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Prayer
+            </Link>
             <ThemeToggle />
           </div>
         </nav>
@@ -263,6 +270,13 @@ export default function NotesPage() {
           >
             Notes
           </span>
+          <Link
+            href="/prayer"
+            className="text-sm transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Prayer
+          </Link>
           <ThemeToggle />
         </div>
       </nav>

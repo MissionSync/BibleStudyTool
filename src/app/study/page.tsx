@@ -121,6 +121,13 @@ export default function StudyPlansPage() {
           >
             Notes
           </Link>
+          <Link
+            href="/prayer"
+            className="text-sm transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Prayer
+          </Link>
           <ThemeToggle />
         </div>
       </nav>

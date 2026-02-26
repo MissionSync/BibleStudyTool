@@ -77,6 +77,13 @@ export default function DashboardPage() {
           >
             Notes
           </Link>
+          <Link
+            href="/prayer"
+            className="text-sm"
+            style={{ color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
+          >
+            Prayer
+          </Link>
           <ThemeToggle />
           <button
             onClick={handleLogout}
@@ -182,6 +189,28 @@ export default function DashboardPage() {
                   </h4>
                   <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                     Your reflections and insights
+                  </p>
+                </div>
+                <span style={{ color: 'var(--text-tertiary)' }}>&rarr;</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/prayer"
+              className="block p-5 transition-colors"
+              style={{
+                border: '1px solid var(--border-light)',
+                borderRadius: 'var(--radius-lg)',
+                textDecoration: 'none',
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="mb-1" style={{ color: 'var(--text-primary)' }}>
+                    Prayer Requests
+                  </h4>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    Share and support one another in prayer
                   </p>
                 </div>
                 <span style={{ color: 'var(--text-tertiary)' }}>&rarr;</span>

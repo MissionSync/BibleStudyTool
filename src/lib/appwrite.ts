@@ -33,4 +33,5 @@ export const COLLECTIONS = {
   GRAPH_NODES: 'graph_nodes',
   GRAPH_EDGES: 'graph_edges',
   THEMES: 'themes',
+  PRAYERS: 'prayers',
 } as const;

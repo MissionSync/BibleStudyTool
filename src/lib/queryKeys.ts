@@ -10,6 +10,10 @@ export const queryKeys = {
   themes: {
     list: () => ['themes', 'list'] as const,
   },
+  prayers: {
+    recent: () => ['prayers', 'recent'] as const,
+    user: (userId: string) => ['prayers', 'user', userId] as const,
+  },
 };
 
 const COLLECTION_KEY_MAP: Record<string, (userId: string) => readonly string[][]> = {
@@ -21,6 +25,10 @@ const COLLECTION_KEY_MAP: Record<string, (userId: string) => readonly string[][]
   ],
   [COLLECTIONS.GRAPH_EDGES]: (userId) => [
     [...queryKeys.graph.full(userId)],
+  ],
+  [COLLECTIONS.PRAYERS]: (userId) => [
+    [...queryKeys.prayers.recent()],
+    [...queryKeys.prayers.user(userId)],
   ],
 };
 
