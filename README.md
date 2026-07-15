@@ -157,7 +157,7 @@ This is a personal Bible study tool project. Feel free to fork and customize for
 
 ## License
 
-[Your chosen license]
+MIT
 
 ## Acknowledgments
 
