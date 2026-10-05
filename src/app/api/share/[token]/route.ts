@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Client, Databases, Query } from 'node-appwrite';
+import { Databases, Query } from 'node-appwrite';
 import DOMPurify from 'isomorphic-dompurify';
-
-function getServerClient() {
-  const client = new Client();
-  client
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
-    .setKey(process.env.APPWRITE_API_KEY!);
-  return new Databases(client);
-}
+import {
+  APPWRITE_SITE_KEY_HEADER,
+  createAppwriteServerClient,
+  resolveAppwriteServerKey,
+} from '@/lib/appwriteServerKey';
 
 interface SharedNoteDocument {
   title: string;
@@ -22,7 +18,7 @@ interface SharedNoteDocument {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params;
@@ -31,7 +27,8 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid share token' }, { status: 400 });
   }
 
-  if (!process.env.APPWRITE_API_KEY) {
+  const apiKey = resolveAppwriteServerKey(request.headers.get(APPWRITE_SITE_KEY_HEADER));
+  if (!apiKey) {
     return NextResponse.json(
       { error: 'Server not configured for sharing' },
       { status: 500 }
@@ -39,7 +36,7 @@ export async function GET(
   }
 
   try {
-    const databases = getServerClient();
+    const databases = new Databases(createAppwriteServerClient(apiKey));
     const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
 
     const response = await databases.listDocuments(databaseId, 'notes', [

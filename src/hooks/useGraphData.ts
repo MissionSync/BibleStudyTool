@@ -20,13 +20,17 @@ async function fetchFullGraphData(userId: string): Promise<{ nodes: Node[]; edge
   const dbEdges = await getAllUserGraphEdges(userId);
 
   const simpleEdges = dbEdges.map((e) => ({ source: e.sourceNodeId, target: e.targetNodeId }));
-  const positions = calculateNodePositions(allNodesForLayout, simpleEdges);
 
-  // Overlay saved positions from localStorage
   let savedPositions: Record<string, { x: number; y: number }> = {};
   if (typeof window !== 'undefined') {
     savedPositions = getSavedPositions(userId);
   }
+
+  const everyItemSaved = allNodesForLayout.length > 0
+    && allNodesForLayout.every((node) => savedPositions[node.$id]);
+  const positions = everyItemSaved
+    ? new Map<string, { x: number; y: number }>()
+    : calculateNodePositions(allNodesForLayout, simpleEdges);
 
   const graphNodesMapped: Node[] = dbNodes.map((dbNode) => {
     const metadata = parseNodeMetadata(dbNode) || {};
@@ -41,6 +45,7 @@ async function fetchFullGraphData(userId: string): Promise<{ nodes: Node[]; edge
         label: dbNode.label,
         description: dbNode.description,
         ...metadata,
+        referenceId: dbNode.referenceId,
       },
     };
   });

@@ -14,9 +14,9 @@ interface GraphStatsProps {
   };
 }
 
-const NODE_TYPE_LABELS: Record<string, string> = {
+const ITEM_TYPE_LABELS: Record<string, string> = {
   book: 'Books',
-  passage: 'Passages',
+  passage: 'Verses',
   note: 'Notes',
   theme: 'Themes',
   person: 'People',
@@ -26,7 +26,6 @@ const NODE_TYPE_LABELS: Record<string, string> = {
 export function GraphStats({ stats }: GraphStatsProps) {
   return (
     <div className="space-y-5 w-48">
-      {/* Overview */}
       <div>
         <h3
           className="text-xs uppercase tracking-wider mb-3"
@@ -50,7 +49,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
               {stats.totalNodes}
             </div>
             <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-              Nodes
+              Items
             </div>
           </div>
           <div
@@ -67,13 +66,12 @@ export function GraphStats({ stats }: GraphStatsProps) {
               {stats.totalEdges}
             </div>
             <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-              Edges
+              Connections
             </div>
           </div>
         </div>
       </div>
 
-      {/* Visible */}
       <div>
         <h3
           className="text-xs uppercase tracking-wider mb-3"
@@ -90,7 +88,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
           }}
         >
           <div className="flex justify-between items-center">
-            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Nodes</span>
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Items</span>
             <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
               {stats.visibleNodes} / {stats.totalNodes}
             </span>
@@ -104,7 +102,6 @@ export function GraphStats({ stats }: GraphStatsProps) {
         </div>
       </div>
 
-      {/* Breakdown */}
       <div>
         <h3
           className="text-xs uppercase tracking-wider mb-3"
@@ -119,7 +116,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
             .map(([type, count]) => (
               <div key={type} className="flex justify-between items-center">
                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  {NODE_TYPE_LABELS[type] || type}
+                  {ITEM_TYPE_LABELS[type] || type}
                 </span>
                 <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
                   {count}

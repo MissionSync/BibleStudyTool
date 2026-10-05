@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client, Databases, Account } from 'node-appwrite';
 import { generateShareToken } from '@/lib/sharing';
+import {
+  APPWRITE_SITE_KEY_HEADER,
+  createAppwriteServerClient,
+  resolveAppwriteServerKey,
+} from '@/lib/appwriteServerKey';
 
-function getServerDatabases() {
-  const client = new Client();
-  client
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
-    .setKey(process.env.APPWRITE_API_KEY!);
-  return new Databases(client);
+function getServerDatabases(apiKey: string) {
+  return new Databases(createAppwriteServerClient(apiKey));
 }
 
 async function getAuthenticatedUserId(request: NextRequest): Promise<string | null> {
@@ -38,7 +38,8 @@ export async function POST(
 ) {
   const { noteId } = await params;
 
-  if (!process.env.APPWRITE_API_KEY) {
+  const apiKey = resolveAppwriteServerKey(request.headers.get(APPWRITE_SITE_KEY_HEADER));
+  if (!apiKey) {
     return NextResponse.json(
       { error: 'Server not configured for sharing' },
       { status: 500 }
@@ -51,7 +52,7 @@ export async function POST(
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getServerDatabases(apiKey);
     const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
 
     const note = await databases.getDocument(databaseId, 'notes', noteId);
@@ -80,7 +81,8 @@ export async function DELETE(
 ) {
   const { noteId } = await params;
 
-  if (!process.env.APPWRITE_API_KEY) {
+  const apiKey = resolveAppwriteServerKey(request.headers.get(APPWRITE_SITE_KEY_HEADER));
+  if (!apiKey) {
     return NextResponse.json(
       { error: 'Server not configured for sharing' },
       { status: 500 }
@@ -93,7 +95,7 @@ export async function DELETE(
   }
 
   try {
-    const databases = getServerDatabases();
+    const databases = getServerDatabases(apiKey);
     const databaseId = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
 
     const note = await databases.getDocument(databaseId, 'notes', noteId);

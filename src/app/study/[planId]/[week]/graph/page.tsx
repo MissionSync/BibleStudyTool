@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -9,10 +9,12 @@ import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useGraphData } from '@/hooks/useGraphData';
-import { useGraphPositions, clearPositions } from '@/hooks/useGraphPositions';
+import { useGraphPositions, clearPositions, getSavedPositions } from '@/hooks/useGraphPositions';
 import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import { queryKeys } from '@/lib/queryKeys';
 import { GraphSkeleton } from '@/components/ui/GraphSkeleton';
+import { StudyMapHint } from '@/components/graph/StudyMapHint';
+import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 
 const KnowledgeGraph = dynamic(
   () => import('@/components/graph/KnowledgeGraph').then((mod) => mod.KnowledgeGraph),
@@ -35,6 +37,10 @@ export default function GraphPage({ params }: PageProps) {
 
   const { data: graphData, isLoading, error: graphError } = useGraphData(user?.$id);
   const { savePositions } = useGraphPositions(user?.$id);
+  const savedPositionIds = useMemo(() => {
+    if (!user?.$id) return [] as string[];
+    return Object.keys(getSavedPositions(user.$id));
+  }, [user?.$id, graphData]);
   const [hasNotes, setHasNotes] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,8 +53,8 @@ export default function GraphPage({ params }: PageProps) {
 
   useEffect(() => {
     if (graphError) {
-      setError('Failed to load graph data.');
-      showToast('Failed to load graph data.', 'error');
+      setError('Could not load your study map.');
+      showToast('Could not load your study map.', 'error');
     }
   }, [graphError, showToast]);
 
@@ -75,11 +81,11 @@ export default function GraphPage({ params }: PageProps) {
     try {
       await generateGraphFromNotes(user.$id);
       await queryClient.invalidateQueries({ queryKey: queryKeys.graph.full(user.$id) });
-      showToast('Knowledge graph generated.', 'success');
+      showToast('Study map updated.', 'success');
     } catch (err) {
-      console.error('Failed to generate graph:', err);
-      setError('Failed to generate graph.');
-      showToast('Failed to generate graph.', 'error');
+      console.error('Failed to build study map:', err);
+      setError('Could not build your study map.');
+      showToast('Could not build your study map.', 'error');
     } finally {
       setGenerating(false);
     }
@@ -167,7 +173,13 @@ export default function GraphPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Graph Container */}
+      <div className="flex-shrink-0 px-6" style={{ maxWidth: 'var(--content-wide)', margin: '0 auto', width: '100%' }}>
+        <FeedbackCard userId={user.$id} className="my-4" />
+      </div>
+
+      {graphData && graphData.nodes.length > 0 && <StudyMapHint />}
+
+      {/* Map */}
       <div className="flex-1 relative min-h-0">
         {isLoading ? (
           <GraphSkeleton />
@@ -183,10 +195,10 @@ export default function GraphPage({ params }: PageProps) {
                     className="text-xl mb-3"
                     style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
                   >
-                    Generate Your Knowledge Graph
+                    Build your study map
                   </h3>
                   <p className="mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Your notes are ready to be visualized. Generate the knowledge graph to see connections between Bible passages, themes, and your study notes.
+                    Your notes are ready. Build your study map to see how verses, themes, and notes connect.
                   </p>
                   <button
                     onClick={handleGenerateGraph}
@@ -194,7 +206,7 @@ export default function GraphPage({ params }: PageProps) {
                     className="btn-primary text-sm"
                     style={{ minWidth: '160px' }}
                   >
-                    {generating ? 'Generating...' : 'Generate Graph'}
+                    {generating ? 'Building...' : 'Build study map'}
                   </button>
                 </>
               ) : (
@@ -206,7 +218,7 @@ export default function GraphPage({ params }: PageProps) {
                     No Notes Yet
                   </h3>
                   <p className="mb-6" style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Start by creating study notes with Bible references and tags. Your knowledge graph will be generated automatically from your notes.
+                    Start by creating study notes with Bible references and tags. Your study map is built from those notes.
                   </p>
                   <Link
                     href="/notes"
@@ -223,19 +235,15 @@ export default function GraphPage({ params }: PageProps) {
           <KnowledgeGraph
             initialNodes={graphData.nodes}
             initialEdges={graphData.edges}
+            savedPositionIds={savedPositionIds}
+            weekReading={week.reading}
             studyPlanId={`${planId}-${weekNumber}`}
-            onNodeClick={(node) => {
-              console.log('Node clicked:', node);
-            }}
-            onNodeDoubleClick={(node) => {
-              console.log('Node double-clicked:', node);
-            }}
             onNodePositionChange={(nodes) => savePositions(nodes)}
             onResetLayout={() => {
               if (user) {
                 clearPositions(user.$id);
                 queryClient.invalidateQueries({ queryKey: queryKeys.graph.full(user.$id) });
-                showToast('Layout reset to default.', 'info');
+                showToast('Layout reset.', 'info');
               }
             }}
           />
@@ -251,7 +259,7 @@ export default function GraphPage({ params }: PageProps) {
           color: 'var(--text-secondary)',
         }}
       >
-        Click nodes to see details. Use filters to focus on specific content types.
+        Click an item to see details. Filters hide items without removing them.
       </div>
     </div>
   );

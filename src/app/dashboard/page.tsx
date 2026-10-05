@@ -7,6 +7,7 @@ import { getStudyWeek, STUDY_PLAN } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 export default function DashboardPage() {
@@ -110,6 +111,8 @@ export default function DashboardPage() {
           </h1>
         </div>
 
+        <FeedbackCard userId={user.$id} className="mb-12" />
+
         {/* Current Week */}
         <section
           className="mb-12 p-6"
@@ -136,7 +139,7 @@ export default function DashboardPage() {
               Begin Reading
             </Link>
             <Link href={`/study/nt/${currentWeek.week}/graph`} className="btn-secondary text-sm">
-              View Graph
+              View study map
             </Link>
           </div>
         </section>
@@ -229,10 +232,10 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="mb-1" style={{ color: 'var(--text-primary)' }}>
-                    Knowledge Graph
+                    Study map
                   </h4>
                   <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    Explore connections between passages and themes
+                    See how your notes and verses connect
                   </p>
                 </div>
                 <span style={{ color: 'var(--text-tertiary)' }}>&rarr;</span>
