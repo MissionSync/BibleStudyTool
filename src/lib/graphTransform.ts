@@ -26,7 +26,7 @@ export interface SimpleEdge {
  * Calculate node positions using Dagre hierarchical layout.
  * Uses edge information to produce connection-aware positioning.
  */
-function calculateNodePositionsDagre(
+export function calculateNodePositionsDagre(
   nodes: SimpleNode[],
   edges: SimpleEdge[],
 ): Map<string, { x: number; y: number }> {
@@ -104,6 +104,74 @@ export function calculateNodePositionsManual(nodes: SimpleNode[]): Map<string, {
 }
 
 /**
+ * Place items evenly around a circle. View-only; nothing is written to storage.
+ */
+export function calculateNodePositionsRadial(nodes: SimpleNode[]): Map<string, { x: number; y: number }> {
+  const positions = new Map<string, { x: number; y: number }>();
+  if (nodes.length === 0) return positions;
+
+  if (nodes.length === 1) {
+    positions.set(nodes[0].$id, { x: 480, y: 360 });
+    return positions;
+  }
+
+  const cx = 480;
+  const cy = 360;
+  const radius = Math.max(220, nodes.length * 28);
+  nodes.forEach((node, index) => {
+    const angle = (2 * Math.PI * index) / nodes.length - Math.PI / 2;
+    positions.set(node.$id, {
+      x: cx + radius * Math.cos(angle),
+      y: cy + radius * Math.sin(angle),
+    });
+  });
+  return positions;
+}
+
+export type StudyMapLayout = 'type' | 'connections' | 'circle';
+
+export interface LayoutItem {
+  id: string;
+  nodeType: string;
+  position: { x: number; y: number };
+}
+
+/**
+ * Apply a layout only to items that do not already have a saved position.
+ * When every item is saved, Dagre is not run.
+ */
+export function applyLayoutPreservingSaved<T extends LayoutItem>(
+  nodes: T[],
+  edges: SimpleEdge[],
+  layout: StudyMapLayout,
+  savedIds: ReadonlySet<string>,
+): T[] {
+  if (nodes.length === 0 || nodes.every((node) => savedIds.has(node.id))) {
+    return nodes;
+  }
+
+  const simpleNodes: SimpleNode[] = nodes.map((node) => ({
+    $id: node.id,
+    nodeType: node.nodeType,
+  }));
+
+  let calculated: Map<string, { x: number; y: number }>;
+  if (layout === 'type') {
+    calculated = calculateNodePositionsManual(simpleNodes);
+  } else if (layout === 'circle') {
+    calculated = calculateNodePositionsRadial(simpleNodes);
+  } else {
+    calculated = calculateNodePositionsDagre(simpleNodes, edges);
+  }
+
+  return nodes.map((node) => {
+    if (savedIds.has(node.id)) return node;
+    const position = calculated.get(node.id);
+    return position ? { ...node, position } : node;
+  });
+}
+
+/**
  * Calculate node positions — uses Dagre when edges are provided, falls back to manual layering.
  */
 export function calculateNodePositions(
@@ -128,7 +196,19 @@ export interface ThemeNodeData {
   metadata: string;
 }
 
+const THEME_CACHE_MS = 5 * 60 * 1000;
+let themeNodeCache: { at: number; data: ThemeNodeData[] } | null = null;
+
+/** Drop the in-memory theme list. Does not touch theme documents. */
+export function clearThemeNodeCache() {
+  themeNodeCache = null;
+}
+
 export async function fetchThemeNodes(): Promise<ThemeNodeData[]> {
+  if (themeNodeCache && Date.now() - themeNodeCache.at < THEME_CACHE_MS) {
+    return themeNodeCache.data;
+  }
+
   try {
     const response = await databases.listDocuments(
       DATABASE_ID,
@@ -136,13 +216,15 @@ export async function fetchThemeNodes(): Promise<ThemeNodeData[]> {
       [Query.limit(100)]
     );
 
-    return response.documents.map((doc) => ({
+    const data = response.documents.map((doc) => ({
       $id: doc.$id,
       nodeType: 'theme' as const,
       label: doc.name,
       description: doc.description,
       metadata: JSON.stringify({ color: doc.color }),
     }));
+    themeNodeCache = { at: Date.now(), data };
+    return data;
   } catch (error) {
     console.error('Failed to fetch themes:', error);
     return [];

@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Node } from 'reactflow';
 
 interface NodeDetailsPanelProps {
@@ -10,16 +11,16 @@ interface NodeDetailsPanelProps {
   studyPlanId?: string;
 }
 
-const NODE_TYPE_LABELS: Record<string, string> = {
+const ITEM_TYPE_LABELS: Record<string, string> = {
   note: 'Note',
-  passage: 'Passage',
+  passage: 'Verse',
   theme: 'Theme',
   person: 'Person',
   book: 'Book',
   place: 'Place',
 };
 
-const NODE_COLORS: Record<string, string> = {
+const ITEM_COLORS: Record<string, string> = {
   note: '--node-note',
   passage: '--node-passage',
   theme: '--node-theme',
@@ -28,11 +29,38 @@ const NODE_COLORS: Record<string, string> = {
   place: '--node-place',
 };
 
-export function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
-  const colorVar = NODE_COLORS[node.type as keyof typeof NODE_COLORS] || '--border-medium';
-  const typeLabel = NODE_TYPE_LABELS[node.type as keyof typeof NODE_TYPE_LABELS] || 'Node';
+function leadSentence(node: Node): string {
+  const label = node.data.label || 'this';
+  switch (node.type) {
+    case 'note':
+      return `This is your note about ${label}.`;
+    case 'passage':
+      return `This verse is ${label}.`;
+    case 'book':
+      return `This book is ${label}.`;
+    case 'theme':
+      return `This theme is ${label}.`;
+    case 'person':
+      return `This person is ${label}.`;
+    case 'place':
+      return `This place is ${label}.`;
+    default:
+      return `This is ${label}.`;
+  }
+}
 
-  const renderNodeSpecificDetails = () => {
+function noteIdFromNode(node: Node): string | null {
+  const referenceId = node.data.referenceId;
+  if (typeof referenceId === 'string' && referenceId.length > 0) return referenceId;
+  return null;
+}
+
+export function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
+  const colorVar = ITEM_COLORS[node.type as keyof typeof ITEM_COLORS] || '--border-medium';
+  const typeLabel = ITEM_TYPE_LABELS[node.type as keyof typeof ITEM_TYPE_LABELS] || 'Item';
+  const noteId = node.type === 'note' ? noteIdFromNode(node) : null;
+
+  const renderItemDetails = () => {
     switch (node.type) {
       case 'note':
         return (
@@ -195,7 +223,6 @@ export function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
         borderLeft: '1px solid var(--border-light)',
       }}
     >
-      {/* Header */}
       <div
         className="p-5"
         style={{ borderBottom: '1px solid var(--border-light)' }}
@@ -226,47 +253,29 @@ export function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-y-auto p-5">
-        {renderNodeSpecificDetails()}
-
-        {/* Node ID */}
-        <div
-          className="pt-4 mt-4"
-          style={{ borderTop: '1px solid var(--border-light)' }}
-        >
-          <div
-            className="text-xs uppercase tracking-wider mb-1"
-            style={{ color: 'var(--text-tertiary)' }}
-          >
-            Node ID
-          </div>
-          <div
-            className="text-xs break-all"
-            style={{ color: 'var(--text-tertiary)', fontFamily: 'monospace' }}
-          >
-            {node.id}
-          </div>
-        </div>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-primary)', lineHeight: 1.6 }}>
+          {leadSentence(node)}
+        </p>
+        {renderItemDetails()}
       </div>
 
-      {/* Actions */}
       <div
         className="p-5 space-y-2"
         style={{ borderTop: '1px solid var(--border-light)' }}
       >
-        {node.type === 'note' && (
-          <button className="btn-primary w-full text-sm">
-            Edit Note
-          </button>
+        {noteId && (
+          <Link href={`/notes?note=${encodeURIComponent(noteId)}`} className="btn-primary w-full text-sm" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+            Open this note
+          </Link>
         )}
         {node.type === 'passage' && (
           <button className="btn-primary w-full text-sm">
-            Read Passage
+            Read passage
           </button>
         )}
         <button className="btn-secondary w-full text-sm">
-          View Connections
+          View connections
         </button>
       </div>
     </div>

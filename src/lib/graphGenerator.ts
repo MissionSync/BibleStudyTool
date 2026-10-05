@@ -1,6 +1,7 @@
 /**
  * Graph Generator
- * Generates knowledge graph nodes and edges from user's notes
+ * Generates knowledge graph nodes and edges from user's notes.
+ * Creates only missing items. Existing documents are never deleted or rewritten.
  */
 
 import { Query } from 'appwrite';
@@ -9,105 +10,147 @@ import { extractBookName } from './bibleParser';
 import { findPeopleInText, findPlacesInText } from './bibleEntities';
 import {
   createGraphNode,
-  getUserGraphNodes,
+  getAllUserGraphNodes,
   type GraphNode,
   type NodeType,
 } from './appwrite/graphNodes';
 import {
   createGraphEdge,
-  edgeExists,
+  getAllUserGraphEdges,
   type GraphEdge,
   type EdgeType,
 } from './appwrite/graphEdges';
 import { type Note } from './appwrite/notes';
 
-/**
- * Find an existing node by type and referenceId
- */
-async function findNodeByReference(
-  userId: string,
-  nodeType: NodeType,
-  referenceId: string
-): Promise<GraphNode | null> {
-  try {
-    const response = await databases.listDocuments<GraphNode>(
-      DATABASE_ID,
-      COLLECTIONS.GRAPH_NODES,
-      [
-        Query.equal('userId', userId),
-        Query.equal('nodeType', nodeType),
-        Query.equal('referenceId', referenceId),
-        Query.limit(1),
-      ]
-    );
+const NOTE_PAGE_SIZE = 100;
 
-    if (response.documents.length > 0) {
-      return response.documents[0];
+interface GraphCache {
+  nodesByKey: Map<string, GraphNode>;
+  edgeKeys: Set<string>;
+}
+
+function nodeKey(nodeType: string, referenceId: string) {
+  return `${nodeType}\0${referenceId}`;
+}
+
+function edgeKey(sourceNodeId: string, targetNodeId: string) {
+  return `${sourceNodeId}\0${targetNodeId}`;
+}
+
+async function loadGraphCache(userId: string): Promise<GraphCache> {
+  const [nodes, edges] = await Promise.all([
+    getAllUserGraphNodes(userId),
+    getAllUserGraphEdges(userId),
+  ]);
+
+  const nodesByKey = new Map<string, GraphNode>();
+  for (const node of nodes) {
+    if (node.referenceId) {
+      nodesByKey.set(nodeKey(node.nodeType, node.referenceId), node);
     }
-    return null;
-  } catch (error) {
-    console.error('Error finding node:', error);
-    return null;
   }
+
+  const edgeKeys = new Set<string>();
+  for (const edge of edges) {
+    edgeKeys.add(edgeKey(edge.sourceNodeId, edge.targetNodeId));
+  }
+
+  return { nodesByKey, edgeKeys };
 }
 
 /**
- * Create or get existing node
+ * Create or get existing node. Lookup is in memory for this generation pass.
  */
 async function createOrGetNode(
+  cache: GraphCache,
   userId: string,
   nodeType: NodeType,
   label: string,
   referenceId: string,
   description?: string
 ): Promise<GraphNode> {
-  // Check if node already exists
-  const existing = await findNodeByReference(userId, nodeType, referenceId);
+  const existing = cache.nodesByKey.get(nodeKey(nodeType, referenceId));
   if (existing) {
     return existing;
   }
 
-  // Create new node
-  return await createGraphNode({
+  const created = await createGraphNode({
     userId,
     nodeType,
     label,
     referenceId,
     description,
   });
+  cache.nodesByKey.set(nodeKey(nodeType, referenceId), created);
+  return created;
 }
 
 /**
- * Create edge if it doesn't exist
+ * Create edge if it doesn't exist. Existing edges are left untouched.
  */
 async function createEdgeIfNotExists(
+  cache: GraphCache,
   userId: string,
   sourceNodeId: string,
   targetNodeId: string,
   edgeType: EdgeType
 ): Promise<GraphEdge | null> {
-  try {
-    const exists = await edgeExists(userId, sourceNodeId, targetNodeId);
-    if (exists) {
-      return null;
-    }
+  const key = edgeKey(sourceNodeId, targetNodeId);
+  if (cache.edgeKeys.has(key)) {
+    return null;
+  }
 
-    return await createGraphEdge({
+  try {
+    const created = await createGraphEdge({
       userId,
       sourceNodeId,
       targetNodeId,
       edgeTyp: edgeType,
     });
+    cache.edgeKeys.add(key);
+    return created;
   } catch (error) {
     console.error('Error creating edge:', error);
     return null;
   }
 }
 
+async function listAllActiveNotes(userId: string): Promise<Note[]> {
+  const notes: Note[] = [];
+  let cursor: string | undefined;
+
+  while (true) {
+    const queries = [
+      Query.equal('userId', userId),
+      Query.equal('isArchived', false),
+      Query.limit(NOTE_PAGE_SIZE),
+    ];
+    if (cursor) {
+      queries.push(Query.cursorAfter(cursor));
+    }
+
+    const response = await databases.listDocuments<Note>(
+      DATABASE_ID,
+      COLLECTIONS.NOTES,
+      queries
+    );
+
+    notes.push(...response.documents);
+    if (response.documents.length < NOTE_PAGE_SIZE) break;
+    cursor = response.documents[response.documents.length - 1].$id;
+  }
+
+  return notes;
+}
+
 /**
- * Generate graph nodes and edges for a single note
+ * Generate graph nodes and edges for a single note.
+ * Loads the user's items once when a cache is not provided.
  */
-export async function generateGraphForNote(note: Note): Promise<{
+export async function generateGraphForNote(
+  note: Note,
+  cache?: GraphCache,
+): Promise<{
   noteNode: GraphNode;
   passageNodes: GraphNode[];
   bookNodes: GraphNode[];
@@ -117,6 +160,7 @@ export async function generateGraphForNote(note: Note): Promise<{
   edges: GraphEdge[];
 }> {
   const userId = note.userId;
+  const graphCache = cache ?? await loadGraphCache(userId);
   const edges: GraphEdge[] = [];
   const passageNodes: GraphNode[] = [];
   const bookNodes: GraphNode[] = [];
@@ -124,8 +168,8 @@ export async function generateGraphForNote(note: Note): Promise<{
   const personNodes: GraphNode[] = [];
   const placeNodes: GraphNode[] = [];
 
-  // 1. Create note node
   const noteNode = await createOrGetNode(
+    graphCache,
     userId,
     'note',
     note.title,
@@ -133,7 +177,6 @@ export async function generateGraphForNote(note: Note): Promise<{
     note.contentPlan?.substring(0, 200) || note.content?.substring(0, 200)
   );
 
-  // 2. Process Bible references
   const bibleReferences = note.bibleReferences || [];
   const processedBooks = new Set<string>();
   const processedPassages = new Set<string>();
@@ -145,8 +188,8 @@ export async function generateGraphForNote(note: Note): Promise<{
     if (processedPassages.has(ref)) continue;
     processedPassages.add(ref);
 
-    // Create passage node
     const passageNode = await createOrGetNode(
+      graphCache,
       userId,
       'passage',
       ref,
@@ -155,8 +198,8 @@ export async function generateGraphForNote(note: Note): Promise<{
     );
     passageNodes.push(passageNode);
 
-    // Create edge: note -> passage (references)
     const noteToPassageEdge = await createEdgeIfNotExists(
+      graphCache,
       userId,
       noteNode.$id,
       passageNode.$id,
@@ -164,12 +207,12 @@ export async function generateGraphForNote(note: Note): Promise<{
     );
     if (noteToPassageEdge) edges.push(noteToPassageEdge);
 
-    // Extract book name and create book node
     const bookName = extractBookName(ref);
     if (bookName && !processedBooks.has(bookName)) {
       processedBooks.add(bookName);
 
       const bookNode = await createOrGetNode(
+        graphCache,
         userId,
         'book',
         bookName,
@@ -178,8 +221,8 @@ export async function generateGraphForNote(note: Note): Promise<{
       );
       bookNodes.push(bookNode);
 
-      // Create edge: passage -> book (references)
       const passageToBookEdge = await createEdgeIfNotExists(
+        graphCache,
         userId,
         passageNode.$id,
         bookNode.$id,
@@ -189,7 +232,6 @@ export async function generateGraphForNote(note: Note): Promise<{
     }
   }
 
-  // 3. Process tags as themes
   const tags = note.tags || [];
   for (const tag of tags) {
     const tagKey = tag.toLowerCase();
@@ -197,6 +239,7 @@ export async function generateGraphForNote(note: Note): Promise<{
     processedThemes.add(tagKey);
 
     const themeNode = await createOrGetNode(
+      graphCache,
       userId,
       'theme',
       tag,
@@ -205,8 +248,8 @@ export async function generateGraphForNote(note: Note): Promise<{
     );
     themeNodes.push(themeNode);
 
-    // Create edge: note -> theme (theme_connection)
     const noteToThemeEdge = await createEdgeIfNotExists(
+      graphCache,
       userId,
       noteNode.$id,
       themeNode.$id,
@@ -215,7 +258,6 @@ export async function generateGraphForNote(note: Note): Promise<{
     if (noteToThemeEdge) edges.push(noteToThemeEdge);
   }
 
-  // 4. Detect and process people mentioned in content
   const noteText = `${note.title} ${note.contentPlan || note.content || ''}`;
   const detectedPeople = findPeopleInText(noteText);
 
@@ -225,6 +267,7 @@ export async function generateGraphForNote(note: Note): Promise<{
     processedPeople.add(personKey);
 
     const personNode = await createOrGetNode(
+      graphCache,
       userId,
       'person',
       person.name,
@@ -233,8 +276,8 @@ export async function generateGraphForNote(note: Note): Promise<{
     );
     personNodes.push(personNode);
 
-    // Create edge: note -> person (mentions)
     const noteToPersonEdge = await createEdgeIfNotExists(
+      graphCache,
       userId,
       noteNode.$id,
       personNode.$id,
@@ -243,7 +286,6 @@ export async function generateGraphForNote(note: Note): Promise<{
     if (noteToPersonEdge) edges.push(noteToPersonEdge);
   }
 
-  // 5. Detect and process places mentioned in content
   const detectedPlaces = findPlacesInText(noteText);
 
   for (const place of detectedPlaces) {
@@ -252,6 +294,7 @@ export async function generateGraphForNote(note: Note): Promise<{
     processedPlaces.add(placeKey);
 
     const placeNode = await createOrGetNode(
+      graphCache,
       userId,
       'place',
       place.name,
@@ -260,8 +303,8 @@ export async function generateGraphForNote(note: Note): Promise<{
     );
     placeNodes.push(placeNode);
 
-    // Create edge: note -> place (mentions)
     const noteToPlaceEdge = await createEdgeIfNotExists(
+      graphCache,
       userId,
       noteNode.$id,
       placeNode.$id,
@@ -282,7 +325,7 @@ export async function generateGraphForNote(note: Note): Promise<{
 }
 
 /**
- * Generate full graph from all user's notes
+ * Generate full graph from all user's notes, including notes past the first page.
  */
 export async function generateGraphFromNotes(userId: string): Promise<{
   nodes: GraphNode[];
@@ -297,18 +340,8 @@ export async function generateGraphFromNotes(userId: string): Promise<{
     edgeCount: number;
   };
 }> {
-  // Fetch all user's notes
-  const notesResponse = await databases.listDocuments<Note>(
-    DATABASE_ID,
-    COLLECTIONS.NOTES,
-    [
-      Query.equal('userId', userId),
-      Query.equal('isArchived', false),
-      Query.limit(100),
-    ]
-  );
-
-  const notes = notesResponse.documents;
+  const notes = await listAllActiveNotes(userId);
+  const cache = await loadGraphCache(userId);
   const allNodes: GraphNode[] = [];
   const allEdges: GraphEdge[] = [];
 
@@ -319,9 +352,8 @@ export async function generateGraphFromNotes(userId: string): Promise<{
   const personNodes: GraphNode[] = [];
   const placeNodes: GraphNode[] = [];
 
-  // Process each note
   for (const note of notes) {
-    const result = await generateGraphForNote(note);
+    const result = await generateGraphForNote(note, cache);
 
     noteNodes.push(result.noteNode);
     passageNodes.push(...result.passageNodes);
@@ -332,7 +364,6 @@ export async function generateGraphFromNotes(userId: string): Promise<{
     allEdges.push(...result.edges);
   }
 
-  // Deduplicate nodes by ID
   const nodeMap = new Map<string, GraphNode>();
   [...noteNodes, ...passageNodes, ...bookNodes, ...themeNodes, ...personNodes, ...placeNodes].forEach(node => {
     nodeMap.set(node.$id, node);

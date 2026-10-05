@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { type Note } from '@/lib/appwrite/notes';
+import { getNote, type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
@@ -33,6 +33,32 @@ export default function NotesPage() {
       router.push('/auth/login');
     }
   }, [user, authLoading, router]);
+
+  const openedNoteFromUrl = useRef<string | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    const noteId = new URLSearchParams(window.location.search).get('note');
+    if (!noteId || openedNoteFromUrl.current === noteId) return;
+
+    const loaded = notes.find((note) => note.$id === noteId);
+    if (loaded) {
+      openedNoteFromUrl.current = noteId;
+      setEditingNote(loaded);
+      return;
+    }
+    if (isLoading) return;
+
+    openedNoteFromUrl.current = noteId;
+    getNote(noteId)
+      .then((note) => {
+        if (note.userId === user.$id) {
+          setEditingNote(note);
+        }
+      })
+      .catch(() => {
+        // Leave the list in place if this note cannot be opened.
+      });
+  }, [user, notes, isLoading]);
 
   const handleSaveNote = async (noteData: {
     title: string;

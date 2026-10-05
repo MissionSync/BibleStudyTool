@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "seed:1john": "tsx src/scripts/seedOneJohn.ts",
     "clear:graph": "tsx src/scripts/clearGraphData.ts",
+    "export:collections": "tsx src/scripts/exportCollections.ts",
     "analyze": "ANALYZE=true next build --webpack"
   },
   "dependencies": {

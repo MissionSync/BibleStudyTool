@@ -12,8 +12,8 @@ A Next.js-based Bible study application with interactive knowledge graph visuali
 
 ## Tech Stack
 
-- **Frontend:** Next.js 14, React, TypeScript, TailwindCSS
-- **Backend:** Appwrite Cloud (managed BaaS)
+- **App:** Next.js, React, TypeScript, TailwindCSS, hosted as an Appwrite SSR Site
+- **Data and auth:** the same Appwrite project as the site
 - **Visualization:** React Flow, D3.js
 - **Editor:** TipTap (rich text editor)
 - **State Management:** Zustand
@@ -121,19 +121,25 @@ Full schema details are in `Deployment_Alternatives.md`.
 
 ## Deployment
 
-### Backend (Appwrite Cloud)
+The Next.js app and its data live in one Appwrite project. Notes, the study map, auth, and the website are that same project, hosted as an Appwrite Site with server-side rendering.
 
-- Sign up at <https://cloud.appwrite.io>
-- Use the free tier (75K MAU, 2GB storage)
-- Follow setup guide in `Deployment_Alternatives.md`
+In the Appwrite console, create a Site from this repository:
 
-### Frontend Options
+- Framework: Next.js
+- Install command: `npm install`
+- Build command: `npm run build`
+- Output directory: `./.next`
+- Rendering: server-side rendering
 
-- **Vercel** (Recommended) - `vercel deploy`
-- **Netlify** - `netlify deploy`
-- **Cloudflare Pages** - Connect GitHub repo
+Set the public variables from `.env.example` (`NEXT_PUBLIC_APPWRITE_ENDPOINT`, `NEXT_PUBLIC_APPWRITE_PROJECT_ID`, `NEXT_PUBLIC_APPWRITE_DATABASE_ID`) to this project. Add the site hostname as a Web platform so login cookies match the site.
 
-All options offer free tiers with SSL, CDN, and automatic deployments.
+Server routes read the ephemeral Appwrite Sites key from the `x-appwrite-key` request header. For local `npm run dev`, they fall back to `APPWRITE_API_KEY` in `.env.local`. Do not commit that key. On the site, grant the dynamic key users read, databases read and write, and messages write.
+
+Collection schema details are in `Deployment_Alternatives.md`.
+
+### Read-only collection export
+
+`npm run export:collections` pages `notes`, `graph_nodes`, `graph_edges`, `themes`, `prayers`, and `feedback_responses` into a timestamped JSON file under `backups/`. It only lists documents. It does not create, update, or delete anything. Restore a downloaded archive into an empty project before treating it as a proven copy. Auth users are not part of this export.
 
 ## Development
 

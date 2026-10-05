@@ -23,7 +23,7 @@ export const PassageNode = memo(({ data, selected }: NodeProps) => {
         className="text-xs uppercase tracking-wider mb-1"
         style={{ color: 'var(--node-passage)' }}
       >
-        Passage
+        Verse
       </div>
       <div
         style={{

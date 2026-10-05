@@ -50,3 +50,6 @@ public/swe-worker-*.js
 
 # Design reference
 /bible-notes-journal
+
+# Read-only collection archives (may contain private notes)
+/backups
