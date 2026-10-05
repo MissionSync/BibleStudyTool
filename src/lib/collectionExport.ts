@@ -32,7 +32,21 @@ export interface CollectionArchive {
   databaseId: string;
   readOnly: true;
   counts: Record<string, number>;
+  /** Collection ids that were not created yet. They are omitted from counts. */
+  missing: string[];
   collections: Record<string, ExportDocument[]>;
+}
+
+/**
+ * True only for a missing collection. Other 404s, including a missing document, stay failures.
+ */
+export function isMissingCollectionError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  const record = error as { code?: unknown; type?: unknown; message?: unknown };
+  if (record.code !== 404) return false;
+  if (record.type === 'collection_not_found') return true;
+  const message = typeof record.message === 'string' ? record.message : '';
+  return /collection/i.test(message) && /not found/i.test(message);
 }
 
 /**
@@ -80,12 +94,18 @@ export async function exportCollections(options: {
 }): Promise<CollectionArchive> {
   const collectionIds = options.collections ?? EXPORT_COLLECTIONS;
   const collections: Record<string, ExportDocument[]> = {};
+  const missing: string[] = [];
 
   for (const collectionId of collectionIds) {
-    collections[collectionId] = await pageCollectionDocuments(
-      (queries) => options.databases.listDocuments(options.databaseId, collectionId, queries),
-      options.pageSize,
-    );
+    try {
+      collections[collectionId] = await pageCollectionDocuments(
+        (queries) => options.databases.listDocuments(options.databaseId, collectionId, queries),
+        options.pageSize,
+      );
+    } catch (error) {
+      if (!isMissingCollectionError(error)) throw error;
+      missing.push(collectionId);
+    }
   }
 
   const counts = Object.fromEntries(
@@ -97,6 +117,7 @@ export async function exportCollections(options: {
     databaseId: options.databaseId,
     readOnly: true,
     counts,
+    missing,
     collections,
   };
 }

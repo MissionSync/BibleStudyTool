@@ -139,7 +139,7 @@ Collection schema details are in `Deployment_Alternatives.md`.
 
 ### Read-only collection export
 
-`npm run export:collections` pages `notes`, `graph_nodes`, `graph_edges`, `themes`, `prayers`, and `feedback_responses` into a timestamped JSON file under `backups/`. It only lists documents. It does not create, update, or delete anything. Restore a downloaded archive into an empty project before treating it as a proven copy. Auth users are not part of this export.
+`npm run export:collections` pages `notes`, `graph_nodes`, `graph_edges`, `themes`, `prayers`, and `feedback_responses` into a timestamped JSON file under `backups/`. It only lists documents. It does not create, update, or delete anything. If `feedback_responses` has not been created yet, that id is recorded as missing and the rest of the archive, including notes, is still written. Restore a downloaded archive into a new empty project before treating it as a proven copy. Do not import it into the live project. Auth users are not part of this export.
 
 ## Development
 

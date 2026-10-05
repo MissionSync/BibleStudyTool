@@ -2,7 +2,8 @@
  * Read-only export of study collections to a timestamped JSON archive.
  *
  * Lists documents and writes a local file. Does not create, update, or delete
- * Appwrite documents, collections, or users.
+ * Appwrite documents, collections, or users. A collection that does not exist
+ * yet is recorded as missing; the archive of the other collections is still written.
  *
  * Usage: npm run export:collections
  * Requires .env.local (endpoint, project id, database id, API key).
@@ -60,6 +61,13 @@ async function main() {
   console.log(`Wrote ${filePath}`);
   for (const [collectionId, count] of Object.entries(archive.counts)) {
     console.log(`  ${collectionId}: ${count}`);
+  }
+  for (const collectionId of archive.missing) {
+    console.error(`  ${collectionId}: collection not found, skipped`);
+  }
+  if (archive.missing.includes('notes')) {
+    console.error('Notes were not listed, so this archive is not a backup of current notes.');
+    process.exitCode = 1;
   }
 }
 

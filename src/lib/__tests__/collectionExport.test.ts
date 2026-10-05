@@ -5,6 +5,7 @@ import {
   EXPORT_COLLECTIONS,
   archiveFileName,
   exportCollections,
+  isMissingCollectionError,
   pageCollectionDocuments,
   type DocumentLister,
   type ExportDocument,
@@ -55,9 +56,68 @@ describe('exportCollections', () => {
     expect(calls.map((call) => call.collectionId)).toEqual([...EXPORT_COLLECTIONS]);
     expect(Object.keys(databases)).toEqual(['listDocuments']);
     expect(archive.readOnly).toBe(true);
+    expect(archive.missing).toEqual([]);
     expect(archive.counts.notes).toBe(1);
     expect(archive.counts.feedback_responses).toBe(0);
     expect(archive.collections.notes[0].title).toBe('Sample');
+  });
+
+  it('keeps listed notes when feedback_responses does not exist yet', async () => {
+    const databases: DocumentLister = {
+      listDocuments: async (_databaseId, collectionId) => {
+        if (collectionId === 'feedback_responses') {
+          throw { code: 404, type: 'collection_not_found', message: 'Collection with the requested ID could not be found.' };
+        }
+        const documents: ExportDocument[] = collectionId === 'notes'
+          ? [{ $id: 'note-1', title: 'Kept' }]
+          : [];
+        return { documents };
+      },
+    };
+
+    const archive = await exportCollections({
+      databases,
+      databaseId: 'bible_study',
+      exportedAt: '2026-10-05T08:31:00.000Z',
+    });
+
+    expect(archive.missing).toEqual(['feedback_responses']);
+    expect(archive.counts.notes).toBe(1);
+    expect(archive.counts.feedback_responses).toBeUndefined();
+    expect(archive.collections.notes[0].title).toBe('Kept');
+    expect(archive.collections.feedback_responses).toBeUndefined();
+    expect(Object.keys(databases)).toEqual(['listDocuments']);
+  });
+
+  it('still fails when a list error is not a missing collection', async () => {
+    const databases: DocumentLister = {
+      listDocuments: async () => {
+        throw { code: 401, type: 'user_unauthorized', message: 'The current user is not authorized.' };
+      },
+    };
+
+    await expect(exportCollections({
+      databases,
+      databaseId: 'bible_study',
+      exportedAt: '2026-10-05T08:31:00.000Z',
+      collections: ['notes'],
+    })).rejects.toMatchObject({ code: 401 });
+  });
+});
+
+describe('isMissingCollectionError', () => {
+  it('accepts only a 404 for a missing collection', () => {
+    expect(isMissingCollectionError({
+      code: 404,
+      type: 'collection_not_found',
+      message: 'Collection with the requested ID could not be found.',
+    })).toBe(true);
+    expect(isMissingCollectionError({
+      code: 404,
+      type: 'document_not_found',
+      message: 'Document with the requested ID could not be found.',
+    })).toBe(false);
+    expect(isMissingCollectionError({ code: 401, type: 'user_unauthorized', message: 'no' })).toBe(false);
   });
 });
 
