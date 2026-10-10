@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         await messaging.createEmail({
           messageId: ID.unique(),
           subject: 'A few questions about your study map',
-          content: 'Open Bible Notes and answer five short questions about your study map. It only takes a minute.',
+          content: 'Thank you for using Bible Notes Journal, please open the app and answer a couple of questions and give me some feedback on how the app can be better.',
           users: [user.$id],
         });
 
