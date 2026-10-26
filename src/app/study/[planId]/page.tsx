@@ -7,6 +7,7 @@ import { Check } from 'lucide-react';
 import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { SupportLink } from '@/components/ui/SupportLink';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 interface PageProps {
@@ -237,6 +238,7 @@ export default function PlanDetailPage({ params }: PageProps) {
             MissionSync Lab
           </a>
         </div>
+        <SupportLink />
       </footer>
     </div>
   );

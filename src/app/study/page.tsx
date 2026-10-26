@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getAllStudyPlans } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { SupportLink } from '@/components/ui/SupportLink';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 function PlanCard({ plan }: { plan: { id: string; title: string; description: string; totalWeeks: number } }) {
@@ -208,6 +209,7 @@ export default function StudyPlansPage() {
             MissionSync Lab
           </a>
         </div>
+        <SupportLink />
       </footer>
     </div>
   );
