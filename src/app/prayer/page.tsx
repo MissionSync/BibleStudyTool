@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { usePrayers } from '@/hooks/usePrayers';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { SupportLink } from '@/components/ui/SupportLink';
 import { type Prayer } from '@/lib/appwrite/prayers';
 
 const PRAYER_MAX_LENGTH = 255;
@@ -613,6 +614,7 @@ export default function PrayerPage() {
             MissionSync Lab
           </a>
         </div>
+        <SupportLink />
       </footer>
     </div>
   );

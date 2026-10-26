@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Databases, Query } from 'node-appwrite';
 import DOMPurify from 'isomorphic-dompurify';
+import { SupportLink } from '@/components/ui/SupportLink';
 import {
   APPWRITE_SITE_KEY_HEADER,
   createAppwriteServerClient,
@@ -176,6 +177,7 @@ export default async function SharedNotePage({ params }: PageProps) {
             MissionSync Lab
           </a>
         </div>
+        <SupportLink />
       </footer>
     </div>
   );

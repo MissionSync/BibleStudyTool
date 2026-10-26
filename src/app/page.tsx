@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { SupportLink } from '@/components/ui/SupportLink';
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -349,6 +350,7 @@ export default function LandingPage() {
               MissionSync Lab
             </a>
           </div>
+          <SupportLink />
         </div>
       </footer>
     </div>

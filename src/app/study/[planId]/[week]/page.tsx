@@ -8,6 +8,7 @@ import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
+import { SupportLink } from '@/components/ui/SupportLink';
 
 interface PageProps {
   params: Promise<{ planId: string; week: string }>;
@@ -255,6 +256,7 @@ export default function WeekDetailPage({ params }: PageProps) {
             MissionSync Lab
           </a>
         </div>
+        <SupportLink />
       </footer>
     </div>
   );

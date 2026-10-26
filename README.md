@@ -135,6 +135,12 @@ Set the public variables from `.env.example` (`NEXT_PUBLIC_APPWRITE_ENDPOINT`, `
 
 Server routes read the ephemeral Appwrite Sites key from the `x-appwrite-key` request header. For local `npm run dev`, they fall back to `APPWRITE_API_KEY` in `.env.local`. Do not commit that key. On the site, grant the dynamic key users read, databases read and write, and messages write.
 
+### Optional support link
+
+Create a Stripe Payment Link with "Let customers choose what to pay", suggested $3, minimum $1, then set `STRIPE_SUPPORT_LINK`.
+
+Next.js inlines public env vars at build time and only exposes names that start with `NEXT_PUBLIC_`. The exact variable is `NEXT_PUBLIC_STRIPE_SUPPORT_LINK`. The footer reads it from the `STRIPE_SUPPORT_LINK` constant. If the variable is unset or empty, the link is not rendered. No Stripe secret key or SDK is required. Set the variable in the Appwrite Site environment before building so the footer can include it.
+
 Collection schema details are in `Deployment_Alternatives.md`.
 
 ### Read-only collection export

@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { FeedbackCard } from '@/components/feedback/FeedbackCard';
+import { SupportLink } from '@/components/ui/SupportLink';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 export default function DashboardPage() {
@@ -262,6 +263,7 @@ export default function DashboardPage() {
             MissionSync Lab
           </a>
         </div>
+        <SupportLink />
       </footer>
     </div>
   );
