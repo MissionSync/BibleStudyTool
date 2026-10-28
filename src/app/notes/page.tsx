@@ -10,6 +10,7 @@ import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
+import { PoietesCredit } from '@/components/ui/PoietesCredit';
 import { SupportLink } from '@/components/ui/SupportLink';
 import { getShareUrl } from '@/lib/sharing';
 
@@ -653,6 +654,7 @@ export default function NotesPage() {
           >
             MissionSync Lab
           </a>
+          <PoietesCredit />
         </div>
         <SupportLink />
       </footer>

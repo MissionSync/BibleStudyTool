@@ -8,6 +8,7 @@ import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
+import { PoietesCredit } from '@/components/ui/PoietesCredit';
 import { SupportLink } from '@/components/ui/SupportLink';
 
 interface PageProps {
@@ -255,6 +256,7 @@ export default function WeekDetailPage({ params }: PageProps) {
           >
             MissionSync Lab
           </a>
+          <PoietesCredit />
         </div>
         <SupportLink />
       </footer>
