@@ -68,33 +68,13 @@ export default async function SharedNotePage({ params }: PageProps) {
       className="min-h-screen"
       style={{ backgroundColor: 'var(--bg-primary)' }}
     >
-      <nav
-        style={{
-          maxWidth: 'var(--content-narrow)',
-          margin: '0 auto',
-          padding: '1.5rem',
-          borderBottom: '1px solid var(--border-light)',
-        }}
-      >
-        <span
-          className="text-lg tracking-wide"
-          style={{
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--text-primary)',
-          }}
-        >
-          Bible Notes Journal
-        </span>
-        <span
-          className="ml-3 text-xs px-2 py-0.5"
-          style={{
-            backgroundColor: 'var(--highlight-sage)',
-            color: 'var(--text-secondary)',
-            borderRadius: 'var(--radius-pill)',
-          }}
-        >
-          Shared Note
-        </span>
+      <nav className="mast">
+        <div className="wrap mast-inner" style={{ gridTemplateColumns: '1fr' }}>
+          <div>
+            <span className="brand-mark">Bible Notes Journal</span>
+            <span className="caps share-kicker">Shared Note</span>
+          </div>
+        </div>
       </nav>
 
       <main
@@ -109,7 +89,7 @@ export default async function SharedNotePage({ params }: PageProps) {
           style={{
             fontFamily: 'var(--font-heading)',
             color: 'var(--text-primary)',
-            fontWeight: 400,
+            fontWeight: 500,
           }}
         >
           {note.title}

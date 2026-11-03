@@ -1,13 +1,13 @@
 'use client';
 
 import { SiteFooter } from '@/components/ui/SiteFooter';
+import { AppNav } from '@/components/ui/AppNav';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getStudyWeek, STUDY_PLAN } from '@/data/studyPlan';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
+  const { currentWeek: currentWeekNumber } = useStudyProgress();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -43,57 +44,11 @@ export default function DashboardPage() {
     return null;
   }
 
-  const { currentWeek: currentWeekNumber } = useStudyProgress();
   const currentWeek = getStudyWeek(currentWeekNumber) || STUDY_PLAN[0];
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
-      <nav
-        className="content-wide py-4 flex items-center justify-between"
-        style={{
-          borderBottom: '1px solid var(--border-light)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-        }}
-      >
-        <Link
-          href="/dashboard"
-          className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >Bible Notes Journal</Link>
-        <div className="flex items-center gap-8">
-          <Link
-            href="/study"
-            className="text-sm"
-            style={{ color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
-          >
-            Study Plans
-          </Link>
-          <Link
-            href="/notes"
-            className="text-sm"
-            style={{ color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
-          >
-            Notes
-          </Link>
-          <Link
-            href="/prayer"
-            className="text-sm"
-            style={{ color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
-          >
-            Prayer
-          </Link>
-          <ThemeToggle />
-          <button
-            onClick={handleLogout}
-            className="text-sm"
-            style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', padding: 0, transition: 'var(--transition-smooth)' }}
-          >
-            Sign Out
-          </button>
-        </div>
-      </nav>
+      <AppNav onSignOut={handleLogout} />
 
       {/* Main Content */}
       <main className="content-narrow py-12">
@@ -104,7 +59,7 @@ export default function DashboardPage() {
           </p>
           <h1
             className="text-3xl"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             Continue your study
           </h1>
@@ -126,7 +81,7 @@ export default function DashboardPage() {
           </p>
           <h2
             className="text-2xl mb-3"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             {currentWeek.title}
           </h2>
@@ -147,7 +102,7 @@ export default function DashboardPage() {
         <section>
           <h3
             className="text-lg mb-6"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             Quick access
           </h3>

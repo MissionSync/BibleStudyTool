@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { usePrayers } from '@/hooks/usePrayers';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { AppNav } from '@/components/ui/AppNav';
 import { type Prayer } from '@/lib/appwrite/prayers';
 
 const PRAYER_MAX_LENGTH = 255;
@@ -38,7 +38,7 @@ function PrayerCard({
               style={{
                 fontFamily: 'var(--font-heading)',
                 color: 'var(--text-primary)',
-                fontWeight: 400,
+                fontWeight: 500,
               }}
             >
               {prayer.title}
@@ -261,34 +261,7 @@ export default function PrayerPage() {
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
-      <nav
-        className="content-wide py-6 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)' }}
-      >
-        <Link
-          href="/dashboard"
-          className="text-lg tracking-wide"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >
-          Bible Notes Journal
-        </Link>
-        <div className="flex items-center gap-8">
-          <Link href="/study" className="text-sm transition-colors" style={{ color: 'var(--text-secondary)' }}>
-            Study Plans
-          </Link>
-          <Link href="/notes" className="text-sm transition-colors" style={{ color: 'var(--text-secondary)' }}>
-            Notes
-          </Link>
-          <span
-            className="text-sm"
-            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
-          >
-            Prayer
-          </span>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <AppNav active="prayer" />
 
       {/* Header */}
       <header className="content-narrow py-12">
@@ -304,7 +277,7 @@ export default function PrayerPage() {
           <div>
             <h1
               className="text-3xl mb-2"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               Prayer Requests
             </h1>
@@ -336,7 +309,7 @@ export default function PrayerPage() {
           >
             <h2
               className="text-xl mb-6"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               New Prayer Request
             </h2>
@@ -449,7 +422,7 @@ export default function PrayerPage() {
           >
             <h2
               className="text-xl mb-2"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               Mark Prayer as Answered
             </h2>
@@ -566,7 +539,7 @@ export default function PrayerPage() {
           >
             <h3
               className="text-xl mb-3"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               {activeTab === 'community' ? 'No community prayers yet' : 'No prayers yet'}
             </h3>

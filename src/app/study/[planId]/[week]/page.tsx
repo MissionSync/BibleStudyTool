@@ -1,6 +1,7 @@
 'use client';
 
 import { SiteFooter } from '@/components/ui/SiteFooter';
+import { AppNav } from '@/components/ui/AppNav';
 import { use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -51,7 +52,7 @@ export default function WeekDetailPage({ params }: PageProps) {
         <div className="text-center">
           <h1
             className="text-2xl mb-4"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             Week not found
           </h1>
@@ -68,33 +69,7 @@ export default function WeekDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
-      <nav
-        className="content-wide py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-      >
-        <Link
-          href="/dashboard"
-          className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >Bible Notes Journal</Link>
-        <div className="flex items-center gap-8">
-          <Link
-            href="/study"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
-          >
-            Study Plans
-          </Link>
-          <Link
-            href="/notes"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Notes
-          </Link>
-        </div>
-      </nav>
+      <AppNav active="study" />
 
       {/* Main Content */}
       <main className="content-narrow py-12">
@@ -117,7 +92,7 @@ export default function WeekDetailPage({ params }: PageProps) {
           </p>
           <h1
             className="text-3xl md:text-4xl mb-4"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             {week.title}
           </h1>
@@ -189,7 +164,7 @@ export default function WeekDetailPage({ params }: PageProps) {
         <section className="mb-12">
           <h2
             className="text-xl mb-6"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             Study guidelines
           </h2>

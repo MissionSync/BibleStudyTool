@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Newsreader, Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Cormorant_Garamond, Jost, Spectral } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -8,26 +8,27 @@ import { ToastProvider } from "@/contexts/ToastContext";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "600"],
+  weight: ["400", "500", "600"],
   style: ["normal", "italic"],
+});
+
+const spectral = Spectral({
+  variable: "--font-spectral",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+});
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 const description = "A contemplative space for Scripture study and personal reflection";
@@ -77,7 +78,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#8a6a45",
+  themeColor: "#f7f0e3",
 };
 
 export default function RootLayout({
@@ -88,7 +89,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${plusJakarta.variable} ${newsreader.variable}`}
+      className={`${cormorant.variable} ${spectral.variable} ${jost.variable}`}
     >
       <body>
         <QueryProvider>

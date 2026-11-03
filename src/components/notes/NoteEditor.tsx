@@ -41,6 +41,7 @@ export function NoteEditor({
   const [detectedReferences, setDetectedReferences] = useState<string[]>([]);
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [StarterKit],
     content: initialContent,
     editorProps: {
