@@ -94,7 +94,7 @@ export function FeedbackCard({ userId, className }: FeedbackCardProps) {
         <div>
           <h2
             className="text-lg"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Five quick questions
           </h2>

@@ -44,7 +44,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
           >
             <div
               className="text-xl font-medium"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)' }}
             >
               {stats.totalNodes}
             </div>
@@ -61,7 +61,7 @@ export function GraphStats({ stats }: GraphStatsProps) {
           >
             <div
               className="text-xl font-medium"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)' }}
             >
               {stats.totalEdges}
             </div>

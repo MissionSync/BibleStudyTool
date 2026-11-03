@@ -1,5 +1,6 @@
 'use client';
 
+import { SiteFooter } from '@/components/ui/SiteFooter';
 import { use, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,8 +9,6 @@ import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
-import { PoietesCredit } from '@/components/ui/PoietesCredit';
-import { SupportLink } from '@/components/ui/SupportLink';
 
 interface PageProps {
   params: Promise<{ planId: string; week: string }>;
@@ -52,7 +51,7 @@ export default function WeekDetailPage({ params }: PageProps) {
         <div className="text-center">
           <h1
             className="text-2xl mb-4"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Week not found
           </h1>
@@ -77,10 +76,8 @@ export default function WeekDetailPage({ params }: PageProps) {
         <Link
           href="/dashboard"
           className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >
-          biblenotes
-        </Link>
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
+        >Bible Notes Journal</Link>
         <div className="flex items-center gap-8">
           <Link
             href="/study"
@@ -120,7 +117,7 @@ export default function WeekDetailPage({ params }: PageProps) {
           </p>
           <h1
             className="text-3xl md:text-4xl mb-4"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             {week.title}
           </h1>
@@ -192,7 +189,7 @@ export default function WeekDetailPage({ params }: PageProps) {
         <section className="mb-12">
           <h2
             className="text-xl mb-6"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Study guidelines
           </h2>
@@ -241,25 +238,7 @@ export default function WeekDetailPage({ params }: PageProps) {
       </main>
 
       {/* Footer */}
-      <footer
-        className="py-12 text-center text-sm"
-        style={{ color: 'var(--text-tertiary)' }}
-      >
-        <div>Bible Notes Journal</div>
-        <div style={{ marginTop: '0.5rem' }}>
-          developed by{' '}
-          <a
-            href="https://missionsynclab.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none' }}
-          >
-            MissionSync Lab
-          </a>
-          <PoietesCredit />
-        </div>
-        <SupportLink />
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

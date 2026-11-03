@@ -1,10 +1,10 @@
 {
   "name": "Bible Notes Journal",
-  "short_name": "Bible Notes",
+  "short_name": "Bible Notes Journal",
   "description": "A contemplative space for Scripture study and personal reflection",
   "start_url": "/dashboard",
   "display": "standalone",
-  "theme_color": "#c4a484",
+  "theme_color": "#8a6a45",
   "background_color": "#faf7f2",
   "icons": [
     {

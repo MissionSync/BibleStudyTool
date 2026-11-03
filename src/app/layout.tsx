@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Newsreader, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -22,9 +22,26 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+});
+
+const description = "A contemplative space for Scripture study and personal reflection";
+const DEFAULT_SITE_URL = "https://biblenotesjournal.app";
+
+function siteUrlFromEnv(value: string | undefined): URL {
+  const configured = value?.trim();
+  return new URL(configured ? configured : DEFAULT_SITE_URL);
+}
+
 export const metadata: Metadata = {
+  metadataBase: siteUrlFromEnv(process.env.NEXT_PUBLIC_SITE_URL),
   title: "Bible Notes Journal",
-  description: "A contemplative space for Scripture study and personal reflection",
+  description,
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -36,12 +53,31 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Bible Notes",
+    title: "Bible Notes Journal",
+  },
+  openGraph: {
+    title: "Bible Notes Journal",
+    description,
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Bible Notes Journal",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bible Notes Journal",
+    description,
+    images: ["/og-image.png"],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#c4a484",
+  themeColor: "#8a6a45",
 };
 
 export default function RootLayout({
@@ -50,8 +86,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.variable} ${plusJakarta.variable}`}>
+    <html
+      lang="en"
+      className={`${outfit.variable} ${plusJakarta.variable} ${newsreader.variable}`}
+    >
+      <body>
         <QueryProvider>
           <ThemeProvider>
             <AuthProvider>

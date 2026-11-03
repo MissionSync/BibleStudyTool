@@ -1,5 +1,6 @@
 'use client';
 
+import { SiteFooter } from '@/components/ui/SiteFooter';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,8 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { usePrayers } from '@/hooks/usePrayers';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { PoietesCredit } from '@/components/ui/PoietesCredit';
-import { SupportLink } from '@/components/ui/SupportLink';
 import { type Prayer } from '@/lib/appwrite/prayers';
 
 const PRAYER_MAX_LENGTH = 255;
@@ -37,7 +36,7 @@ function PrayerCard({
             <h3
               className="text-lg truncate"
               style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-heading)',
                 color: 'var(--text-primary)',
                 fontWeight: 400,
               }}
@@ -270,7 +269,7 @@ export default function PrayerPage() {
         <Link
           href="/dashboard"
           className="text-lg tracking-wide"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
         >
           Bible Notes Journal
         </Link>
@@ -305,7 +304,7 @@ export default function PrayerPage() {
           <div>
             <h1
               className="text-3xl mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               Prayer Requests
             </h1>
@@ -337,7 +336,7 @@ export default function PrayerPage() {
           >
             <h2
               className="text-xl mb-6"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               New Prayer Request
             </h2>
@@ -450,7 +449,7 @@ export default function PrayerPage() {
           >
             <h2
               className="text-xl mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               Mark Prayer as Answered
             </h2>
@@ -567,7 +566,7 @@ export default function PrayerPage() {
           >
             <h3
               className="text-xl mb-3"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               {activeTab === 'community' ? 'No community prayers yet' : 'No prayers yet'}
             </h3>
@@ -599,25 +598,7 @@ export default function PrayerPage() {
       </main>
 
       {/* Footer */}
-      <footer
-        className="py-12 text-center text-sm"
-        style={{ color: 'var(--text-tertiary)' }}
-      >
-        <div>Bible Notes Journal</div>
-        <div style={{ marginTop: '0.5rem' }}>
-          developed by{' '}
-          <a
-            href="https://missionsynclab.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none' }}
-          >
-            MissionSync Lab
-          </a>
-          <PoietesCredit />
-        </div>
-        <SupportLink />
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

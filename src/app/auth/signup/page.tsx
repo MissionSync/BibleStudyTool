@@ -114,7 +114,7 @@ export default function SignupPage() {
         <div className="mb-10">
           <h1
             className="text-3xl mb-2"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Create account
           </h1>
