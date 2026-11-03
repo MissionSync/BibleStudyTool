@@ -31,8 +31,15 @@ const newsreader = Newsreader({
 });
 
 const description = "A contemplative space for Scripture study and personal reflection";
+const DEFAULT_SITE_URL = "https://biblenotesjournal.app";
+
+function siteUrlFromEnv(value: string | undefined): URL {
+  const configured = value?.trim();
+  return new URL(configured ? configured : DEFAULT_SITE_URL);
+}
 
 export const metadata: Metadata = {
+  metadataBase: siteUrlFromEnv(process.env.NEXT_PUBLIC_SITE_URL),
   title: "Bible Notes Journal",
   description,
   manifest: "/manifest.json",
