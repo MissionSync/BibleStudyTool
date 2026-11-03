@@ -262,8 +262,10 @@ export function KnowledgeGraph({
     if (!graphRef.current) return;
     try {
       const { toPng } = await import('html-to-image');
+      const backgroundColor =
+        getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim() || '#f7f0e3';
       const dataUrl = await toPng(graphRef.current, {
-        backgroundColor: '#faf7f2',
+        backgroundColor,
         quality: 1,
       });
       const a = document.createElement('a');

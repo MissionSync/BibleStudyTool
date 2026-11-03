@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { getStudyPlan } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { AppNav } from '@/components/ui/AppNav';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 interface PageProps {
@@ -59,7 +59,7 @@ export default function PlanDetailPage({ params }: PageProps) {
         <div className="text-center">
           <h1
             className="text-2xl mb-4"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             Plan not found
           </h1>
@@ -73,34 +73,7 @@ export default function PlanDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
-      <nav
-        className="content-wide py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-      >
-        <Link
-          href="/dashboard"
-          className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >Bible Notes Journal</Link>
-        <div className="flex items-center gap-8">
-          <Link
-            href="/study"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
-          >
-            Study Plans
-          </Link>
-          <Link
-            href="/notes"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Notes
-          </Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <AppNav active="study" />
 
       {/* Header */}
       <header className="content-narrow py-12">
@@ -114,7 +87,7 @@ export default function PlanDetailPage({ params }: PageProps) {
 
         <h1
           className="text-3xl mb-3"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
         >
           {plan.title}
         </h1>
@@ -202,7 +175,7 @@ export default function PlanDetailPage({ params }: PageProps) {
                       style={{
                         fontFamily: 'var(--font-heading)',
                         color: 'var(--text-primary)',
-                        fontWeight: 400,
+                        fontWeight: 500,
                       }}
                     >
                       {week.title}

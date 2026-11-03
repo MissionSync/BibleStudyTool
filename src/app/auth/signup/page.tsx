@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { validateName, validateEmail, validatePassword, validatePasswordMatch, getPasswordStrength } from '@/lib/validation';
 import { FieldError } from '@/components/ui/FieldError';
+import { Ornament } from '@/components/ui/Ornament';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function SignupPage() {
   const { user, loading: authLoading, refreshUser } = useAuth();
@@ -99,26 +101,20 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      <div className="w-full" style={{ maxWidth: '24rem' }}>
-        {/* Back */}
-        <Link
-          href="/"
-          className="inline-block mb-10 text-sm transition-colors"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          &larr; Back
-        </Link>
+    <div className="auth-page animate-fade-in">
+      <div className="auth-card">
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/" className="text-link caps" style={{ fontSize: '0.72rem' }}>
+            &larr; Back
+          </Link>
+          <ThemeToggle />
+        </div>
 
-        {/* Header */}
-        <div className="mb-10">
-          <h1
-            className="text-3xl mb-2"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
-          >
-            Create account
-          </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>
+        <Ornament>Bible Notes Journal</Ornament>
+
+        <div className="mb-10 text-center">
+          <h1 className="mb-2">Create account</h1>
+          <p className="italic" style={{ color: 'var(--text-secondary)' }}>
             Begin your study journey
           </p>
         </div>
@@ -247,7 +243,6 @@ export default function SignupPage() {
             type="submit"
             disabled={loading}
             className="btn-primary w-full flex items-center justify-center"
-            style={{ height: '3rem' }}
           >
             {loading ? (
               <span className="spinner" style={{ width: '18px', height: '18px', borderColor: 'var(--bg-primary)', borderTopColor: 'var(--accent)' }} />

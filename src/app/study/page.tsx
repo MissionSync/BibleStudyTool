@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getAllStudyPlans } from '@/data/studyPlans';
 import { useAuth } from '@/contexts/AuthContext';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { AppNav } from '@/components/ui/AppNav';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 function PlanCard({ plan }: { plan: { id: string; title: string; description: string; totalWeeks: number } }) {
@@ -27,7 +27,7 @@ function PlanCard({ plan }: { plan: { id: string; title: string; description: st
         <div>
           <h2
             className="text-2xl mb-2"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             {plan.title}
           </h2>
@@ -96,40 +96,7 @@ export default function StudyPlansPage() {
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
-      <nav
-        className="content-wide py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-      >
-        <Link
-          href="/dashboard"
-          className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >Bible Notes Journal</Link>
-        <div className="flex items-center gap-8">
-          <span
-            className="text-sm"
-            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
-          >
-            Study Plans
-          </span>
-          <Link
-            href="/notes"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Notes
-          </Link>
-          <Link
-            href="/prayer"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Prayer
-          </Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <AppNav active="study" />
 
       {/* Header */}
       <header className="content-narrow py-12">
@@ -143,7 +110,7 @@ export default function StudyPlansPage() {
 
         <h1
           className="text-3xl mb-3"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
         >
           Study Plans
         </h1>
@@ -175,7 +142,7 @@ export default function StudyPlansPage() {
             style={{
               fontFamily: 'var(--font-heading)',
               color: 'var(--text-primary)',
-              fontWeight: 400,
+              fontWeight: 500,
               marginBottom: '1.5rem',
             }}
           >

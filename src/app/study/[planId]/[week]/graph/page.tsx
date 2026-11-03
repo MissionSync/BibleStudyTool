@@ -13,6 +13,7 @@ import { useGraphPositions, clearPositions, getSavedPositions } from '@/hooks/us
 import { userHasNotes, generateGraphFromNotes } from '@/lib/graphGenerator';
 import { queryKeys } from '@/lib/queryKeys';
 import { GraphSkeleton } from '@/components/ui/GraphSkeleton';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { StudyMapHint } from '@/components/graph/StudyMapHint';
 import { FeedbackCard } from '@/components/feedback/FeedbackCard';
 
@@ -109,7 +110,7 @@ export default function GraphPage({ params }: PageProps) {
         <div className="text-center">
           <h1
             className="text-2xl mb-4"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             Week not found
           </h1>
@@ -124,39 +125,36 @@ export default function GraphPage({ params }: PageProps) {
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
       {/* Header */}
-      <header
-        className="flex-shrink-0 py-4 px-6"
-        style={{ backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-      >
-        <div className="flex items-center justify-between" style={{ maxWidth: 'var(--content-wide)', margin: '0 auto' }}>
-          <div className="flex items-center gap-6">
+      <header className="study-map-bar">
+        <div className="study-map-bar-inner">
+          <div className="flex items-center gap-6 min-w-0">
             <Link
               href={`/study/${planId}/${weekNumber}`}
-              className="text-sm transition-colors"
-              style={{ color: 'var(--text-secondary)' }}
+              className="caps"
+              style={{ color: 'var(--text-secondary)', fontSize: '0.72rem', textDecoration: 'none' }}
             >
               &larr; Back
             </Link>
-            <div>
-              <p className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>
+            <div className="min-w-0">
+              <p className="caps study-map-kicker">
                 Week {weekNumber}
               </p>
-              <h1
-                className="text-xl"
-                style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
-              >
+              <h1 className="study-map-title truncate">
                 {week.title}
               </h1>
             </div>
           </div>
 
-          <Link
-            href={`/study/${planId}`}
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            All Weeks &rarr;
-          </Link>
+          <div className="flex items-center gap-5 flex-shrink-0">
+            <Link
+              href={`/study/${planId}`}
+              className="caps"
+              style={{ color: 'var(--text-secondary)', fontSize: '0.72rem', textDecoration: 'none' }}
+            >
+              All Weeks &rarr;
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -193,7 +191,7 @@ export default function GraphPage({ params }: PageProps) {
                 <>
                   <h3
                     className="text-xl mb-3"
-                    style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+                    style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
                   >
                     Build your study map
                   </h3>
@@ -213,7 +211,7 @@ export default function GraphPage({ params }: PageProps) {
                 <>
                   <h3
                     className="text-xl mb-3"
-                    style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+                    style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
                   >
                     No Notes Yet
                   </h3>

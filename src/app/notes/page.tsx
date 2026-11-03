@@ -9,7 +9,7 @@ import { getNote, type Note } from '@/lib/appwrite/notes';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
-import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { AppNav } from '@/components/ui/AppNav';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
 import { getShareUrl } from '@/lib/sharing';
 
@@ -193,40 +193,7 @@ export default function NotesPage() {
   if (isCreating || editingNote) {
     return (
       <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        {/* Navigation */}
-        <nav
-          className="content-wide py-4 flex items-center justify-between"
-          style={{ borderBottom: '1px solid var(--border-light)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-        >
-          <Link
-            href="/dashboard"
-            className="text-lg font-semibold tracking-tight"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-          >Bible Notes Journal</Link>
-          <div className="flex items-center gap-8">
-            <Link
-              href="/study"
-              className="text-sm transition-colors"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              Study Plans
-            </Link>
-            <span
-              className="text-sm"
-              style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
-            >
-              Notes
-            </span>
-            <Link
-              href="/prayer"
-              className="text-sm transition-colors"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              Prayer
-            </Link>
-            <ThemeToggle />
-          </div>
-        </nav>
+        <AppNav active="notes" />
 
         <main className="content-narrow py-12">
           <button
@@ -242,7 +209,7 @@ export default function NotesPage() {
 
           <h1
             className="text-3xl mb-8"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
           >
             {editingNote ? 'Edit Note' : 'New Note'}
           </h1>
@@ -269,42 +236,7 @@ export default function NotesPage() {
   // Notes List View
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
-      <nav
-        className="content-wide py-6 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-light)' }}
-      >
-        <Link
-          href="/dashboard"
-          className="text-lg tracking-wide"
-          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >
-          Bible Notes Journal
-        </Link>
-        <div className="flex items-center gap-8">
-          <Link
-            href="/study"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Study Plans
-          </Link>
-          <span
-            className="text-sm"
-            style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-primary)', paddingBottom: '2px' }}
-          >
-            Notes
-          </span>
-          <Link
-            href="/prayer"
-            className="text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Prayer
-          </Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <AppNav active="notes" />
 
       {/* Header */}
       <header className="content-narrow py-12">
@@ -320,7 +252,7 @@ export default function NotesPage() {
           <div>
             <h1
               className="text-3xl mb-2"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               Study Notes
             </h1>
@@ -417,7 +349,7 @@ export default function NotesPage() {
           >
             <h3
               className="text-xl mb-3"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               {searchQuery ? 'No notes found' : 'No notes yet'}
             </h3>
@@ -451,7 +383,7 @@ export default function NotesPage() {
                         style={{
                           fontFamily: 'var(--font-heading)',
                           color: 'var(--text-primary)',
-                          fontWeight: 400,
+                          fontWeight: 500,
                         }}
                       >
                         {note.title}
@@ -620,7 +552,7 @@ export default function NotesPage() {
             style={{
               fontFamily: 'var(--font-heading)',
               color: 'var(--text-primary)',
-              fontWeight: 400,
+              fontWeight: 500,
               marginBottom: '1.5rem',
             }}
           >
