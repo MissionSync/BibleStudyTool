@@ -176,7 +176,7 @@ export function NoteEditor({
           maxLength={200}
           className="w-full"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-heading)',
             fontSize: '1.25rem',
             border: `1px solid ${titleError ? 'var(--error)' : 'var(--border-light)'}`,
             borderRadius: '4px',

@@ -1,9 +1,8 @@
+import { SiteFooter } from '@/components/ui/SiteFooter';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Databases, Query } from 'node-appwrite';
 import DOMPurify from 'isomorphic-dompurify';
-import { PoietesCredit } from '@/components/ui/PoietesCredit';
-import { SupportLink } from '@/components/ui/SupportLink';
 import {
   APPWRITE_SITE_KEY_HEADER,
   createAppwriteServerClient,
@@ -80,7 +79,7 @@ export default async function SharedNotePage({ params }: PageProps) {
         <span
           className="text-lg tracking-wide"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-heading)',
             color: 'var(--text-primary)',
           }}
         >
@@ -108,7 +107,7 @@ export default async function SharedNotePage({ params }: PageProps) {
         <h1
           className="text-3xl mb-4"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-heading)',
             color: 'var(--text-primary)',
             fontWeight: 400,
           }}
@@ -162,25 +161,7 @@ export default async function SharedNotePage({ params }: PageProps) {
         />
       </main>
 
-      <footer
-        className="py-12 text-center text-sm"
-        style={{ color: 'var(--text-tertiary)' }}
-      >
-        <div>Bible Notes Journal</div>
-        <div style={{ marginTop: '0.5rem' }}>
-          developed by{' '}
-          <a
-            href="https://missionsynclab.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none' }}
-          >
-            MissionSync Lab
-          </a>
-          <PoietesCredit />
-        </div>
-        <SupportLink />
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

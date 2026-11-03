@@ -109,7 +109,7 @@ export default function GraphPage({ params }: PageProps) {
         <div className="text-center">
           <h1
             className="text-2xl mb-4"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Week not found
           </h1>
@@ -143,7 +143,7 @@ export default function GraphPage({ params }: PageProps) {
               </p>
               <h1
                 className="text-xl"
-                style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+                style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
               >
                 {week.title}
               </h1>
@@ -193,7 +193,7 @@ export default function GraphPage({ params }: PageProps) {
                 <>
                   <h3
                     className="text-xl mb-3"
-                    style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+                    style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
                   >
                     Build your study map
                   </h3>
@@ -213,7 +213,7 @@ export default function GraphPage({ params }: PageProps) {
                 <>
                   <h3
                     className="text-xl mb-3"
-                    style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+                    style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
                   >
                     No Notes Yet
                   </h3>

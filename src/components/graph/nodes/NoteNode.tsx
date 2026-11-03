@@ -28,7 +28,7 @@ export const NoteNode = memo(({ data, selected }: NodeProps) => {
       <div
         className="truncate"
         style={{
-          fontFamily: 'var(--font-serif)',
+          fontFamily: 'var(--font-heading)',
           fontSize: '0.875rem',
           color: 'var(--text-primary)',
         }}

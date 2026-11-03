@@ -1,17 +1,17 @@
 export function PoietesCredit() {
   return (
     <span>
-      <span aria-hidden="true" style={{ margin: '0 0.5rem' }}>
-        ·
-      </span>
+      <span aria-hidden="true"> · </span>
+      A{' '}
       <a
         href="https://poietes.org/"
         target="_blank"
-        rel="noopener"
-        style={{ color: 'var(--text-tertiary)', textDecoration: 'none' }}
+        rel="noopener noreferrer"
+        className="site-footer-link"
       >
-        Developed by Poietes LLC
+        Poietes LLC
       </a>
+      {' '}company
     </span>
   );
 }

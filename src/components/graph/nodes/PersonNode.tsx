@@ -26,7 +26,7 @@ export const PersonNode = memo(({ data, selected }: NodeProps) => {
       </div>
       <div
         style={{
-          fontFamily: 'var(--font-serif)',
+          fontFamily: 'var(--font-heading)',
           fontSize: '0.875rem',
           color: 'var(--text-primary)',
         }}

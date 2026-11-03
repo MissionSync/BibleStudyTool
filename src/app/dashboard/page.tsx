@@ -1,5 +1,6 @@
 'use client';
 
+import { SiteFooter } from '@/components/ui/SiteFooter';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,8 +9,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { FeedbackCard } from '@/components/feedback/FeedbackCard';
-import { PoietesCredit } from '@/components/ui/PoietesCredit';
-import { SupportLink } from '@/components/ui/SupportLink';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 
 export default function DashboardPage() {
@@ -61,10 +60,8 @@ export default function DashboardPage() {
         <Link
           href="/dashboard"
           className="text-lg font-semibold tracking-tight"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
-        >
-          biblenotes
-        </Link>
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
+        >Bible Notes Journal</Link>
         <div className="flex items-center gap-8">
           <Link
             href="/study"
@@ -107,7 +104,7 @@ export default function DashboardPage() {
           </p>
           <h1
             className="text-3xl"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Continue your study
           </h1>
@@ -129,7 +126,7 @@ export default function DashboardPage() {
           </p>
           <h2
             className="text-2xl mb-3"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             {currentWeek.title}
           </h2>
@@ -150,7 +147,7 @@ export default function DashboardPage() {
         <section>
           <h3
             className="text-lg mb-6"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             Quick access
           </h3>
@@ -248,25 +245,7 @@ export default function DashboardPage() {
       </main>
 
       {/* Footer */}
-      <footer
-        className="py-12 text-center text-sm"
-        style={{ color: 'var(--text-tertiary)' }}
-      >
-        <div>Bible Notes Journal</div>
-        <div style={{ marginTop: '0.5rem' }}>
-          developed by{' '}
-          <a
-            href="https://missionsynclab.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none' }}
-          >
-            MissionSync Lab
-          </a>
-          <PoietesCredit />
-        </div>
-        <SupportLink />
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

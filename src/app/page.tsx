@@ -4,9 +4,32 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { BookOpen, NotebookPen, Sparkles, Waypoints, type LucideIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { PoietesCredit } from '@/components/ui/PoietesCredit';
-import { SupportLink } from '@/components/ui/SupportLink';
+import { SiteFooter } from '@/components/ui/SiteFooter';
+
+const features: { title: string; body: string; icon: LucideIcon }[] = [
+  {
+    title: 'Knowledge Graph',
+    icon: Waypoints,
+    body: 'Visualize how passages, themes, and people interconnect. See relationships in Scripture you may have missed.',
+  },
+  {
+    title: 'Study Notes',
+    icon: NotebookPen,
+    body: 'Capture insights with automatic Bible reference detection. Your reflections, searchable and organized.',
+  },
+  {
+    title: 'Study Plans',
+    icon: BookOpen,
+    body: 'Follow guided weekly readings through the New Testament. Each week builds thematic connections.',
+  },
+  {
+    title: 'Theme Discovery',
+    icon: Sparkles,
+    body: 'Explore how Love, Grace, Faith, and Redemption weave through different books and passages.',
+  },
+];
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -32,7 +55,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Navigation */}
       <nav
         style={{
           position: 'fixed',
@@ -42,18 +64,15 @@ export default function LandingPage() {
           zIndex: 50,
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          backgroundColor: 'rgba(250, 247, 242, 0.85)',
+          backgroundColor: 'var(--nav-bg)',
           borderBottom: '1px solid var(--border-light)',
         }}
       >
-        <div className="content-wide py-4 flex items-center justify-between">
-          <span
-            className="text-lg font-semibold tracking-tight"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)' }}
-          >
-            biblenotes
+        <div className="content-wide py-4 flex items-center justify-between gap-3">
+          <span className="brand-name">
+            Bible Notes Journal
           </span>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             <a
               href="#features"
               className="text-sm transition-colors hidden sm:inline"
@@ -79,7 +98,6 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
       <section
         className="content-wide"
         style={{ paddingTop: '8rem', paddingBottom: 'var(--space-4xl)' }}
@@ -89,11 +107,10 @@ export default function LandingPage() {
           style={{ maxWidth: '1100px', margin: '0 auto' }}
         >
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16 w-full">
-            {/* Left: Text */}
             <div className="flex-1 text-center lg:text-left">
               <h1
                 style={{
-                  fontFamily: 'var(--font-serif)',
+                  fontFamily: 'var(--font-heading)',
                   color: 'var(--text-primary)',
                   fontWeight: 700,
                   fontSize: 'clamp(2rem, 5vw, 3rem)',
@@ -130,9 +147,11 @@ export default function LandingPage() {
                   Sign In
                 </Link>
               </div>
+              <p className="hero-note">
+                Free to use. Creating an account does not require payment.
+              </p>
             </div>
 
-            {/* Right: Illustration */}
             <div className="flex-1 flex justify-center lg:justify-end">
               <div className="animate-float" style={{ maxWidth: '420px', width: '100%' }}>
                 <Image
@@ -149,7 +168,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
       <section
         id="features"
         className="content-wide section"
@@ -158,7 +176,7 @@ export default function LandingPage() {
         <h2
           className="text-center"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-heading)',
             color: 'var(--text-primary)',
             fontWeight: 700,
             fontSize: '1.75rem',
@@ -172,130 +190,99 @@ export default function LandingPage() {
         <div
           className="feature-grid"
           style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             maxWidth: '56rem',
             margin: '0 auto',
           }}
         >
-          <div
-            className="card"
-            style={{
-              padding: 'var(--space-lg)',
-              transition: 'var(--transition-smooth)',
-              cursor: 'default',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-sm)' }}>
-              🔗
-            </div>
-            <h3
+          {features.map(({ title, body, icon: Icon }) => (
+            <div
+              key={title}
+              className="card"
               style={{
-                fontFamily: 'var(--font-serif)',
-                color: 'var(--text-primary)',
-                fontSize: '1.25rem',
-                marginBottom: 'var(--space-sm)',
+                padding: 'var(--space-lg)',
+                transition: 'var(--transition-smooth)',
+                cursor: 'default',
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
             >
-              Knowledge Graph
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
-              Visualize how passages, themes, and people interconnect.
-              See relationships in Scripture you may have missed.
-            </p>
-          </div>
-
-          <div
-            className="card"
-            style={{
-              padding: 'var(--space-lg)',
-              transition: 'var(--transition-smooth)',
-              cursor: 'default',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-sm)' }}>
-              📝
+              <div className="feature-icon">
+                <Icon aria-hidden="true" size={28} strokeWidth={1.75} />
+              </div>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-heading)',
+                  color: 'var(--text-primary)',
+                  fontSize: '1.25rem',
+                  marginBottom: 'var(--space-sm)',
+                }}
+              >
+                {title}
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
+                {body}
+              </p>
             </div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif)',
-                color: 'var(--text-primary)',
-                fontSize: '1.25rem',
-                marginBottom: 'var(--space-sm)',
-              }}
-            >
-              Study Notes
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
-              Capture insights with automatic Bible reference detection.
-              Your reflections, searchable and organized.
-            </p>
-          </div>
-
-          <div
-            className="card"
-            style={{
-              padding: 'var(--space-lg)',
-              transition: 'var(--transition-smooth)',
-              cursor: 'default',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-sm)' }}>
-              📖
-            </div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif)',
-                color: 'var(--text-primary)',
-                fontSize: '1.25rem',
-                marginBottom: 'var(--space-sm)',
-              }}
-            >
-              Study Plans
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
-              Follow guided weekly readings through the New Testament.
-              Each week builds thematic connections.
-            </p>
-          </div>
-
-          <div
-            className="card"
-            style={{
-              padding: 'var(--space-lg)',
-              transition: 'var(--transition-smooth)',
-              cursor: 'default',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            <div style={{ fontSize: '1.75rem', marginBottom: 'var(--space-sm)' }}>
-              ✨
-            </div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif)',
-                color: 'var(--text-primary)',
-                fontSize: '1.25rem',
-                marginBottom: 'var(--space-sm)',
-              }}
-            >
-              Theme Discovery
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem' }}>
-              Explore how Love, Grace, Faith, and Redemption
-              weave through different books and passages.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* CTA */}
+      <section
+        className="content-wide section"
+        aria-labelledby="product-previews-heading"
+      >
+        <h2
+          id="product-previews-heading"
+          className="text-center"
+          style={{
+            fontFamily: 'var(--font-heading)',
+            color: 'var(--text-primary)',
+            fontWeight: 700,
+            fontSize: '1.75rem',
+            letterSpacing: '-0.02em',
+            marginBottom: 'var(--space-md)',
+          }}
+        >
+          Knowledge graph and study notes
+        </h2>
+        <p className="preview-note">
+          Placeholders. These are not screenshots from a signed-in account.
+        </p>
+        <div className="preview-grid">
+          <figure className="preview-card">
+            <div
+              className="preview-frame"
+              role="img"
+              aria-label="Placeholder for the knowledge graph. Not a captured screenshot."
+            >
+              <span className="preview-badge">Placeholder</span>
+              <div className="placeholder-graph">
+                <span className="placeholder-node">Passage</span>
+                <span className="placeholder-node placeholder-node--center">Theme</span>
+                <span className="placeholder-node">Note</span>
+              </div>
+            </div>
+            <figcaption className="preview-caption">Knowledge graph</figcaption>
+          </figure>
+          <figure className="preview-card">
+            <div
+              className="preview-frame"
+              role="img"
+              aria-label="Placeholder for study notes. Not a captured screenshot."
+            >
+              <span className="preview-badge">Placeholder</span>
+              <div className="placeholder-lines" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+            <figcaption className="preview-caption">Study notes</figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section
         className="section-lg"
         style={{
@@ -326,35 +313,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer
-        className="text-center text-sm"
-        style={{
-          borderTop: '1px solid var(--border-light)',
-          color: 'var(--text-tertiary)',
-          paddingTop: '3rem',
-          paddingBottom: '3rem',
-        }}
-      >
-        <div className="content-wide">
-          <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 600 }}>
-            biblenotes
-          </div>
-          <div style={{ marginTop: '0.5rem' }}>
-            developed by{' '}
-            <a
-              href="https://missionsynclab.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--accent)', textDecoration: 'none' }}
-            >
-              MissionSync Lab
-            </a>
-            <PoietesCredit />
-          </div>
-          <SupportLink />
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

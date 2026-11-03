@@ -1,5 +1,6 @@
 'use client';
 
+import { SiteFooter } from '@/components/ui/SiteFooter';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -10,8 +11,6 @@ import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
-import { PoietesCredit } from '@/components/ui/PoietesCredit';
-import { SupportLink } from '@/components/ui/SupportLink';
 import { getShareUrl } from '@/lib/sharing';
 
 const NoteEditor = dynamic(
@@ -202,10 +201,8 @@ export default function NotesPage() {
           <Link
             href="/dashboard"
             className="text-lg font-semibold tracking-tight"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
-          >
-            biblenotes
-          </Link>
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
+          >Bible Notes Journal</Link>
           <div className="flex items-center gap-8">
             <Link
               href="/study"
@@ -245,7 +242,7 @@ export default function NotesPage() {
 
           <h1
             className="text-3xl mb-8"
-            style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
           >
             {editingNote ? 'Edit Note' : 'New Note'}
           </h1>
@@ -280,7 +277,7 @@ export default function NotesPage() {
         <Link
           href="/dashboard"
           className="text-lg tracking-wide"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', textDecoration: 'none' }}
+          style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', textDecoration: 'none' }}
         >
           Bible Notes Journal
         </Link>
@@ -323,7 +320,7 @@ export default function NotesPage() {
           <div>
             <h1
               className="text-3xl mb-2"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               Study Notes
             </h1>
@@ -420,7 +417,7 @@ export default function NotesPage() {
           >
             <h3
               className="text-xl mb-3"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 400 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 400 }}
             >
               {searchQuery ? 'No notes found' : 'No notes yet'}
             </h3>
@@ -452,7 +449,7 @@ export default function NotesPage() {
                       <h3
                         className="text-lg truncate"
                         style={{
-                          fontFamily: 'var(--font-serif)',
+                          fontFamily: 'var(--font-heading)',
                           color: 'var(--text-primary)',
                           fontWeight: 400,
                         }}
@@ -621,7 +618,7 @@ export default function NotesPage() {
           <h2
             className="text-xl"
             style={{
-              fontFamily: 'var(--font-serif)',
+              fontFamily: 'var(--font-heading)',
               color: 'var(--text-primary)',
               fontWeight: 400,
               marginBottom: '1.5rem',
@@ -639,25 +636,7 @@ export default function NotesPage() {
       </section>
 
       {/* Footer */}
-      <footer
-        className="py-12 text-center text-sm"
-        style={{ color: 'var(--text-tertiary)' }}
-      >
-        <div>Bible Notes Journal</div>
-        <div style={{ marginTop: '0.5rem' }}>
-          developed by{' '}
-          <a
-            href="https://missionsynclab.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent)', textDecoration: 'none' }}
-          >
-            MissionSync Lab
-          </a>
-          <PoietesCredit />
-        </div>
-        <SupportLink />
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

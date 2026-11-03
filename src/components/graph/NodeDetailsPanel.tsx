@@ -237,7 +237,7 @@ export function NodeDetailsPanel({ node, onClose }: NodeDetailsPanelProps) {
             </div>
             <h2
               className="text-lg break-words"
-              style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 500 }}
+              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
             >
               {node.data.label}
             </h2>

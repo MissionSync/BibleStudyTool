@@ -26,7 +26,7 @@ export const BookNode = memo(({ data, selected }: NodeProps) => {
       </div>
       <div
         style={{
-          fontFamily: 'var(--font-serif)',
+          fontFamily: 'var(--font-heading)',
           fontSize: '0.9375rem',
           color: 'var(--text-primary)',
           fontWeight: 500,
