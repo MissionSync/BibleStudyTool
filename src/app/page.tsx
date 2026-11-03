@@ -240,44 +240,32 @@ export default function LandingPage() {
             fontWeight: 700,
             fontSize: '1.75rem',
             letterSpacing: '-0.02em',
-            marginBottom: 'var(--space-md)',
+            marginBottom: 'var(--space-2xl)',
           }}
         >
           Knowledge graph and study notes
         </h2>
-        <p className="preview-note">
-          Placeholders. These are not screenshots from a signed-in account.
-        </p>
-        <div className="preview-grid">
+        <div className="preview-stack">
           <figure className="preview-card">
-            <div
-              className="preview-frame"
-              role="img"
-              aria-label="Placeholder for the knowledge graph. Not a captured screenshot."
-            >
-              <span className="preview-badge">Placeholder</span>
-              <div className="placeholder-graph">
-                <span className="placeholder-node">Passage</span>
-                <span className="placeholder-node placeholder-node--center">Theme</span>
-                <span className="placeholder-node">Note</span>
-              </div>
-            </div>
-            <figcaption className="preview-caption">Knowledge graph</figcaption>
+            <Image
+              src="/images/study-map.webp"
+              alt="Study map of 1 John centered on the note Christ our Advocate, linked to themes such as Doing and Abiding, Little Children, Do Not Love the World, and Deceivers, and to the passage 1 John 2:2–4."
+              width={690}
+              height={240}
+              sizes="(min-width: 1024px) 56rem, 100vw"
+              className="preview-shot"
+            />
+            <figcaption className="preview-caption">1 John study map</figcaption>
           </figure>
-          <figure className="preview-card">
-            <div
-              className="preview-frame"
-              role="img"
-              aria-label="Placeholder for study notes. Not a captured screenshot."
-            >
-              <span className="preview-badge">Placeholder</span>
-              <div className="placeholder-lines" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
+          <figure className="preview-card preview-card--notes">
+            <Image
+              src="/images/study-notes.webp"
+              alt="Study notes list with How great a Love, Christ our Advocate, and Word of Life. Each note shows a reflection, Bible references, tags, and the date, with note-taking tips below."
+              width={1120}
+              height={1113}
+              sizes="(min-width: 768px) 40rem, 100vw"
+              className="preview-shot"
+            />
             <figcaption className="preview-caption">Study notes</figcaption>
           </figure>
         </div>
