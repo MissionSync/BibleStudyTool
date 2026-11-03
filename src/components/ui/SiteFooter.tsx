@@ -24,14 +24,6 @@ export function SiteFooter() {
           </a>
           <PoietesCredit />
         </p>
-        <a
-          href="https://missionsynclab.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="site-footer-link site-footer-cross"
-        >
-          Built by MissionSync Lab: websites for churches and ministries
-        </a>
         <SupportLink />
       </div>
     </footer>
