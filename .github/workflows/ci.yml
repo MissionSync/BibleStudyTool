@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Install, typecheck, test, and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npx vitest run
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_APPWRITE_ENDPOINT: https://example.invalid/v1
+          NEXT_PUBLIC_APPWRITE_PROJECT_ID: ci-placeholder
+          NEXT_PUBLIC_APPWRITE_DATABASE_ID: ci-placeholder
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
