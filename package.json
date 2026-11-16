@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build --webpack && serwist build serwist.config.mjs",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
@@ -12,39 +12,42 @@
     "seed:1john": "tsx src/scripts/seedOneJohn.ts",
     "clear:graph": "tsx src/scripts/clearGraphData.ts",
     "export:collections": "tsx src/scripts/exportCollections.ts",
-    "analyze": "ANALYZE=true next build --webpack"
+    "analyze": "ANALYZE=true next build --webpack && serwist build serwist.config.mjs"
   },
   "dependencies": {
-    "@ducanh2912/next-pwa": "^10.2.9",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-persist-client": "^5.90.22",
-    "@tiptap/react": "^3.13.0",
-    "@tiptap/starter-kit": "^3.13.0",
+    "@tiptap/react": "^3.34.0",
+    "@tiptap/starter-kit": "^3.34.0",
     "appwrite": "^21.5.0",
     "dagre": "^0.8.5",
     "html-to-image": "^1.11.13",
     "idb-keyval": "^6.2.2",
     "isomorphic-dompurify": "^3.0.0",
     "lucide-react": "^0.556.0",
-    "next": "^16.1.1",
+    "next": "^16.4.6",
     "node-appwrite": "^21.1.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "reactflow": "^11.10.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.1.6",
+    "@next/bundle-analyzer": "^16.4.6",
+    "@serwist/cli": "^9.5.13",
+    "@serwist/next": "^9.5.13",
     "@tailwindcss/postcss": "^4",
     "@types/dagre": "^0.7.53",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.2.3",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
-    "eslint-config-next": "^16.1.1",
+    "eslint-config-next": "^16.4.6",
+    "serwist": "^9.5.13",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.12"
   }
 }

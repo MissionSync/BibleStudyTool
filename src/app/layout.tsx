@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
+import { SerwistProvider } from "@/components/pwa/SerwistProvider";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -92,18 +93,27 @@ export default function RootLayout({
       className={`${cormorant.variable} ${spectral.variable} ${jost.variable}`}
     >
       <body>
-        <QueryProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <RealtimeProvider>
-                <ToastProvider>
-                  <OfflineBanner />
-                  {children}
-                </ToastProvider>
-              </RealtimeProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </QueryProvider>
+        <SerwistProvider
+          swUrl="/sw.js"
+          disable={process.env.NODE_ENV === "development"}
+          register
+          cacheOnNavigation={false}
+          reloadOnOnline
+          options={{ scope: "/", type: "classic" }}
+        >
+          <QueryProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <RealtimeProvider>
+                  <ToastProvider>
+                    <OfflineBanner />
+                    {children}
+                  </ToastProvider>
+                </RealtimeProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </QueryProvider>
+        </SerwistProvider>
       </body>
     </html>
   );
