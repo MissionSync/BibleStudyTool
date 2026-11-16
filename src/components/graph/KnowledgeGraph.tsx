@@ -114,17 +114,23 @@ export function KnowledgeGraph({
   const [searchQuery, setSearchQuery] = useState('');
   const [mapScope, setMapScope] = useState<'week' | 'all'>('week');
   const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set(savedPositionIds));
+  const [graphInputs, setGraphInputs] = useState<{
+    initialNodes: Node[];
+    initialEdges: Edge[];
+    savedPositionIds: string[];
+  } | null>(null);
 
-  const layoutRef = useRef(layoutAlgorithm);
-  layoutRef.current = layoutAlgorithm;
-  const savedRef = useRef(savedIds);
-  savedRef.current = savedIds;
-
-  useEffect(() => {
+  if (
+    graphInputs === null ||
+    graphInputs.initialNodes !== initialNodes ||
+    graphInputs.initialEdges !== initialEdges ||
+    graphInputs.savedPositionIds !== savedPositionIds
+  ) {
     const ids = new Set(savedPositionIds);
+    setGraphInputs({ initialNodes, initialEdges, savedPositionIds });
     setSavedIds(ids);
-    setNodes(positionsForLayout(initialNodes, initialEdges, layoutRef.current, ids));
-  }, [initialNodes, initialEdges, savedPositionIds, setNodes]);
+    setNodes(positionsForLayout(initialNodes, initialEdges, layoutAlgorithm, ids));
+  }
 
   useEffect(() => {
     setEdges(initialEdges.map(styleEdge));
