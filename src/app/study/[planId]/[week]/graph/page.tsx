@@ -44,7 +44,11 @@ export default function GraphPage({ params }: PageProps) {
   }, [user?.$id, graphData]);
   const [hasNotes, setHasNotes] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [hiddenLoadError, setHiddenLoadError] = useState<unknown>(null);
+  const loadError =
+    graphError && graphError !== hiddenLoadError ? 'Could not load your study map.' : null;
+  const error = actionError ?? loadError;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -53,10 +57,8 @@ export default function GraphPage({ params }: PageProps) {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (graphError) {
-      setError('Could not load your study map.');
-      showToast('Could not load your study map.', 'error');
-    }
+    if (!graphError) return;
+    showToast('Could not load your study map.', 'error');
   }, [graphError, showToast]);
 
   useEffect(() => {
@@ -78,14 +80,15 @@ export default function GraphPage({ params }: PageProps) {
     if (!user || generating) return;
 
     setGenerating(true);
-    setError(null);
+    setActionError(null);
+    setHiddenLoadError(graphError ?? null);
     try {
       await generateGraphFromNotes(user.$id);
       await queryClient.invalidateQueries({ queryKey: queryKeys.graph.full(user.$id) });
       showToast('Study map updated.', 'success');
     } catch (err) {
       console.error('Failed to build study map:', err);
-      setError('Could not build your study map.');
+      setActionError('Could not build your study map.');
       showToast('Could not build your study map.', 'error');
     } finally {
       setGenerating(false);
