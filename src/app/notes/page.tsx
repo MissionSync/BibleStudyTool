@@ -1,7 +1,7 @@
 'use client';
 
 import { SiteFooter } from '@/components/ui/SiteFooter';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -13,54 +13,140 @@ import { AppNav } from '@/components/ui/AppNav';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
 import { getShareUrl } from '@/lib/sharing';
 import { shareFailureMessage, SHARE_ERRORS } from '@/lib/shareAuth';
+import { isDevMobileFixture, mobilePreviewNotes } from '@/lib/mobileReadingFixture';
 
 const NoteEditor = dynamic(
   () => import('@/components/notes/NoteEditor').then((mod) => mod.NoteEditor),
   { ssr: false },
 );
 
+function NoteActions({
+  note,
+  onEdit,
+  onArchive,
+  onUnarchive,
+  onShare,
+  onUnshare,
+  onCopy,
+  onDelete,
+}: {
+  note: Note;
+  onEdit: (note: Note) => void;
+  onArchive: (noteId: string) => void;
+  onUnarchive: (noteId: string) => void;
+  onShare: (noteId: string) => void;
+  onUnshare: (noteId: string) => void;
+  onCopy: (shareToken: string) => void;
+  onDelete: (noteId: string) => void;
+}) {
+  if (note.isArchived) {
+    return (
+      <button type="button" className="note-action is-accent" onClick={() => onUnarchive(note.$id)}>
+        Unarchive
+      </button>
+    );
+  }
+
+  return (
+    <>
+      <button type="button" className="note-action is-accent" onClick={() => onEdit(note)}>
+        Edit
+      </button>
+      {note.shareToken ? (
+        <>
+          <button type="button" className="note-action is-accent" onClick={() => onCopy(note.shareToken!)}>
+            Copy Link
+          </button>
+          <button type="button" className="note-action" onClick={() => onUnshare(note.$id)}>
+            Unshare
+          </button>
+        </>
+      ) : (
+        <button type="button" className="note-action" onClick={() => onShare(note.$id)}>
+          Share
+        </button>
+      )}
+      <button type="button" className="note-action" onClick={() => onArchive(note.$id)}>
+        Archive
+      </button>
+      <button type="button" className="note-action is-quiet" onClick={() => onDelete(note.$id)}>
+        Delete
+      </button>
+    </>
+  );
+}
+
 export default function NotesPage() {
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
   const [showArchived, setShowArchived] = useState(false);
-  const { notes, isLoading, error: loadError, hasNextPage, fetchNextPage, isFetchingNextPage, createNote, updateNote, deleteNote, archiveNote, unarchiveNote, shareNote, unshareNote } = useNotes(user?.$id, { includeArchived: showArchived });
+  const liveNotes = useNotes(user?.$id, { includeArchived: showArchived });
   const [isCreating, setIsCreating] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [fetchedNote, setFetchedNote] = useState<Note | null>(null);
+  const [editorClosed, setEditorClosed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [saveError, setSaveError] = useState<string | null>(null);
+  const search = useSyncExternalStore(
+    (onChange) => {
+      window.addEventListener('popstate', onChange);
+      return () => window.removeEventListener('popstate', onChange);
+    },
+    () => window.location.search,
+    () => '',
+  );
+  const fixtureMode = isDevMobileFixture(process.env.NODE_ENV, search);
+  const noteId = new URLSearchParams(search).get('note');
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && isDevMobileFixture(process.env.NODE_ENV, window.location.search)) {
+      return;
+    }
+    if (fixtureMode) return;
     if (!authLoading && !user) {
       router.push('/auth/login');
     }
-  }, [user, authLoading, router]);
+  }, [fixtureMode, user, authLoading, router]);
 
-  const openedNoteFromUrl = useRef<string | null>(null);
+  const notes = fixtureMode ? mobilePreviewNotes : liveNotes.notes;
+  const isLoading = fixtureMode ? false : liveNotes.isLoading;
+  const loadError = fixtureMode ? null : liveNotes.error;
+  const hasNextPage = fixtureMode ? false : liveNotes.hasNextPage;
+  const fetchNextPage = liveNotes.fetchNextPage;
+  const isFetchingNextPage = liveNotes.isFetchingNextPage;
+  const { createNote, updateNote, deleteNote, archiveNote, unarchiveNote, shareNote, unshareNote } = liveNotes;
+
+  const noteIsListed = Boolean(noteId && notes.some((note) => note.$id === noteId));
   useEffect(() => {
-    if (!user) return;
-    const noteId = new URLSearchParams(window.location.search).get('note');
-    if (!noteId || openedNoteFromUrl.current === noteId) return;
-
-    const loaded = notes.find((note) => note.$id === noteId);
-    if (loaded) {
-      openedNoteFromUrl.current = noteId;
-      setEditingNote(loaded);
-      return;
-    }
-    if (isLoading) return;
-
-    openedNoteFromUrl.current = noteId;
+    if (!user || !noteId || editorClosed || noteIsListed) return;
+    let active = true;
     getNote(noteId)
       .then((note) => {
-        if (note.userId === user.$id) {
-          setEditingNote(note);
-        }
+        if (active && note.userId === user.$id) setFetchedNote(note);
       })
       .catch(() => {
         // Leave the list in place if this note cannot be opened.
       });
-  }, [user, notes, isLoading]);
+    return () => {
+      active = false;
+    };
+  }, [user, noteId, editorClosed, noteIsListed]);
+
+  const listedUrlNote = !editorClosed && noteId
+    ? notes.find((note) => note.$id === noteId) ?? null
+    : null;
+  const fetchedUrlNote = !editorClosed && fetchedNote?.$id === noteId ? fetchedNote : null;
+  const previewNote = !editorClosed && fixtureMode && new URLSearchParams(search).get('view') === 'editor'
+    ? mobilePreviewNotes[0]
+    : null;
+  const editingNote = selectedNote ?? listedUrlNote ?? fetchedUrlNote ?? previewNote;
+
+  const closeEditor = () => {
+    setIsCreating(false);
+    setSelectedNote(null);
+    setEditorClosed(true);
+  };
 
   const handleSaveNote = async (noteData: {
     title: string;
@@ -68,6 +154,11 @@ export default function NotesPage() {
     tags: string[];
     references: string[];
   }) => {
+    if (fixtureMode) {
+      showToast('This preview does not save.', 'info');
+      closeEditor();
+      return;
+    }
     try {
       setSaveError(null);
 
@@ -96,8 +187,7 @@ export default function NotesPage() {
         showToast('Note created.', 'success');
       }
 
-      setIsCreating(false);
-      setEditingNote(null);
+      closeEditor();
     } catch (err) {
       console.error('Error saving note:', err);
       setSaveError('Failed to save note. Please try again.');
@@ -106,6 +196,7 @@ export default function NotesPage() {
   };
 
   const handleDeleteNote = async (noteId: string) => {
+    if (fixtureMode) return;
     if (!confirm('Are you sure you want to delete this note?')) {
       return;
     }
@@ -120,6 +211,7 @@ export default function NotesPage() {
   };
 
   const handleArchiveNote = async (noteId: string) => {
+    if (fixtureMode) return;
     try {
       await archiveNote.mutateAsync(noteId);
       showToast('Note archived.', 'success');
@@ -129,6 +221,7 @@ export default function NotesPage() {
   };
 
   const handleUnarchiveNote = async (noteId: string) => {
+    if (fixtureMode) return;
     try {
       await unarchiveNote.mutateAsync(noteId);
       showToast('Note unarchived.', 'success');
@@ -138,6 +231,7 @@ export default function NotesPage() {
   };
 
   const handleShareNote = async (noteId: string) => {
+    if (fixtureMode) return;
     try {
       const result = await shareNote.mutateAsync(noteId);
       const url = getShareUrl(result.shareToken);
@@ -150,6 +244,7 @@ export default function NotesPage() {
   };
 
   const handleUnshareNote = async (noteId: string) => {
+    if (fixtureMode) return;
     try {
       await unshareNote.mutateAsync(noteId);
       showToast('Note is no longer shared.', 'info');
@@ -179,7 +274,7 @@ export default function NotesPage() {
     );
   });
 
-  if (authLoading) {
+  if (!fixtureMode && authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <div className="spinner" />
@@ -187,32 +282,26 @@ export default function NotesPage() {
     );
   }
 
-  if (!user) {
+  if (!fixtureMode && !user) {
     return null;
   }
 
   // Editor View
   if (isCreating || editingNote) {
     return (
-      <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="notes-page min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <AppNav active="notes" />
 
-        <main className="content-narrow py-12">
+        <main className="content-narrow notes-editor-main py-12">
           <button
-            onClick={() => {
-              setIsCreating(false);
-              setEditingNote(null);
-            }}
-            className="inline-block mb-8 text-sm transition-colors"
-            style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
+            type="button"
+            onClick={closeEditor}
+            className="back-link"
           >
             &larr; Back to Notes
           </button>
 
-          <h1
-            className="text-3xl mb-8"
-            style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
-          >
+          <h1 className="reading-title">
             {editingNote ? 'Edit Note' : 'New Note'}
           </h1>
 
@@ -222,10 +311,7 @@ export default function NotesPage() {
             initialTags={editingNote?.tags}
             initialReferences={editingNote?.bibleReferences}
             onSave={handleSaveNote}
-            onCancel={() => {
-              setIsCreating(false);
-              setEditingNote(null);
-            }}
+            onCancel={closeEditor}
             error={saveError}
           />
         </main>
@@ -237,33 +323,22 @@ export default function NotesPage() {
 
   // Notes List View
   return (
-    <div className="min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    <div className="notes-page min-h-screen animate-fade-in" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <AppNav active="notes" />
 
-      {/* Header */}
-      <header className="content-narrow py-12">
-        <Link
-          href="/dashboard"
-          className="inline-block mb-6 text-sm transition-colors"
-          style={{ color: 'var(--text-secondary)' }}
-        >
+      <header className="content-narrow notes-page-header py-12">
+        <Link href="/dashboard" className="back-link">
           &larr; Dashboard
         </Link>
 
-        <div className="flex items-start justify-between gap-6">
+        <div className="notes-header">
           <div>
-            <h1
-              className="text-3xl mb-2"
-              style={{ fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', fontWeight: 500 }}
-            >
-              Study Notes
-            </h1>
-            <p style={{ color: 'var(--text-secondary)' }}>
-              Capture insights from your Bible study
-            </p>
+            <h1 className="reading-title">Study Notes</h1>
+            <p className="reading-lede">Capture insights from your Bible study</p>
           </div>
 
           <button
+            type="button"
             onClick={() => setIsCreating(true)}
             className="btn-primary text-sm"
           >
@@ -283,7 +358,7 @@ export default function NotesPage() {
               borderRadius: 'var(--radius-md)',
             }}
           >
-            <p className="text-sm" style={{ color: 'var(--error)' }}>{errorMessage}</p>
+            <p style={{ color: 'var(--error)', fontSize: '1rem', lineHeight: 1.5 }}>{errorMessage}</p>
           </div>
         )}
 
@@ -355,7 +430,7 @@ export default function NotesPage() {
             >
               {searchQuery ? 'No notes found' : 'No notes yet'}
             </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            <p className="reading-lede" style={{ marginBottom: '1.5rem' }}>
               {searchQuery
                 ? 'Try a different search term'
                 : 'Start capturing your Bible study insights'}
@@ -377,149 +452,69 @@ export default function NotesPage() {
                 className="py-5"
                 style={{ borderBottom: '1px solid var(--border-light)' }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3
-                        className="text-lg truncate"
-                        style={{
-                          fontFamily: 'var(--font-heading)',
-                          color: 'var(--text-primary)',
-                          fontWeight: 500,
-                        }}
-                      >
-                        {note.title}
-                      </h3>
-                      {note.isArchived && (
-                        <span
-                          className="text-xs px-2 py-0.5 flex-shrink-0"
-                          style={{
-                            backgroundColor: 'var(--bg-tertiary)',
-                            color: 'var(--text-tertiary)',
-                            borderRadius: 'var(--radius-pill)',
-                          }}
-                        >
-                          Archived
-                        </span>
-                      )}
+                <div className="note-row">
+                  <div className="note-main">
+                    <div className="note-title-row">
+                      <h3 className="note-card-title">{note.title}</h3>
+                      {note.isArchived && <span className="archived-chip">Archived</span>}
                     </div>
 
-                    <p
-                      className="text-sm mb-3 line-clamp-2"
-                      style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}
-                    >
-                      {note.contentPlan}
-                    </p>
+                    <p className="note-excerpt line-clamp-2">{note.contentPlan}</p>
 
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="note-meta">
                       {note.bibleReferences.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="chip-row">
                           {note.bibleReferences.slice(0, 3).map((ref, idx) => (
-                            <span
-                              key={idx}
-                              className="text-xs px-2 py-0.5"
-                              style={{
-                                backgroundColor: 'var(--highlight-sage)',
-                                color: 'var(--text-secondary)',
-                                borderRadius: 'var(--radius-pill)',
-                              }}
-                            >
-                              {ref}
-                            </span>
+                            <span key={idx} className="verse-chip">{ref}</span>
                           ))}
                           {note.bibleReferences.length > 3 && (
-                            <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                              +{note.bibleReferences.length - 3}
-                            </span>
+                            <span className="chip-more">+{note.bibleReferences.length - 3}</span>
                           )}
                         </div>
                       )}
 
                       {note.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="chip-row">
                           {note.tags.slice(0, 3).map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className="text-xs px-2 py-0.5"
-                              style={{
-                                backgroundColor: 'var(--highlight-gold)',
-                                color: 'var(--text-secondary)',
-                                borderRadius: 'var(--radius-pill)',
-                              }}
-                            >
-                              {tag}
-                            </span>
+                            <span key={idx} className="tag-chip">{tag}</span>
                           ))}
                         </div>
                       )}
 
-                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                      <span className="note-date">
                         {new Date(note.$createdAt).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    {note.isArchived ? (
-                      <button
-                        onClick={() => handleUnarchiveNote(note.$id)}
-                        className="text-sm transition-colors"
-                        style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
-                      >
-                        Unarchive
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => setEditingNote(note)}
-                          className="text-sm transition-colors"
-                          style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >
-                          Edit
-                        </button>
-                        {note.shareToken ? (
-                          <>
-                            <button
-                              onClick={() => handleCopyShareLink(note.shareToken!)}
-                              className="text-sm transition-colors"
-                              style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
-                            >
-                              Copy Link
-                            </button>
-                            <button
-                              onClick={() => handleUnshareNote(note.$id)}
-                              className="text-sm transition-colors"
-                              style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
-                            >
-                              Unshare
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => handleShareNote(note.$id)}
-                            className="text-sm transition-colors"
-                            style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
-                          >
-                            Share
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleArchiveNote(note.$id)}
-                          className="text-sm transition-colors"
-                          style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >
-                          Archive
-                        </button>
-                        <button
-                          onClick={() => handleDeleteNote(note.$id)}
-                          className="text-sm transition-colors"
-                          style={{ color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
+                  <div className="note-actions">
+                    <NoteActions
+                      note={note}
+                      onEdit={setSelectedNote}
+                      onArchive={handleArchiveNote}
+                      onUnarchive={handleUnarchiveNote}
+                      onShare={handleShareNote}
+                      onUnshare={handleUnshareNote}
+                      onCopy={handleCopyShareLink}
+                      onDelete={handleDeleteNote}
+                    />
                   </div>
+
+                  <details className="note-menu">
+                    <summary>Actions</summary>
+                    <div className="note-menu-panel">
+                      <NoteActions
+                        note={note}
+                        onEdit={setSelectedNote}
+                        onArchive={handleArchiveNote}
+                        onUnarchive={handleUnarchiveNote}
+                        onShare={handleShareNote}
+                        onUnshare={handleUnshareNote}
+                        onCopy={handleCopyShareLink}
+                        onDelete={handleDeleteNote}
+                      />
+                    </div>
+                  </details>
                 </div>
               </div>
             ))}
@@ -548,7 +543,7 @@ export default function NotesPage() {
           marginTop: '2rem',
         }}
       >
-        <div className="content-narrow" style={{ padding: '3rem 1.5rem' }}>
+        <div className="content-narrow notes-tips" style={{ padding: '3rem 1.5rem' }}>
           <h2
             className="text-xl"
             style={{
@@ -560,7 +555,7 @@ export default function NotesPage() {
           >
             Note-taking tips
           </h2>
-          <ul className="space-y-3" style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+          <ul className="space-y-3" style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>
             <li>Bible references are automatically detected (e.g., &quot;John 3:16&quot;)</li>
             <li>Use tags to organize notes by topic or theme</li>
             <li>Notes can be linked to knowledge graph nodes</li>
