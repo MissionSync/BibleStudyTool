@@ -1,8 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-
-type Theme = 'light' | 'dark';
+import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from 'react';
+import { resolveThemePreference, type ThemePreference as Theme } from '@/lib/themePreference';
 
 interface ThemeContextType {
   theme: Theme;
@@ -10,27 +9,38 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const THEME_CHANGE = 'bnj-theme-change';
+
+function subscribe(onChange: () => void) {
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener('change', onChange);
+  window.addEventListener('storage', onChange);
+  window.addEventListener(THEME_CHANGE, onChange);
+  return () => {
+    media.removeEventListener('change', onChange);
+    window.removeEventListener('storage', onChange);
+    window.removeEventListener(THEME_CHANGE, onChange);
+  };
+}
+
+function currentTheme(): Theme {
+  const stored = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return resolveThemePreference(stored, prefersDark).theme;
+}
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
-  const [mounted, setMounted] = useState(false);
+  const theme = useSyncExternalStore(subscribe, currentTheme, () => 'light' as Theme);
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as Theme | null;
-    if (stored === 'light' || stored === 'dark') {
-      setTheme(stored);
-    }
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme, mounted]);
+  }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    const next = theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', next);
+    document.documentElement.dataset.theme = next;
+    window.dispatchEvent(new Event(THEME_CHANGE));
   };
 
   return (

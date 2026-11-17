@@ -18,52 +18,54 @@
   --font-serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
   --font-smallcaps: var(--font-jost), system-ui, sans-serif;
 
-  /* Light — parchment, ink, brown, gold, walnut */
-  --bg-primary: #f7f0e3;
-  --bg-secondary: #efe4cf;
-  --bg-tertiary: #e7dcc4;
-  --bg-card: #fbf6ec;
-  --nav-bg: rgba(247, 240, 227, 0.92);
+  /* Parchment by day, walnut by night.
+     light-dark() follows the color-scheme set below, so a phone in dark mode
+     does not keep ink-on-parchment colors (or the reverse). */
+  --bg-primary: light-dark(#f7f0e3, #1a120d);
+  --bg-secondary: light-dark(#efe4cf, #241912);
+  --bg-tertiary: light-dark(#e7dcc4, #2e2118);
+  --bg-card: light-dark(#fbf6ec, #221810);
+  --nav-bg: light-dark(rgba(247, 240, 227, 0.92), rgba(26, 18, 13, 0.92));
 
-  --text-primary: #2e2118;
-  --text-secondary: #5a4636;
-  /* 6.3:1 on parchment, 5.6:1 on the secondary panel. */
-  --text-tertiary: #6a5340;
+  --text-primary: light-dark(#2e2118, #f3e8d2);
+  --text-secondary: light-dark(#5a4636, #d4c4a8);
+  /* 6.3:1 on parchment, 8.8:1 on the night page. */
+  --text-tertiary: light-dark(#6a5340, #c4b195);
 
-  --accent: #7a5a3a;
-  --accent-hover: #2b1e15;
-  --accent-light: #efe4cf;
+  --accent: light-dark(#7a5a3a, #e0c48a);
+  --accent-hover: light-dark(#2b1e15, #f3e0b8);
+  --accent-light: light-dark(#efe4cf, #3a2c1c);
 
-  --gold: #b8935a;
-  --gold-deep: #8f6b34;
-  --gold-bright: #d8b878;
+  --gold: light-dark(#b8935a, #d8b878);
+  --gold-deep: light-dark(#8f6b34, #e0c48a);
+  --gold-bright: light-dark(#d8b878, #e8d09a);
   --gold-soft: #e9d3a2;
-  --walnut: #2b1e15;
-  --rule: #d8c7a6;
+  --walnut: light-dark(#2b1e15, #100b08);
+  --rule: light-dark(#d8c7a6, #5c4634);
   --quote: #f3e8d2;
   --footer-text: #e4d6bb;
   --footer-link: #e9d3a2;
 
-  --highlight-gold: #f3e6c4;
-  --highlight-sage: #e5efe4;
-  --highlight-peach: #f6e6dc;
-  --highlight-blue: #e8e4da;
+  --highlight-gold: light-dark(#f3e6c4, #3a2e1c);
+  --highlight-sage: light-dark(#e5efe4, #243028);
+  --highlight-peach: light-dark(#f6e6dc, #3a2a24);
+  --highlight-blue: light-dark(#e8e4da, #2a2824);
 
-  --border-light: #d8c7a6;
-  --border-medium: #c4b08a;
+  --border-light: light-dark(#d8c7a6, #5c4634);
+  --border-medium: light-dark(#c4b08a, #7a6248);
 
-  /* Darkened so small error/success/info text stays above 4.5:1 on parchment. */
-  --success: #3d5c32;
-  --error: #6b3030;
-  --info: #3e5164;
+  /* Checked above 4.5:1 on the page and on the peach error panel. */
+  --success: light-dark(#3d5c32, #b7d4a4);
+  --error: light-dark(#6b3030, #f0c4c4);
+  --info: light-dark(#3e5164, #c5d4e4);
 
   /* Graph Node Colors - Muted Palette */
-  --node-book: #8B9EAC;
-  --node-passage: #8CAC9A;
-  --node-theme: #9E8BAC;
-  --node-person: #AC9E8B;
-  --node-note: #B8AD8E;
-  --node-place: #8BACA7;
+  --node-book: light-dark(#8B9EAC, #9BAEBF);
+  --node-passage: light-dark(#8CAC9A, #9CBFAC);
+  --node-theme: light-dark(#9E8BAC, #B09BBF);
+  --node-person: light-dark(#AC9E8B, #BFAE9B);
+  --node-note: light-dark(#B8AD8E, #C8BD9E);
+  --node-place: light-dark(#8BACA7, #9BBFBA);
 
   /* Spacing Scale - Expanded */
   --space-xs: 0.5rem;            /* 8px */
@@ -91,51 +93,25 @@
   --transition-smooth: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Dark — the same walnut, cream, and gold, lifted for a night reading room.
-   Text colors are checked against the page, card, and secondary surfaces. */
-[data-theme="dark"] {
-  --bg-primary: #1a120d;
-  --bg-secondary: #241912;
-  --bg-tertiary: #2e2118;
-  --bg-card: #221810;
-  --nav-bg: rgba(26, 18, 13, 0.92);
+/* color-scheme must match the colors actually painted. A phone that prefers
+   dark will otherwise force-dark a light page and wash the type out.
+   An explicit data-theme wins over the system preference. */
+:root {
+  color-scheme: light;
+}
 
-  --text-primary: #f3e8d2;
-  --text-secondary: #d4c4a8;
-  --text-tertiary: #c4b195;
+:root[data-theme="light"] {
+  color-scheme: light;
+}
 
-  --accent: #e0c48a;
-  --accent-hover: #f3e0b8;
-  --accent-light: #3a2c1c;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
 
-  --gold: #d8b878;
-  --gold-deep: #e0c48a;
-  --gold-bright: #e8d09a;
-  --gold-soft: #e9d3a2;
-  --walnut: #100b08;
-  --rule: #5c4634;
-  --quote: #f3e8d2;
-  --footer-text: #e4d6bb;
-  --footer-link: #e9d3a2;
-
-  --highlight-gold: #3a2e1c;
-  --highlight-sage: #243028;
-  --highlight-peach: #3a2a24;
-  --highlight-blue: #2a2824;
-
-  --border-light: #5c4634;
-  --border-medium: #7a6248;
-
-  --success: #b7d4a4;
-  --error: #f0c4c4;
-  --info: #c5d4e4;
-
-  --node-book: #9BAEBF;
-  --node-passage: #9CBFAC;
-  --node-theme: #B09BBF;
-  --node-person: #BFAE9B;
-  --node-note: #C8BD9E;
-  --node-place: #9BBFBA;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
 }
 
 /* Tailwind Theme Integration */
@@ -197,6 +173,8 @@ html {
 }
 
 body {
+  position: relative;
+  z-index: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
@@ -212,15 +190,23 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  /* Behind the type. A grain layer above the glyphs drops text contrast. */
+  z-index: -1;
   mix-blend-mode: multiply;
-  opacity: 0.42;
+  opacity: 0.28;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .38  0 0 0 0 .2  0 0 0 .1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
-[data-theme="dark"] body::before {
+:root[data-theme="dark"] body::before {
   mix-blend-mode: soft-light;
-  opacity: 0.3;
+  opacity: 0.22;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::before {
+    mix-blend-mode: soft-light;
+    opacity: 0.22;
+  }
 }
 
 /* Typography */
@@ -340,8 +326,14 @@ select {
   overflow: visible;
 }
 
-[data-theme="dark"] select {
+:root[data-theme="dark"] select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0c48a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0c48a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  }
 }
 
 select option {
@@ -361,9 +353,9 @@ button {
 
 /* Primary Button — brown on parchment, cream on walnut at night */
 .btn-primary {
-  background-color: var(--accent);
-  color: #ffffff;
-  border: 1px solid var(--accent);
+  background-color: light-dark(#7a5a3a, #e9d3a2);
+  color: light-dark(#ffffff, #1a120d);
+  border: 1px solid light-dark(#7a5a3a, #e9d3a2);
   padding: 1.05rem 2.25rem;
   border-radius: 0;
   font-family: var(--font-smallcaps);
@@ -374,22 +366,10 @@ button {
   text-decoration: none;
 }
 
-[data-theme="dark"] .btn-primary {
-  background-color: var(--gold-soft);
-  border-color: var(--gold-soft);
-  color: #1a120d;
-}
-
 .btn-primary:hover {
-  background-color: var(--walnut);
-  border-color: var(--walnut);
-  color: #ffffff;
-}
-
-[data-theme="dark"] .btn-primary:hover {
-  background-color: #f7f0e3;
-  border-color: #f7f0e3;
-  color: #1a120d;
+  background-color: light-dark(#2b1e15, #f7f0e3);
+  border-color: light-dark(#2b1e15, #f7f0e3);
+  color: light-dark(#ffffff, #1a120d);
 }
 
 .btn-primary:disabled {
@@ -760,12 +740,8 @@ blockquote {
 }
 
 .btn-ghost:hover {
-  background: var(--accent);
-  color: #ffffff;
-}
-
-[data-theme="dark"] .btn-ghost:hover {
-  color: #1a120d;
+  background: light-dark(#7a5a3a, #e0c48a);
+  color: light-dark(#ffffff, #1a120d);
 }
 
 /* Landing hero */
@@ -1211,9 +1187,10 @@ button.app-nav-link:hover {
 }
 
 .share-kicker {
-  margin-left: 0.85rem;
+  margin-left: 0;
   color: var(--accent);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
   vertical-align: middle;
 }
 
@@ -1337,6 +1314,454 @@ button.app-nav-link:hover {
     min-height: 44px;
     padding: 0.4rem 0.75rem;
     text-align: center;
+  }
+}
+
+/* Reading layout for /share and /notes.
+   Desktop keeps a horizontal note row. Phones stack the meta and hide the
+   inline action row behind a menu so the title can use the full width. */
+
+.reading-shell {
+  max-width: var(--content-narrow);
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.reading-title {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: clamp(1.75rem, 4vw, 1.875rem);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  margin: 0 0 0.75rem;
+}
+
+.reading-meta,
+.reading-lede,
+.note-excerpt,
+.note-date {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.reading-meta {
+  color: var(--text-tertiary);
+  margin: 0 0 1.25rem;
+}
+
+.reading-lede {
+  margin: 0;
+}
+
+.reading-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem 0.75rem;
+  margin: 0 0 1.75rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.verse-chip,
+.tag-chip,
+.archived-chip {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  color: var(--text-secondary);
+}
+
+.verse-chip { background-color: var(--highlight-sage); }
+.tag-chip { background-color: var(--highlight-gold); }
+.archived-chip {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.chip-more {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text-tertiary);
+  align-self: center;
+}
+
+.reading-body {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 65ch;
+}
+
+.reading-body :where(p, li, blockquote) {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.reading-body :where(p) {
+  margin: 0 0 1rem;
+}
+
+.reading-body :where(p:last-child) {
+  margin-bottom: 0;
+}
+
+.share-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.85rem;
+  min-width: 0;
+}
+
+.notes-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.note-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.note-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.note-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  min-width: 0;
+}
+
+.note-card-title {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.note-excerpt {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 0.85rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.note-date {
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.note-action {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.note-action.is-accent { color: var(--accent); }
+.note-action.is-quiet { color: var(--text-tertiary); }
+
+.note-menu { display: none; }
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-bottom: 1rem;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.editor-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.editor-block {
+  padding: 1.5rem;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  background-color: var(--bg-secondary);
+  max-width: 100%;
+}
+
+.editor-tool {
+  padding: 0.5rem 0.65rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.editor-tool[aria-pressed="true"] {
+  background: var(--bg-tertiary);
+}
+
+.editor-tool:disabled {
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.editor-divider {
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 0.15rem;
+  background: var(--border-light);
+}
+
+.note-title-field {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow: hidden;
+  resize: none;
+  field-sizing: content;
+  min-height: 3.25rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.editor-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-smallcaps);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.editor-compose {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  max-width: 100%;
+}
+
+.editor-compose input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 2.75rem;
+  font-size: 1rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+}
+
+.editor-surface .ProseMirror {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .reading-shell {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .share-page .brand-mark,
+  .notes-page .app-nav .brand-mark,
+  .site-footer .brand-mark {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .share-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .notes-page-header,
+  .notes-editor-main {
+    padding-top: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .notes-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .notes-header .btn-primary {
+    align-self: flex-start;
+  }
+
+  .reading-chips,
+  .note-meta,
+  .note-row,
+  .note-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .note-row { gap: 0.75rem; }
+
+  .verse-chip,
+  .tag-chip,
+  .archived-chip,
+  .chip-more,
+  .note-date,
+  .reading-meta {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .verse-chip,
+  .tag-chip,
+  .archived-chip {
+    padding: 0.35rem 0.7rem;
+  }
+
+  .note-actions { display: none; }
+  .note-menu { display: block; width: 100%; }
+
+  .note-menu summary {
+    list-style: none;
+    cursor: pointer;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-smallcaps);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .note-menu summary::-webkit-details-marker { display: none; }
+
+  .note-menu-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .note-menu .note-action {
+    min-height: 44px;
+    padding: 0.35rem 0;
+    text-align: left;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .editor-block,
+  .editor-actions {
+    padding: 1rem;
+  }
+
+  .editor-compose,
+  .editor-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .editor-actions {
+    flex-direction: column-reverse;
+  }
+
+  .editor-actions .btn-primary,
+  .editor-actions .btn-secondary,
+  .editor-compose .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .notes-tips {
+    padding: 2rem 1rem !important;
   }
 }
 

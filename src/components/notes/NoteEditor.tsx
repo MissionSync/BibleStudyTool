@@ -1,7 +1,7 @@
 // components/notes/NoteEditor.tsx
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { validateNoteTitle } from '@/lib/validation';
@@ -39,6 +39,28 @@ export function NoteEditor({
   const [referenceInput, setReferenceInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [detectedReferences, setDetectedReferences] = useState<string[]>([]);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
+
+  const growTitle = useCallback(() => {
+    const field = titleRef.current;
+    if (!field) return;
+    field.style.height = 'auto';
+    const border = field.offsetHeight - field.clientHeight;
+    field.style.height = `${field.scrollHeight + border}px`;
+  }, []);
+
+  useEffect(() => {
+    growTitle();
+    const fonts = document.fonts;
+    if (!fonts) return;
+    let cancel = false;
+    fonts.ready.then(() => {
+      if (!cancel) growTitle();
+    });
+    return () => {
+      cancel = true;
+    };
+  }, [title, growTitle]);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -46,7 +68,7 @@ export function NoteEditor({
     content: initialContent,
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[300px]',
+        class: 'note-editor-prose max-w-none focus:outline-none min-h-[300px]',
       },
     },
     onUpdate: ({ editor }) => {
@@ -129,13 +151,7 @@ export function NoteEditor({
   if (!editor) return null;
 
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border-light)',
-        borderRadius: '4px',
-      }}
-    >
+    <div className="editor-card">
       {/* Parent error */}
       {parentError && (
         <div
@@ -146,27 +162,24 @@ export function NoteEditor({
             borderRadius: 'var(--radius-sm)',
           }}
         >
-          <p className="text-sm" style={{ color: 'var(--error)' }}>{parentError}</p>
+          <p style={{ color: 'var(--error)', fontSize: '1rem', lineHeight: 1.5 }}>{parentError}</p>
         </div>
       )}
 
       {/* Title */}
-      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)' }}>
-        <div className="flex items-center justify-between mb-2">
-          <label
-            htmlFor="note-title"
-            className="block text-xs uppercase tracking-wider"
-            style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
-          >
+      <div className="editor-block" style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <div className="flex items-center justify-between mb-2 gap-3">
+          <label htmlFor="note-title" className="editor-label" style={{ marginBottom: 0 }}>
             Title
           </label>
-          <span className="text-xs" style={{ color: title.length > 200 ? 'var(--error)' : 'var(--text-tertiary)' }}>
+          <span style={{ color: title.length > 200 ? 'var(--error)' : 'var(--text-tertiary)', fontSize: '0.875rem' }}>
             {title.length}/200
           </span>
         </div>
-        <input
+        <textarea
+          ref={titleRef}
           id="note-title"
-          type="text"
+          rows={1}
           placeholder="Enter your note title..."
           value={title}
           onChange={(e) => {
@@ -175,36 +188,21 @@ export function NoteEditor({
           }}
           onBlur={handleTitleBlur}
           maxLength={200}
-          className="w-full"
+          className="note-title-field"
           style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: '1.25rem',
             border: `1px solid ${titleError ? 'var(--error)' : 'var(--border-light)'}`,
-            borderRadius: '4px',
-            padding: '0.75rem 1rem',
-            backgroundColor: 'var(--bg-primary)',
-            color: 'var(--text-primary)',
           }}
         />
         <FieldError message={titleError} />
       </div>
 
       {/* Toolbar */}
-      <div
-        className="flex items-center gap-1 p-3"
-        style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-secondary)' }}
-      >
+      <div className="editor-toolbar" role="toolbar" aria-label="Note formatting">
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           type="button"
-          className="p-2 transition-colors"
-          style={{
-            borderRadius: '4px',
-            background: editor.isActive('bold') ? 'var(--bg-tertiary)' : 'transparent',
-            color: 'var(--text-secondary)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="editor-tool"
+          aria-pressed={editor.isActive('bold')}
           title="Bold"
         >
           <strong>B</strong>
@@ -212,32 +210,18 @@ export function NoteEditor({
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
           type="button"
-          className="p-2 transition-colors"
-          style={{
-            borderRadius: '4px',
-            background: editor.isActive('italic') ? 'var(--bg-tertiary)' : 'transparent',
-            color: 'var(--text-secondary)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="editor-tool"
+          aria-pressed={editor.isActive('italic')}
           title="Italic"
         >
           <em>I</em>
         </button>
-
-        <div className="w-px h-5 mx-1" style={{ backgroundColor: 'var(--border-light)' }} />
-
+        <div className="editor-divider" />
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           type="button"
-          className="p-2 transition-colors text-sm"
-          style={{
-            borderRadius: '4px',
-            background: editor.isActive('bulletList') ? 'var(--bg-tertiary)' : 'transparent',
-            color: 'var(--text-secondary)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="editor-tool"
+          aria-pressed={editor.isActive('bulletList')}
           title="Bullet List"
         >
           List
@@ -245,33 +229,19 @@ export function NoteEditor({
         <button
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           type="button"
-          className="p-2 transition-colors text-sm"
-          style={{
-            borderRadius: '4px',
-            background: editor.isActive('blockquote') ? 'var(--bg-tertiary)' : 'transparent',
-            color: 'var(--text-secondary)',
-            border: 'none',
-            cursor: 'pointer',
-          }}
+          className="editor-tool"
+          aria-pressed={editor.isActive('blockquote')}
           title="Quote"
         >
           Quote
         </button>
-
-        <div className="w-px h-5 mx-1" style={{ backgroundColor: 'var(--border-light)' }} />
-
+        <div className="editor-divider" />
         <button
           onClick={() => editor.chain().focus().undo().run()}
           type="button"
           disabled={!editor.can().undo()}
-          className="p-2 transition-colors text-sm"
-          style={{
-            borderRadius: '4px',
-            color: 'var(--text-tertiary)',
-            border: 'none',
-            cursor: 'pointer',
-            opacity: editor.can().undo() ? 1 : 0.3,
-          }}
+          className="editor-tool"
+          style={{ opacity: editor.can().undo() ? 1 : 0.35 }}
           title="Undo"
         >
           Undo
@@ -280,22 +250,16 @@ export function NoteEditor({
           onClick={() => editor.chain().focus().redo().run()}
           type="button"
           disabled={!editor.can().redo()}
-          className="p-2 transition-colors text-sm"
-          style={{
-            borderRadius: '4px',
-            color: 'var(--text-tertiary)',
-            border: 'none',
-            cursor: 'pointer',
-            opacity: editor.can().redo() ? 1 : 0.3,
-          }}
+          className="editor-tool"
+          style={{ opacity: editor.can().redo() ? 1 : 0.35 }}
           title="Redo"
         >
           Redo
         </button>
       </div>
 
-      {/* Editor */}
       <div
+        className="editor-surface"
         style={{
           borderBottom: '1px solid var(--border-light)',
           backgroundColor: 'var(--bg-primary)',
@@ -305,32 +269,19 @@ export function NoteEditor({
         <EditorContent editor={editor} />
       </div>
 
-      {/* Tags */}
-      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-card)' }}>
-        <label
-          className="block text-xs uppercase tracking-wider mb-3"
-          style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
-        >
-          Tags
-        </label>
+      <div className="editor-block" style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-card)' }}>
+        <label className="editor-label">Tags</label>
 
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="chip-row mb-3">
             {tags.map(tag => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm"
-                style={{
-                  backgroundColor: 'var(--highlight-gold)',
-                  color: 'var(--text-secondary)',
-                  borderRadius: '4px',
-                }}
-              >
+              <span key={tag} className="tag-chip" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                 {tag}
                 <button
                   type="button"
                   onClick={() => handleRemoveTag(tag)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: '0 2px' }}
+                  aria-label={`Remove tag ${tag}`}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: '0 2px', fontSize: '1.1rem', lineHeight: 1 }}
                 >
                   &times;
                 </button>
@@ -339,7 +290,7 @@ export function NoteEditor({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="editor-compose">
           <input
             type="text"
             placeholder="Add a tag..."
@@ -351,21 +302,12 @@ export function NoteEditor({
                 handleAddTag();
               }
             }}
-            className="flex-1 text-sm"
-            style={{
-              height: '2.75rem',
-              border: '1px solid var(--border-light)',
-              borderRadius: '4px',
-              padding: '0 0.75rem',
-              backgroundColor: 'var(--bg-primary)',
-              color: 'var(--text-primary)',
-            }}
           />
           <button
             type="button"
             onClick={handleAddTag}
             disabled={!tagInput.trim()}
-            className="btn-secondary text-sm"
+            className="btn-secondary"
             style={{ opacity: tagInput.trim() ? 1 : 0.5 }}
           >
             Add
@@ -373,32 +315,19 @@ export function NoteEditor({
         </div>
       </div>
 
-      {/* Bible References */}
-      <div className="p-6" style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-card)' }}>
-        <label
-          className="block text-xs uppercase tracking-wider mb-3"
-          style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}
-        >
-          Bible References
-        </label>
+      <div className="editor-block" style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: 'var(--bg-card)' }}>
+        <label className="editor-label">Bible References</label>
 
         {references.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="chip-row mb-3">
             {references.map(ref => (
-              <span
-                key={ref}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm"
-                style={{
-                  backgroundColor: 'var(--highlight-sage)',
-                  color: 'var(--text-secondary)',
-                  borderRadius: '4px',
-                }}
-              >
+              <span key={ref} className="verse-chip" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                 {ref}
                 <button
                   type="button"
                   onClick={() => handleRemoveReference(ref)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: '0 2px' }}
+                  aria-label={`Remove reference ${ref}`}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', padding: '0 2px', fontSize: '1.1rem', lineHeight: 1 }}
                 >
                   &times;
                 </button>
@@ -412,14 +341,13 @@ export function NoteEditor({
             className="mb-3 p-3"
             style={{
               backgroundColor: 'var(--bg-secondary)',
-              borderRadius: '4px',
               border: '1px solid var(--border-light)',
             }}
           >
-            <div className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>
+            <div className="mb-2" style={{ color: 'var(--text-tertiary)', fontSize: '1rem', lineHeight: 1.5 }}>
               Detected references (click to add):
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="chip-row">
               {detectedReferences
                 .filter(ref => !references.includes(ref))
                 .map(ref => (
@@ -427,14 +355,8 @@ export function NoteEditor({
                     type="button"
                     key={ref}
                     onClick={() => handleAddReference(ref)}
-                    className="px-2 py-1 text-sm transition-colors"
-                    style={{
-                      backgroundColor: 'var(--bg-tertiary)',
-                      color: 'var(--text-secondary)',
-                      borderRadius: '4px',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
+                    className="verse-chip"
+                    style={{ cursor: 'pointer', border: 'none' }}
                   >
                     + {ref}
                   </button>
@@ -443,7 +365,7 @@ export function NoteEditor({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="editor-compose">
           <input
             type="text"
             placeholder="Add a reference (e.g., John 3:16)..."
@@ -455,21 +377,12 @@ export function NoteEditor({
                 handleAddReference(referenceInput);
               }
             }}
-            className="flex-1 text-sm"
-            style={{
-              height: '2.75rem',
-              border: '1px solid var(--border-light)',
-              borderRadius: '4px',
-              padding: '0 0.75rem',
-              backgroundColor: 'var(--bg-primary)',
-              color: 'var(--text-primary)',
-            }}
           />
           <button
             type="button"
             onClick={() => handleAddReference(referenceInput)}
             disabled={!referenceInput.trim()}
-            className="btn-secondary text-sm"
+            className="btn-secondary"
             style={{ opacity: referenceInput.trim() ? 1 : 0.5 }}
           >
             Add
@@ -477,14 +390,13 @@ export function NoteEditor({
         </div>
 
         {references.length === 0 && detectedReferences.length === 0 && (
-          <p className="text-sm mt-3" style={{ color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+          <p className="mt-3" style={{ color: 'var(--text-tertiary)', fontSize: '1rem', lineHeight: 1.5, fontStyle: 'italic' }}>
             Bible references will be automatically detected as you type
           </p>
         )}
       </div>
 
-      {/* Actions */}
-      <div className="p-6 flex justify-end gap-3" style={{ backgroundColor: 'var(--bg-card)' }}>
+      <div className="editor-actions">
         {onCancel && (
           <button
             type="button"

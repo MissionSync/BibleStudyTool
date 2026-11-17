@@ -9,6 +9,7 @@ import {
   createAppwriteServerClient,
   resolveAppwriteServerKey,
 } from '@/lib/appwriteServerKey';
+import { fixtureSharedNote } from '@/lib/mobileReadingFixture';
 
 interface SharedNote {
   title: string;
@@ -19,6 +20,8 @@ interface SharedNote {
 }
 
 async function getSharedNote(token: string): Promise<SharedNote | null> {
+  const preview = fixtureSharedNote(token, process.env.NODE_ENV);
+  if (preview) return preview;
   if (!token || token.length < 16) return null;
   const headerStore = await headers();
   const apiKey = resolveAppwriteServerKey(headerStore.get(APPWRITE_SITE_KEY_HEADER));
@@ -68,38 +71,20 @@ export default async function SharedNotePage({ params }: PageProps) {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: 'var(--bg-primary)' }}
-    >
+    <div className="share-page min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <nav className="mast">
         <div className="wrap mast-inner" style={{ gridTemplateColumns: '1fr' }}>
-          <div>
+          <div className="share-brand">
             <span className="brand-mark">Bible Notes Journal</span>
             <span className="caps share-kicker">Shared Note</span>
           </div>
         </div>
       </nav>
 
-      <main
-        style={{
-          maxWidth: 'var(--content-narrow)',
-          margin: '0 auto',
-          padding: '3rem 1.5rem',
-        }}
-      >
-        <h1
-          className="text-3xl mb-4"
-          style={{
-            fontFamily: 'var(--font-heading)',
-            color: 'var(--text-primary)',
-            fontWeight: 500,
-          }}
-        >
-          {note.title}
-        </h1>
+      <main className="reading-shell">
+        <h1 className="reading-title">{note.title}</h1>
 
-        <p className="text-sm mb-8" style={{ color: 'var(--text-tertiary)' }}>
+        <p className="reading-meta">
           {new Date(note.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -108,40 +93,33 @@ export default async function SharedNotePage({ params }: PageProps) {
         </p>
 
         {(note.bibleReferences.length > 0 || note.tags.length > 0) && (
-          <div className="flex flex-wrap gap-2 mb-8">
-            {note.bibleReferences.map((ref, i) => (
-              <span
-                key={`ref-${i}`}
-                className="text-xs px-2 py-1"
-                style={{
-                  backgroundColor: 'var(--highlight-sage)',
-                  color: 'var(--text-secondary)',
-                  borderRadius: 'var(--radius-pill)',
-                }}
-              >
-                {ref}
-              </span>
-            ))}
-            {note.tags.map((tag, i) => (
-              <span
-                key={`tag-${i}`}
-                className="text-xs px-2 py-1"
-                style={{
-                  backgroundColor: 'var(--highlight-gold)',
-                  color: 'var(--text-secondary)',
-                  borderRadius: 'var(--radius-pill)',
-                }}
-              >
-                {tag}
-              </span>
-            ))}
+          <div className="reading-chips">
+            {note.bibleReferences.length > 0 && (
+              <div className="chip-row">
+                {note.bibleReferences.map((ref, i) => (
+                  <span key={`ref-${i}`} className="verse-chip">
+                    {ref}
+                  </span>
+                ))}
+              </div>
+            )}
+            {note.tags.length > 0 && (
+              <div className="chip-row">
+                {note.tags.map((tag, i) => (
+                  <span key={`tag-${i}`} className="tag-chip">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         <div
-          className="scripture"
-          style={{ color: 'var(--text-primary)', lineHeight: 1.8 }}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content) }}
+          className="reading-body"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(note.content, { FORBID_ATTR: ['style'] }),
+          }}
         />
       </main>
 
