@@ -33,18 +33,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // /share CSP is set per request in src/proxy.ts. A static policy here
+        // would be enforced in addition to that header and would still block
+        // Next's nonce-bearing inline scripts.
         source: "/:path*",
         headers: securityHeaders,
-      },
-      {
-        source: "/share/:path*",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value:
-              "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';",
-          },
-        ],
       },
     ];
   },
