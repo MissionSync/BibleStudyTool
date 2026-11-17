@@ -1,7 +1,11 @@
 import { ID, Query, type Models } from 'appwrite';
-import { databases, DATABASE_ID, COLLECTIONS } from '../appwrite';
+import { account, databases, DATABASE_ID, COLLECTIONS } from '../appwrite';
 import { generateGraphForNote } from '../graphGenerator';
-
+import {
+  bearerAuthorization,
+  errorFromShareResponse,
+  SHARE_ERRORS,
+} from '../shareAuth';
 
 export interface Note extends Models.Document {
   title: string;
@@ -195,25 +199,43 @@ export async function searchNotes(userId: string, searchTerm: string): Promise<N
   return response.documents;
 }
 
+async function shareRequestHeaders(): Promise<{ Authorization: string }> {
+  try {
+    const created = await account.createJWT();
+    return bearerAuthorization(created.jwt);
+  } catch (error) {
+    if (error instanceof Error && error.message === SHARE_ERRORS.unauthenticated) {
+      throw error;
+    }
+    throw new Error(SHARE_ERRORS.unauthenticated);
+  }
+}
+
 /**
- * Share a note by generating a share token (via server API route)
+ * Share a note by generating a share token (via server API route).
+ * The Appwrite session cookie is on the API host, so this sends a
+ * short-lived user JWT instead.
  */
 export async function shareNote(noteId: string): Promise<{ shareToken: string; noteId: string }> {
-  const res = await fetch(`/api/notes/${noteId}/share`, { method: 'POST' });
+  const res = await fetch(`/api/notes/${noteId}/share`, {
+    method: 'POST',
+    headers: await shareRequestHeaders(),
+  });
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || 'Failed to share note');
+    throw await errorFromShareResponse(res, SHARE_ERRORS.shareFailed);
   }
   return res.json();
 }
 
 /**
- * Unshare a note by removing the share token (via server API route)
+ * Unshare a note by removing the share token (via server API route).
  */
 export async function unshareNote(noteId: string): Promise<void> {
-  const res = await fetch(`/api/notes/${noteId}/share`, { method: 'DELETE' });
+  const res = await fetch(`/api/notes/${noteId}/share`, {
+    method: 'DELETE',
+    headers: await shareRequestHeaders(),
+  });
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || 'Failed to unshare note');
+    throw await errorFromShareResponse(res, SHARE_ERRORS.unshareFailed);
   }
 }

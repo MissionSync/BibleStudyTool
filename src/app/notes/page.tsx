@@ -12,6 +12,7 @@ import { useNotes } from '@/hooks/useNotes';
 import { AppNav } from '@/components/ui/AppNav';
 import { NoteCardSkeleton } from '@/components/ui/NoteCardSkeleton';
 import { getShareUrl } from '@/lib/sharing';
+import { shareFailureMessage, SHARE_ERRORS } from '@/lib/shareAuth';
 
 const NoteEditor = dynamic(
   () => import('@/components/notes/NoteEditor').then((mod) => mod.NoteEditor),
@@ -144,7 +145,7 @@ export default function NotesPage() {
       showToast('Share link copied to clipboard.', 'success');
     } catch (err) {
       console.error('Share note error:', err);
-      showToast('Failed to share note.', 'error');
+      showToast(shareFailureMessage(err, SHARE_ERRORS.shareFailed), 'error');
     }
   };
 
@@ -152,8 +153,9 @@ export default function NotesPage() {
     try {
       await unshareNote.mutateAsync(noteId);
       showToast('Note is no longer shared.', 'info');
-    } catch {
-      showToast('Failed to unshare note.', 'error');
+    } catch (err) {
+      console.error('Unshare note error:', err);
+      showToast(shareFailureMessage(err, SHARE_ERRORS.unshareFailed), 'error');
     }
   };
 
