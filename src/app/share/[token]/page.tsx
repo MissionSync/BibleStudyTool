@@ -1,6 +1,7 @@
 import { SiteFooter } from '@/components/ui/SiteFooter';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { connection } from 'next/server';
 import { Databases, Query } from 'node-appwrite';
 import DOMPurify from 'isomorphic-dompurify';
 import {
@@ -56,6 +57,9 @@ interface PageProps {
 }
 
 export default async function SharedNotePage({ params }: PageProps) {
+  // The CSP nonce is created per request. Dynamic rendering is required so
+  // Next can copy that nonce onto its inline scripts.
+  await connection();
   const { token } = await params;
   const note = await getSharedNote(token);
 
