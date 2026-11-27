@@ -9,6 +9,10 @@ import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
 import { SerwistProvider } from "@/components/pwa/SerwistProvider";
 
+// Cloudflare Web Analytics is rendered by src/app/(site)/layout.tsx and
+// src/app/share/layout.tsx. /share needs the per-request CSP nonce on the
+// beacon, so the snippet stays in those layouts and this shell can stay static.
+
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
