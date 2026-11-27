@@ -141,6 +141,14 @@ Create a Stripe Payment Link with "Let customers choose what to pay", suggested 
 
 Next.js inlines public env vars at build time and only exposes names that start with `NEXT_PUBLIC_`. The exact variable is `NEXT_PUBLIC_STRIPE_SUPPORT_LINK`. The footer reads it from the `STRIPE_SUPPORT_LINK` constant. If the variable is unset or empty, the link is not rendered. No Stripe secret key or SDK is required. Set the variable in the Appwrite Site environment before building so the footer can include it.
 
+### Cloudflare Web Analytics
+
+DNS for biblenotesjournal.app is gray-cloud, so Cloudflare cannot inject the Web Analytics beacon. The app adds the snippet in the shared page layouts when `NEXT_PUBLIC_CF_WEB_ANALYTICS_TOKEN` is set. An unset or empty value omits the beacon. The token is public by design. Do not commit a real value.
+
+Cassidy creates the token in the Cloudflare dashboard under Web Analytics > Add a site (biblenotesjournal.app), sets it as an Appwrite Sites environment variable named `NEXT_PUBLIC_CF_WEB_ANALYTICS_TOKEN`, and redeploys. See the [Cloudflare Web Analytics get started guide](https://developers.cloudflare.com/web-analytics/get-started/).
+
+`/share` is the only route with a Content-Security-Policy. That policy allows `https://static.cloudflareinsights.com` on `script-src` and `https://cloudflareinsights.com` on `connect-src`.
+
 Collection schema details are in `Deployment_Alternatives.md`.
 
 ### Read-only collection export

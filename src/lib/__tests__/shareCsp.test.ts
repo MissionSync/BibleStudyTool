@@ -3,6 +3,10 @@ import { NextRequest } from 'next/server';
 import nextConfig from '../../../next.config';
 import { config, proxy } from '../../proxy';
 import {
+  CF_WEB_ANALYTICS_CONNECT_ORIGIN,
+  CF_WEB_ANALYTICS_SCRIPT_ORIGIN,
+} from '../cfWebAnalytics';
+import {
   buildShareContentSecurityPolicy,
   createShareNonce,
 } from '../shareCsp';
@@ -51,6 +55,10 @@ describe('share page CSP', () => {
     ).toBe(csp);
     expect(second.headers.get('content-security-policy')).not.toBe(csp);
 
+    expect(scriptSrc).toContain(CF_WEB_ANALYTICS_SCRIPT_ORIGIN);
+    expect(directive(csp!, 'connect-src')).toBe(
+      `connect-src 'self' ${CF_WEB_ANALYTICS_CONNECT_ORIGIN}`,
+    );
     expect(directive(csp!, 'default-src')).toBe("default-src 'self'");
     expect(directive(csp!, 'style-src')).toBe(
       "style-src 'self' 'unsafe-inline'",
@@ -62,7 +70,10 @@ describe('share page CSP', () => {
     const policy = buildShareContentSecurityPolicy('abc123', true);
     const scriptSrc = directive(policy, 'script-src');
     expect(scriptSrc).toBe(
-      "script-src 'self' 'nonce-abc123' 'strict-dynamic' 'unsafe-eval'",
+      `script-src 'self' 'nonce-abc123' 'strict-dynamic' ${CF_WEB_ANALYTICS_SCRIPT_ORIGIN} 'unsafe-eval'`,
+    );
+    expect(directive(policy, 'connect-src')).toBe(
+      `connect-src 'self' ${CF_WEB_ANALYTICS_CONNECT_ORIGIN}`,
     );
     expect(scriptSrc).not.toContain('unsafe-inline');
     expect(directive(policy, 'style-src')).toBe(
